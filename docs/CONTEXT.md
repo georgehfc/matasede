@@ -48,6 +48,7 @@ Sources are named rather than linked because links rot; search the outlet plus t
 | 3 Oct 2026 | **Icons:** drawn geometric SVGs replace Fluent Emoji in the interface. Emoji only for occasional playful moments outside the UI, case by case. |
 | 3 Oct 2026 | **Location scope:** browser geolocation, nearest first, straight-line distance and ≈ walking minutes, "Como chegar" hands off to the phone's maps app. No in-app routing. |
 | 3 Oct 2026 | **Heat header pulled into Block 4** as a proof of concept, reading IPMA open data in the browser (Lisboa codes: warnings `LSB`, forecast `1110600`; no key, CORS open). Full heat mode stays later. |
+| 3 Oct 2026 | **Search** covers fountain names and addresses only (no geocoding service). **"Como chegar" on desktop** opens the walking route in Google Maps in a new tab; no QR handoff. |
 
 ## Still open
 

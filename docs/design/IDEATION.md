@@ -119,7 +119,7 @@ These are on the Paper page "Bloco 4 · dados reais + fluxo".
 3. The browser asks for location. It only asks after a click, never on load.
 4. The nearest 3 appear, with ≈ minutes on foot.
 5. The detail opens in the left panel ("Sem informação recente", "Ainda sem fotos", shareable `?b=id`).
-6. "Como chegar" opens Google Maps in a new tab plus a **QR code to carry the route to the phone**.
+6. "Como chegar" opens the walking route in Google Maps in a new tab. No QR code.
 
 Other branches:
 - **3b, refused or failed:** the site focuses the search and never asks again on its own.
@@ -128,4 +128,4 @@ Other branches:
 - **Shared link:** goes straight to step 5.
 - **A–Z list:** reaches every fountain.
 
-**Open:** the desktop QR handoff is new. Decide whether it goes into Block 4.
+Decided on 3 Oct 2026: no QR code, and the narrower search is fine for Block 4.
