@@ -82,3 +82,23 @@ Answers so far: Fluent emoji stay at a minimum (A tests one); the Mar Largo wave
 Not yet done: the "Sem info" invite state, a winter (non-heat) state for C, and making B's marks look truly brushed rather than vector.
 
 Note: `CLAUDE.md`, `docs/SPEC.md` and `DESIGN.md` are not in this folder or on GitHub (`main` has only README, data and scripts).
+
+## Round 2: merged direction D, desktop-first (3 Oct 2026)
+
+Founder picks: **B's visuals** (cobalt on white, line-drawn map, geometric icons), **A's typography** (Archivo Black + Archivo), and **C's structure** (temperature in the header, fountain cards, location-first). The product is **desktop-first**: the main experience is browsing at a monitor. Mobile stays a simpler companion for the in-street moments (finding water now, taking photos).
+
+Paper artboard "D · Desktop", 1440 × 900:
+- **Header:** wordmark, search, "Perto de mim", temperature and heat-warning module.
+- **Wave frieze:** a cobalt band with the white Mar Largo wave under the header.
+- **Left column, 440 px:** "Perto de ti" cards with a number, name, status (mark plus word), feature icons, and distance in big numerals with ≈ minutes. The 438-challenge counter sits at the bottom.
+- **Map:** cobalt line drawing, the river as wave strokes, your location with a dotted line to the selected fountain, numbered square pins, and diamonds for chafarizes and bicas.
+- **Detail card:** album first, features, "Como chegar" (hands off to the phone's maps app) and "Reportar".
+
+Palette D: white #FFFFFF, cobalt #1D3CA8, wash #E3E8F7, ink #121B3D, muted #5A6285, broken #D2452F (the only non-cobalt hue).
+
+### Location ("GPS") scope, proposed
+- In: browser geolocation, nearest-first list, straight-line distance, an estimated walk time (≈), and a "Como chegar" handoff to Google or Apple Maps.
+- Out of v1: in-app routing and turn-by-turn, which need a routing service and break the "no API-key services" rule.
+- Needs checking against docs/SPEC.md once it's in the repo.
+
+Next: the mobile companion for D, the empty "Sem info" state, and a winter (non-heat) header.
