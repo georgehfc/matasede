@@ -102,3 +102,30 @@ Palette D: white #FFFFFF, cobalt #1D3CA8, wash #E3E8F7, ink #121B3D, muted #5A62
 - Needs checking against docs/SPEC.md once it's in the repo.
 
 Next: the mobile companion for D, the empty "Sem info" state, and a winter (non-heat) header.
+
+## Round 3: real data and the Block 4 flow (3 Oct 2026)
+
+These are on the Paper page "Bloco 4 · dados reais + fluxo".
+
+**The 438 real pins** (projected from `data/pontos.geojson`, schematic river, no tiles)
+- At city zoom the 438 points spread across the whole city and stay readable as small dashed squares. The densest areas are Baixa and Avenidas Novas, and there are long gaps in Monsanto and the east.
+- A 70 px clustering grid gave 82 clusters with up to 18 fountains each. It looked busier than the raw pins.
+- **Proposal:** show every pin at city zoom and cluster only when zoomed out beyond the city. Check this in MapLibre with real tiles.
+- At 6 px a pin is too small to tap, so on mobile tapping should pick the nearest pin within 22 px.
+
+**The flow** (wireframe, desktop-first)
+1. Arrive on the map.
+2. "Qual é o mais perto?" is our own message, shown before the browser's prompt.
+3. The browser asks for location. It only asks after a click, never on load.
+4. The nearest 3 appear, with ≈ minutes on foot.
+5. The detail opens in the left panel ("Sem informação recente", "Ainda sem fotos", shareable `?b=id`).
+6. "Como chegar" opens Google Maps in a new tab plus a **QR code to carry the route to the phone**.
+
+Other branches:
+- **3b, refused or failed:** the site focuses the search and never asks again on its own.
+- **4b, search results:** search covers the fountains' names and addresses only. Searching any street would need a geocoding service, which is out of scope.
+- **6b, on the phone:** "Como chegar" opens the maps app directly.
+- **Shared link:** goes straight to step 5.
+- **A–Z list:** reaches every fountain.
+
+**Open:** the desktop QR handoff is new. Decide whether it goes into Block 4.
