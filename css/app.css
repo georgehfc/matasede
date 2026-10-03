@@ -49,9 +49,9 @@ a { color: var(--color-cobalt); }
   gap: var(--spacing-3);
   height: 46px;
   padding: 0 var(--spacing-4);
-  border: var(--border) solid var(--color-ink);
+  border: var(--border) solid var(--color-line);
 }
-.pesquisa:focus-within { outline: 3px solid var(--color-cobalt); outline-offset: 2px; }
+.pesquisa:focus-within { border-color: var(--color-cobalt); outline: 3px solid var(--color-cobalt); outline-offset: 2px; }
 .pesquisa input {
   flex: 1;
   border: 0;
@@ -126,7 +126,7 @@ a { color: var(--color-cobalt); }
   width: var(--panel-width);
   flex-shrink: 0;
   overflow-y: auto;
-  border-right: var(--border) solid var(--color-ink);
+  border-right: var(--border) solid var(--color-line);
   padding: var(--spacing-6) var(--spacing-8) var(--spacing-8);
   display: flex;
   flex-direction: column;
@@ -443,7 +443,7 @@ a { color: var(--color-cobalt); }
     z-index: 3;
     width: auto;
     border-right: 0;
-    border-top: var(--border) solid var(--color-ink);
+    border-top: var(--border) solid var(--color-line);
     background: var(--color-glaze);
     padding: 28px var(--spacing-4) var(--spacing-6);
     transition: height 200ms ease;

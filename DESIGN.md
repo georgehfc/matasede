@@ -20,7 +20,7 @@ One hue does the work. Cobalt marks water, action, selection and the brand. The 
 | `--color-wash` | `#E3E8F7` | Cobalt wash: river, plazas, tinted panels, inactive number badges |
 | `--color-ink` | `#121B3D` | Text, borders on white, wordmark |
 | `--color-muted` | `#5A6285` | Secondary text (6.0:1 on white, 4.9:1 on wash) |
-| `--color-line` | `#E3E8F7` | Dividers between list rows (same value as wash) |
+| `--color-line` | `#E3E8F7` | Dividers, the panel/map divider and the search field border (same value as wash) |
 | `--color-broken` | `#D2452F` | "Avariado" only, always paired with ✕ and the word |
 | `--color-warning-yellow` | `#E8B300` | IPMA yellow warning swatch (small square only) |
 | `--color-warning-orange` | `#E0701B` | IPMA orange warning swatch |
@@ -54,11 +54,11 @@ Rules:
 
 - Spacing scale (px): 4, 6, 8, 12, 16, 20, 24, 32, 40, 56.
 - Radius: **0** everywhere. Squares come from tiles and setts. The exceptions are on the map: fountain pins, photo thumbnails and the location dot are round, so they read as points against the street grid.
-- Borders: 1.5 px. Ink for containers, cobalt for icon tiles, wash for list dividers.
+- Borders: 1.5 px. Ink for buttons, chips and map controls, cobalt for icon tiles, line (#E3E8F7) for dividers, the panel edge and the search field.
 - Desktop layout at 1440:
   - **Header:** 80 px.
   - **Wave frieze:** 20 px.
-  - **Body:** a 440 px left panel with a 1.5 px ink border on its right side, and the map filling the rest.
+  - **Body:** a 440 px left panel with a 1.5 px line (#E3E8F7) border on its right side, and the map filling the rest.
   - Gutters are 32 px in the header and the panel heads, and 20 px around cards.
 - Breakpoints: `--breakpoint-sm: 375px`, `--breakpoint-md: 768px`, `--breakpoint-lg: 1024px`, `--breakpoint-xl: 1440px`. Below 1024 the left panel becomes the mobile bottom sheet.
 
@@ -111,7 +111,7 @@ Files go in `assets/icons/*.svg`, using `currentColor` so CSS can colour them. F
 ## 8. Components
 
 ### Header (desktop)
-Contains the wordmark (376 px slot, so search lines up with the map), search (1.5 px ink border, 46 px tall), the "Perto de mim" button (cobalt, white text, crosshair icon) and the weather module, separated by a 1.5 px wash rule.
+Contains the wordmark (376 px slot, so search lines up with the map), search (1.5 px line border, cobalt with a focus ring when active, 46 px tall), the "Perto de mim" button (cobalt, white text, crosshair icon) and the weather module, separated by a 1.5 px wash rule.
 
 ### Weather module (heat header, IPMA proof of concept)
 - **Data:** IPMA open data, no key, CORS open.
