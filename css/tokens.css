@@ -10,6 +10,8 @@
   --color-muted: #5A6285;   /* secondary text */
   --color-line: #E3E8F7;    /* list dividers */
   --color-hover: #F2F3F5;   /* quiet grey fill on hover */
+  --color-edge: #BBC4E5;    /* soft cobalt border for available filter chips */
+  --color-disabled: #9AA0B8; /* labels and icons of filters with no data yet */
   --color-broken: #D2452F;  /* "Avariado" only */
   --color-warning-yellow: #E8B300;
   --color-warning-orange: #E0701B;

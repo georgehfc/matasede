@@ -22,6 +22,8 @@ One hue does the work. Cobalt marks water, action, selection and the brand. The 
 | `--color-muted` | `#5A6285` | Secondary text (6.0:1 on white, 4.9:1 on wash) |
 | `--color-line` | `#E3E8F7` | Dividers, the panel/map divider and the search field border (same value as wash) |
 | `--color-hover` | `#F2F3F5` | Quiet grey fill on hover (e.g. the "Ver todos em lista" footer) |
+| `--color-edge` | `#BBC4E5` | Soft cobalt border of available filter chips (cobalt on hover) |
+| `--color-disabled` | `#9AA0B8` | Label and icon of filters with no data yet |
 | `--color-broken` | `#D2452F` | "Avariado" only, always paired with ✕ and the word |
 | `--color-warning-yellow` | `#E8B300` | IPMA yellow warning swatch (small square only) |
 | `--color-warning-orange` | `#E0701B` | IPMA orange warning swatch |
@@ -147,7 +149,7 @@ Contains the wordmark (376 px slot, so search lines up with the map), search (1.
 Sits at the bottom of the left panel on a wash background. The count is in Archivo Black 40 cobalt with "de 438 bebedouros já têm foto". Below it is an 8 px progress bar (cobalt on white) and the line "Há N sem foto a menos de 400 m" with a "Fotografar" link.
 
 ### Filter chips
-These are square, unlike the v0.1 pills: 36 px tall with a 1.5 px ink border and a feature icon plus a word. Active chips are solid cobalt with white text. Filters that have no data before Block 5 explain this in the empty result.
+These are square, unlike the v0.1 pills: 36 px tall with a 1.5 px soft cobalt (edge) border, cobalt on hover, and a feature icon plus a word. Filters with no data yet keep a wash border and a lighter (disabled) label. Active chips are solid cobalt with white text. Filters that have no data before Block 5 explain this in the empty result.
 
 ### Heritage toggle
 A map control labelled "Chafarizes e bicas" with a diamond icon, off by default.
@@ -185,6 +187,8 @@ OpenFreeMap Liberty, restyled:
   --color-muted: #5A6285;
   --color-line: #E3E8F7;
   --color-hover: #F2F3F5;   /* quiet grey fill on hover */
+  --color-edge: #BBC4E5;    /* soft cobalt border for available filter chips */
+  --color-disabled: #9AA0B8; /* labels and icons of filters with no data yet */
   --color-broken: #D2452F;
   --color-warning-yellow: #E8B300;
   --color-warning-orange: #E0701B;

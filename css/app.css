@@ -177,8 +177,10 @@ a { color: var(--color-cobalt); }
   font-size: 14px;
 }
 .chip .icone { color: var(--color-cobalt); }
-.chip--sem-dados { border-color: var(--color-wash); color: var(--color-muted); }
-.chip--sem-dados .icone { color: var(--color-muted); }
+.chip:not(.chip--sem-dados):not(.chip--on) { border-color: var(--color-edge); }
+.chip:not(.chip--sem-dados):not(.chip--on):hover { border-color: var(--color-cobalt); }
+.chip--sem-dados { border-color: var(--color-wash); color: var(--color-disabled); }
+.chip--sem-dados .icone { color: var(--color-disabled); }
 .chip--on { background: var(--color-cobalt); border-color: var(--color-cobalt); color: var(--color-glaze); }
 .chip--on .icone { color: var(--color-glaze); }
 
