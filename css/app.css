@@ -179,7 +179,7 @@ a { color: var(--color-cobalt); }
 .chip .icone { color: var(--color-cobalt); }
 .chip:not(.chip--sem-dados):not(.chip--on) { border-color: var(--color-line); }
 .chip:not(.chip--sem-dados):not(.chip--on):hover { border-color: var(--color-cobalt); }
-.chip--sem-dados { border-color: var(--color-disabled-line, #EFF1F7); color: var(--color-disabled, #B4B8C4); cursor: default; }
+.chip--sem-dados { border-color: var(--color-disabled-line, #EFF1F7); color: var(--color-disabled, #B4B8C4); }
 .chip--sem-dados .icone { color: var(--color-disabled, #B4B8C4); }
 .chip--on { background: var(--color-cobalt); border-color: var(--color-cobalt); color: var(--color-glaze); }
 .chip--on .icone { color: var(--color-glaze); }

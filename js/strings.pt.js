@@ -39,6 +39,7 @@ export default {
     fotos: "Com fotos",
   },
   filtersNote: "Garrafa, taça e estado chegam com as tuas contribuições (em breve).",
+  filtersSoon: "Em breve, com as tuas contribuições",
   filtersEmpty: "Ainda não sabemos que bebedouros têm isto. Esta informação chega com as fotos e relatos de quem os usa — em breve.",
 
   heritageToggle: "Chafarizes e bicas",

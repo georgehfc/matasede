@@ -149,7 +149,7 @@ Contains the wordmark (376 px slot, so search lines up with the map), search (1.
 Sits at the bottom of the left panel on a wash background. The count is in Archivo Black 40 cobalt with "de 438 bebedouros já têm foto". Below it is an 8 px progress bar (cobalt on white) and the line "Há N sem foto a menos de 400 m" with a "Fotografar" link.
 
 ### Filter chips
-These are square, unlike the v0.1 pills: 36 px tall with a 1.5 px line (#E3E8F7) border, cobalt on hover, and a feature icon plus a word. Filters with no data yet have a lighter border (#EFF1F7), a light grey label and icon, and no hover change. Active chips are solid cobalt with white text. Filters that have no data before Block 5 explain this in the empty result.
+These are square, unlike the v0.1 pills: 36 px tall with a 1.5 px line (#E3E8F7) border, cobalt on hover, and a feature icon plus a word. Filters with no data yet have a lighter border (#EFF1F7), a light grey label and icon, and no hover change other than the pointer cursor (they stay clickable and explain "em breve"; tooltip "Em breve, com as tuas contribuições"). Active chips are solid cobalt with white text. Filters that have no data before Block 5 explain this in the empty result.
 
 ### Heritage toggle
 A map control labelled "Chafarizes e bicas" with a diamond icon, off by default.

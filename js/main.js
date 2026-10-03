@@ -74,7 +74,8 @@ function filtersHTML() {
   const chip = (key, icon) => {
     const on = state.filters.has(key);
     const count = key in counts ? ` · ${counts[key]}` : "";
-    return `<button type="button" class="chip${on ? " chip--on" : ""}${FILTERS_WITH_DATA.includes(key) ? "" : " chip--sem-dados"}" data-filter="${key}" aria-pressed="${on}">${icon ? `<span class="icone">${icons[icon]}</span>` : ""}${t.filters[key]}${count}</button>`;
+    const soon = !FILTERS_WITH_DATA.includes(key);
+    return `<button type="button" class="chip${on ? " chip--on" : ""}${soon ? " chip--sem-dados" : ""}" data-filter="${key}" aria-pressed="${on}"${soon ? ` title="${t.filtersSoon}"` : ""}>${icon ? `<span class="icone">${icons[icon]}</span>` : ""}${t.filters[key]}${count}</button>`;
   };
   return `
     <div class="filtros">

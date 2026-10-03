@@ -38,6 +38,7 @@ export default {
     fotos: "With photos",
   },
   filtersNote: "Bottle tap, dog bowl and status arrive with your contributions (soon).",
+  filtersSoon: "Coming soon, with your contributions",
   filtersEmpty: "We don't know yet which fountains have this. It arrives with photos and reports from the people who use them — soon.",
 
   heritageToggle: "Historic fountains",
