@@ -23,6 +23,28 @@ export async function loadPoints(base) {
   return points;
 }
 
+// Seed photos (the founder's, Sep 2026) and links to CML's own photos.
+// Adds p.photos (newest first) and p.cml (list of URLs) to every point.
+export async function attachPhotos(base, points) {
+  const byId = new Map(points.map((p) => [p.id, p]));
+  for (const p of points) {
+    p.photos = [];
+    p.cml = [];
+  }
+  const [seed, cml] = await Promise.all([
+    fetch(`${base}data/fotos-semente.json`).then((r) => r.json()),
+    fetch(`${base}data/links-cml.json`).then((r) => r.json()),
+  ]);
+  for (const f of seed.photos) {
+    const p = byId.get(f.point_id);
+    if (!p || f.moderation !== "approved") continue;
+    const file = f.file.replace(/\.[^.]+$/, ".jpg"); // scripts/fotos.py writes .jpg
+    p.photos.push({ src: `${base}fotos/${file}`, thumb: `${base}fotos/mini/${file}`, date: f.taken_at });
+  }
+  for (const p of points) p.photos.sort((a, b) => b.date.localeCompare(a.date));
+  for (const link of cml.links) byId.get(link.point_id)?.cml.push(link.url);
+}
+
 // "Bebedouro 2 na Praça das Flores" -> "Praça das Flores · 2"
 // The official name is still shown in the detail panel.
 export function shortTitle(name, kind) {

@@ -1,0 +1,131 @@
+{
+ "description": "Ligações para fotos no site da CML (informacoeseservicos.lisboa.pt). Só ligamos, não copiamos.",
+ "links": [
+  {
+   "point_id": "c3e7c6da-6de7-47ec-b372-a5a7daaa8181",
+   "point_name": "Bebedouro 2 na Avenida da Liberdade",
+   "cml_name": "Bebedouro São Jorge",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_sao_jorge.jpg",
+   "distance_m": 40
+  },
+  {
+   "point_id": "c3e7c6da-6de7-47ec-b372-a5a7daaa8181",
+   "point_name": "Bebedouro 2 na Avenida da Liberdade",
+   "cml_name": "Bebedouro EPAL",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouroAvLiberdade_ALA_2190.jpg",
+   "distance_m": 40
+  },
+  {
+   "point_id": "ec135b30-a4e7-4d5e-8659-bfd6a4028db4",
+   "point_name": "Bebedouro junto ao Teatro Tivoli",
+   "cml_name": "Bebedouro Tivoli",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_tivoli.jpg",
+   "distance_m": 28
+  },
+  {
+   "point_id": "8788b1a4-553d-4026-a99f-228b994cfc19",
+   "point_name": "Bebedouro na Avenida Duque d'Ávila",
+   "cml_name": "Bebedouro Av. República",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_duque_avila.jpg",
+   "distance_m": 8
+  },
+  {
+   "point_id": "2b2b11ac-d6ea-4243-9a96-9e0aec147797",
+   "point_name": "Bebedouro na Avenida Júlio Dinis",
+   "cml_name": "Bebedouro Avenida Julio Dinis",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_julio_dinis.jpg",
+   "distance_m": 55
+  },
+  {
+   "point_id": "72d09256-df8c-4390-86f8-c280b6cbedbb",
+   "point_name": "Bebedouro junto ao Edifício CML (Campo Grande 27)",
+   "cml_name": "Bebedouro Campo Grande",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_campo_grande.jpg",
+   "distance_m": 31
+  },
+  {
+   "point_id": "ef318ef4-2bf1-44e8-9cd2-0d6b6ba2e8f2",
+   "point_name": "Bebedouro na Rua Cipriano Dourado",
+   "cml_name": "Bebedouro Edifício NOS",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_NOS.jpg",
+   "distance_m": 5
+  },
+  {
+   "point_id": "7cd394a1-931c-4cc9-b791-552e8259aba5",
+   "point_name": "Bebedouro na Estrada da Correia",
+   "cml_name": "Bebedouro Carnide",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_carnide.JPG",
+   "distance_m": 48
+  },
+  {
+   "point_id": "e12eaafb-d7a0-46d7-a7c8-1d9688147799",
+   "point_name": "Bebedouro junto ao Terminal Ferroviário de Entrecampos",
+   "cml_name": "Bebedouro Entrecampos",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_entrecampos.JPG",
+   "distance_m": 0
+  },
+  {
+   "point_id": "e58042b4-2b11-40e6-8c59-3406be0b5990",
+   "point_name": "Bebedouro 2 no Parque Eduardo VII de Inglaterra",
+   "cml_name": "Bebedouro Marquês de Pombal",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_marques_pombal.jpg",
+   "distance_m": 28
+  },
+  {
+   "point_id": "466420a4-f8da-4cb2-ba21-f51fd075fc13",
+   "point_name": "Bebedouro junto às Escadinhas da Saúde",
+   "cml_name": "Bebedouro Martim Moniz",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_martim_moniz.jpg",
+   "distance_m": 0
+  },
+  {
+   "point_id": "67e6e49f-1a2a-407d-95ce-831f5c50700a",
+   "point_name": "Bebedouro na Gare do Oriente",
+   "cml_name": "Bebedouro Oriente",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_parque_nacoes.JPG",
+   "distance_m": 2
+  },
+  {
+   "point_id": "991eca51-7f31-47f6-b59a-b060edefbd98",
+   "point_name": "Bebedouro 1 no Jardim da Ribeira das Naus",
+   "cml_name": "Bebedouro Ribeira das Naus",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_ribeira_naus.jpg",
+   "distance_m": 70
+  },
+  {
+   "point_id": "d96b0bd7-818e-4377-aeda-00cb4060c3f0",
+   "point_name": "Bebedouro na Praça D. Pedro IV",
+   "cml_name": "Bebedouro Rossio",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_rossio.jpg",
+   "distance_m": 4
+  },
+  {
+   "point_id": "ef9a6250-4187-4af1-85e6-ce385a37dc26",
+   "point_name": "Bebedouro frente à Maternidade Dr. Alfredo da Costa",
+   "cml_name": "Bebedouro Rua Viriato",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_maternidade.jpg",
+   "distance_m": 59
+  },
+  {
+   "point_id": "e037b526-5cc3-4b96-9f55-b31449d59a74",
+   "point_name": "Bebedouro 3 no Eixo Central – Saldanha",
+   "cml_name": "Bebedouro Saldanha",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_saldanha.jpg",
+   "distance_m": 1
+  },
+  {
+   "point_id": "a087fe91-8540-4346-b5e7-f913f015a35a",
+   "point_name": "Bebedouro junto ao Terminal Ferroviário de Santa Apolónia",
+   "cml_name": "Bebedouro Santa Apolónia",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_santa_apolonia.jpg",
+   "distance_m": 15
+  },
+  {
+   "point_id": "2a72990f-1825-4053-803f-37493149f76f",
+   "point_name": "Bebedouro junto ao Terminal Fluvial do Terreiro do Paço",
+   "cml_name": "Bebedouro Terreiro Paço",
+   "url": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_praca_comercio.jpg",
+   "distance_m": 14
+  }
+ ]
+}

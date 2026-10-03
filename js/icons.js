@@ -12,6 +12,7 @@ export const icons = {
   out: '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10 10 2M4 2h6v6"/></svg>',
   back: '<svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 7H2M6 2 1 7l5 5"/></svg>',
   link: '<svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8a3 3 0 0 0 4 0l2-2a3 3 0 0 0-4-4L7 3M8 6a3 3 0 0 0-4 0L2 8a3 3 0 0 0 4 4l1-1"/></svg>',
+  photoSmall: '<svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="3.5" width="12" height="8.5"/><circle cx="7" cy="7.8" r="2.3"/><path d="M4.5 3.5 5.5 1.5h3l1 2"/></svg>',
   photo: '<svg viewBox="0 0 26 22" width="26" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="1.5" y="5" width="23" height="15"/><circle cx="13" cy="12.5" r="4.5"/><path d="M8 5l2-3.5h6L18 5"/></svg>',
 };
 

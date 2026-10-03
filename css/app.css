@@ -231,6 +231,7 @@ a { color: var(--color-cobalt); }
   color: var(--color-cobalt);
   flex-shrink: 0;
 }
+.tile--fotos { width: auto; gap: 4px; padding: 0 6px; font-size: var(--text-label); font-weight: 700; font-variant-numeric: tabular-nums; }
 .cartao-dist { width: 100px; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
 .dist {
   font: 400 var(--text-distance)/28px var(--font-display);
@@ -265,6 +266,17 @@ a { color: var(--color-cobalt); }
 }
 .album-vazio .icone { color: var(--color-cobalt); margin-bottom: 4px; }
 .album-vazio strong { color: var(--color-ink); font-size: var(--text-body); }
+/* Album: newest photo large, the rest as 78 px tiles */
+.album { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.album-grande { display: block; aspect-ratio: 1 / 1; background: var(--color-wash); overflow: hidden; }
+.album-grande img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.album-legenda { display: flex; justify-content: space-between; gap: var(--spacing-3); font-size: var(--text-label); color: var(--color-muted); }
+.album-tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.album-tile { width: 78px; height: 78px; padding: 0; border: var(--border) solid transparent; background: var(--color-wash); cursor: pointer; }
+.album-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.album-tile[aria-pressed="true"] { border-color: var(--color-cobalt); box-shadow: inset 0 0 0 2px var(--color-glaze); }
+.album-cml { display: flex; flex-direction: column; gap: 4px; }
+.album-cml .ligacao { display: inline-flex; align-items: center; gap: 6px; }
 .caracteristicas { display: flex; flex-wrap: wrap; gap: var(--spacing-4); }
 .caracteristica { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
 .caracteristica--nao { color: var(--color-muted); }

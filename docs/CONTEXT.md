@@ -49,6 +49,8 @@ Sources are named rather than linked because links rot; search the outlet plus t
 | 3 Oct 2026 | **Location scope:** browser geolocation, nearest first, straight-line distance and ≈ walking minutes, "Como chegar" hands off to the phone's maps app. No in-app routing. |
 | 3 Oct 2026 | **Heat header pulled into Block 4** as a proof of concept, reading IPMA open data in the browser (Lisboa codes: warnings `LSB`, forecast `1110600`; no key, CORS open). Full heat mode stays later. |
 | 3 Oct 2026 | **Search** covers fountain names and addresses only (no geocoding service). **"Como chegar" on desktop** opens the walking route in Google Maps in a new tab; no QR handoff. |
+| 3 Oct 2026 | **Seed albums in Block 4:** the founder's 44 located photos (27 fountains) show in the detail album, resized and with camera data stripped by `scripts/fotos.py`. "Com fotos" filter is live. |
+| 3 Oct 2026 | **CML photos: link only.** The 18 CML photos that match a fountain appear as "Ver foto no site da CML ↗" links; we never copy or embed CML images (rights unclear, independence). |
 
 ## Still open
 
@@ -58,6 +60,7 @@ Sources are named rather than linked because links rot; search the outlet plus t
 - Verify the "nova rede = accessible" hypothesis by checking three NÃO fountains in person.
 - Find a stable download URL for the Lisboa Aberta export (for the monthly update Action).
 - The official list of 49 climate refuges as coordinates.
+- Which fountains the two seed photos without GPS show (`5EF80971…`, `C238FCB2…` in `data/fotos-semente.json`).
 
 ## Marketing plan (for Block 6, May 2027)
 

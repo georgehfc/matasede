@@ -4,7 +4,7 @@
 import pt from "./strings.pt.js";
 import en from "./strings.en.js";
 import { icons, fillIcons } from "./icons.js";
-import { loadPoints, search, nearest, distance, walkMinutes } from "./data.js";
+import { loadPoints, attachPhotos, search, nearest, distance, walkMinutes } from "./data.js";
 import { loadWeather, renderWeather } from "./weather.js";
 import { createMap } from "./map.js";
 
@@ -16,8 +16,9 @@ const panel = document.getElementById("painel");
 const searchForm = document.getElementById("pesquisa");
 const searchInput = document.getElementById("pesquisa-input");
 
-// Which filters are on. Only "acessivel" has data before Block 5.
-const FILTERS_WITH_DATA = ["acessivel"];
+// Filters that have data before Block 5: accessibility (official data)
+// and photos (the founder's seed albums).
+const FILTERS_WITH_DATA = ["acessivel", "fotos"];
 const state = {
   view: "inicio", // inicio | perto | resultados | todos | detalhe
   previous: "inicio",
@@ -57,6 +58,7 @@ function passesFilters(p) {
   for (const f of state.filters) {
     if (!FILTERS_WITH_DATA.includes(f)) return false; // no data yet
     if (f === "acessivel" && !p.accessible) return false;
+    if (f === "fotos" && !p.photos?.length) return false;
   }
   return true;
 }
@@ -64,17 +66,20 @@ const visibleFountains = () => fountains.filter(passesFilters);
 const missingData = () => [...state.filters].some((f) => !FILTERS_WITH_DATA.includes(f));
 
 function filtersHTML() {
-  const accessibleCount = fountains.filter((p) => p.accessible).length;
+  const counts = {
+    acessivel: fountains.filter((p) => p.accessible).length,
+    fotos: fountains.filter((p) => p.photos?.length).length,
+  };
   const chip = (key, icon) => {
     const on = state.filters.has(key);
-    const count = key === "acessivel" ? ` · ${accessibleCount}` : "";
+    const count = key in counts ? ` · ${counts[key]}` : "";
     return `<button type="button" class="chip${on ? " chip--on" : ""}${FILTERS_WITH_DATA.includes(key) ? "" : " chip--sem-dados"}" data-filter="${key}" aria-pressed="${on}">${icon ? `<span class="icone">${icons[icon]}</span>` : ""}${t.filters[key]}${count}</button>`;
   };
   return `
     <div class="filtros">
       <h2 class="sobretitulo">${t.filtersTitle}</h2>
       <div class="chips">
-        ${chip("acessivel", "accessible")}${chip("garrafa", "bottle")}${chip("taca", "bowl")}${chip("funcionar")}${chip("fotos")}
+        ${chip("acessivel", "accessible")}${chip("garrafa", "bottle")}${chip("taca", "bowl")}${chip("funcionar")}${chip("fotos", "photoSmall")}
       </div>
       <p class="nota">${missingData() ? t.filtersEmpty : t.filtersNote}</p>
     </div>`;
@@ -90,7 +95,7 @@ function cardHTML(p, { number, metres } = {}) {
         <span class="cartao-meio">
           <span class="cartao-nome">${esc(p.title)}</span>
           <span class="cartao-estado"><span class="icone">${icons.noInfo}</span>${t.statusNoInfo}</span>
-          ${p.accessible ? `<span class="cartao-icones"><span class="tile" title="${t.featAccessible}">${icons.accessible}</span></span>` : ""}
+          ${p.accessible || p.photos?.length ? `<span class="cartao-icones">${p.accessible ? `<span class="tile" title="${t.featAccessible}">${icons.accessible}</span>` : ""}${p.photos?.length ? `<span class="tile tile--fotos" title="${photoCount(p)}">${icons.photoSmall}<span>${p.photos.length}</span></span>` : ""}</span>` : ""}
         </span>
         ${metres != null ? `<span class="cartao-dist"><span class="dist">${formatDistance(metres)}</span><span class="min">${fill(t.minutes, { m: walkMinutes(metres) })}</span></span>` : ""}
       </button>
@@ -108,6 +113,49 @@ function kindLabel(kind) {
   return { bebedouro: t.kindBebedouro, chafariz: t.kindChafariz, bica: t.kindBica }[kind] || kind;
 }
 
+const photoCount = (p) => (p.photos.length === 1 ? t.photoOne : fill(t.photoMany, { n: p.photos.length }));
+const photoDate = (iso) => new Intl.DateTimeFormat(t.lang === "pt" ? "pt-PT" : "en-GB", { month: "long", year: "numeric" }).format(new Date(iso));
+
+// Album: the newest photo large, the others as 78 px tiles underneath.
+function albumHTML(p) {
+  const cml = p.cml.length
+    ? `<p class="album-cml">${p.cml.map((url, i) => `<a class="ligacao" href="${esc(url)}" target="_blank" rel="noopener">${t.cmlLink}${p.cml.length > 1 ? ` (${i + 1})` : ""} ${icons.out}</a>`).join("")}</p>`
+    : "";
+  if (!p.photos.length) {
+    return `<div class="album"><div class="album-vazio"><span class="icone">${icons.photo}</span><strong>${t.albumEmpty}</strong><span>${t.albumSoon}</span></div>${cml}</div>`;
+  }
+  const first = p.photos[0];
+  const n = p.photos.length;
+  const tiles = n > 1
+    ? `<div class="album-tiles">${p.photos.map((ph, i) => `
+        <button type="button" class="album-tile" data-foto="${i}" aria-pressed="${i === 0}" aria-label="${fill(t.photoOf, { i: i + 1, n })}">
+          <img src="${ph.thumb}" alt="" loading="lazy">
+        </button>`).join("")}</div>`
+    : "";
+  return `
+    <figure class="album">
+      <a class="album-grande" href="${first.src}" target="_blank" rel="noopener" title="${t.photoOpen}">
+        <img src="${first.src}" alt="${esc(fill(t.photoAlt, { name: p.title, d: photoDate(first.date) }))}">
+      </a>
+      <figcaption class="album-legenda"><span data-legenda>${fill(t.photoTaken, { d: photoDate(first.date) })}</span><span>${photoCount(p)}</span></figcaption>
+      ${tiles}
+      <p class="nota">${t.albumSoon}</p>
+      ${cml}
+    </figure>`;
+}
+
+function showPhoto(i) {
+  const p = byId.get(state.selected);
+  const ph = p?.photos[i];
+  if (!ph) return;
+  const big = panel.querySelector(".album-grande");
+  big.href = ph.src;
+  big.querySelector("img").src = ph.src;
+  big.querySelector("img").alt = fill(t.photoAlt, { name: p.title, d: photoDate(ph.date) });
+  panel.querySelector("[data-legenda]").textContent = fill(t.photoTaken, { d: photoDate(ph.date) });
+  panel.querySelectorAll("[data-foto]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.foto === String(i)));
+}
+
 function detailHTML(p) {
   const metres = state.located ? distance(state.located, p) : null;
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}&travelmode=walking`;
@@ -122,9 +170,7 @@ function detailHTML(p) {
       <h2 class="titulo">${esc(p.title)}</h2>
       ${isFountain ? `<p class="estado"><span class="icone">${icons.noInfo}</span>${t.statusNoInfo}</p>` : `<p class="nota">${t.heritageNote}</p>`}
       ${isFountain ? `
-      <div class="album">
-        <div class="album-vazio"><span class="icone">${icons.photo}</span><strong>${t.albumEmpty}</strong><span>${t.albumSoon}</span></div>
-      </div>
+      ${albumHTML(p)}
       <div class="caracteristicas">
         <span class="caracteristica${p.accessible ? "" : " caracteristica--nao"}"><span class="tile">${icons.accessible}</span>${p.accessible ? t.featAccessible : t.featNotAccessible}</span>
       </div>` : ""}
@@ -261,6 +307,7 @@ panel.addEventListener("click", async (e) => {
   const el = e.target.closest("button, a");
   if (!el) return;
   if (el.dataset.id) return select(el.dataset.id);
+  if (el.dataset.foto) return showPhoto(Number(el.dataset.foto));
   if (el.hasAttribute("data-locate")) return locate();
   if (el.hasAttribute("data-skip")) return searchInput.focus();
   if (el.hasAttribute("data-all")) return go("todos");
@@ -330,6 +377,7 @@ async function start() {
     .catch(() => {}); // IPMA down: the header simply has no weather
 
   all = await loadPoints(base);
+  await attachPhotos(base, all).catch(() => all.forEach((p) => ((p.photos ||= []), (p.cml ||= [])))); // no photos: albums stay empty
   fountains = all.filter((p) => p.kind === "bebedouro");
   heritage = all.filter((p) => p.kind === "chafariz" || p.kind === "bica");
   byId = new Map(all.map((p) => [p.id, p]));
