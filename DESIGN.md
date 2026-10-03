@@ -21,6 +21,7 @@ One hue does the work. Cobalt marks water, action, selection and the brand. The 
 | `--color-ink` | `#121B3D` | Text, borders on white, wordmark |
 | `--color-muted` | `#5A6285` | Secondary text (6.0:1 on white, 4.9:1 on wash) |
 | `--color-line` | `#E3E8F7` | Dividers, the panel/map divider and the search field border (same value as wash) |
+| `--color-hover` | `#F2F3F5` | Quiet grey fill on hover (e.g. the "Ver todos em lista" footer) |
 | `--color-broken` | `#D2452F` | "Avariado" only, always paired with ✕ and the word |
 | `--color-warning-yellow` | `#E8B300` | IPMA yellow warning swatch (small square only) |
 | `--color-warning-orange` | `#E0701B` | IPMA orange warning swatch |
@@ -183,6 +184,7 @@ OpenFreeMap Liberty, restyled:
   --color-ink: #121B3D;
   --color-muted: #5A6285;
   --color-line: #E3E8F7;
+  --color-hover: #F2F3F5;   /* quiet grey fill on hover */
   --color-broken: #D2452F;
   --color-warning-yellow: #E8B300;
   --color-warning-orange: #E0701B;

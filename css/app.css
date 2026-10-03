@@ -127,7 +127,9 @@ a { color: var(--color-cobalt); }
   flex-shrink: 0;
   overflow-y: auto;
   border-right: var(--border) solid var(--color-line);
-  padding: var(--spacing-6) var(--spacing-8) var(--spacing-8);
+  --painel-x: var(--spacing-8);
+  --painel-fundo: var(--spacing-8);
+  padding: var(--spacing-6) var(--painel-x) var(--painel-fundo);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-6);
@@ -180,14 +182,22 @@ a { color: var(--color-cobalt); }
 .chip--on { background: var(--color-cobalt); border-color: var(--color-cobalt); color: var(--color-glaze); }
 .chip--on .icone { color: var(--color-glaze); }
 
+/* "Ver todos em lista": a footer bar stuck to the bottom of the panel */
 .todos {
+  position: sticky;
+  bottom: calc(var(--painel-fundo) * -1);
+  z-index: 1;
+  margin: auto calc(var(--painel-x) * -1) calc(var(--painel-fundo) * -1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: var(--spacing-4);
+  padding: 18px var(--painel-x);
+  background: var(--color-glaze);
   border-top: var(--border) solid var(--color-line);
   font-size: 14px;
+  transition: background 0.15s;
 }
+.todos:hover { background: var(--color-hover); }
 .todos strong { color: var(--color-cobalt); }
 
 .voltar { display: inline-flex; align-items: center; gap: 6px; color: var(--color-cobalt); font-size: 14px; font-weight: 600; align-self: flex-start; }
@@ -445,7 +455,9 @@ a { color: var(--color-cobalt); }
     border-right: 0;
     border-top: var(--border) solid var(--color-line);
     background: var(--color-glaze);
-    padding: 28px var(--spacing-4) var(--spacing-6);
+    --painel-x: var(--spacing-4);
+    --painel-fundo: var(--spacing-6);
+    padding: 28px var(--painel-x) var(--painel-fundo);
     transition: height 200ms ease;
   }
   body[data-folha="espreita"] .painel { height: 34%; }
