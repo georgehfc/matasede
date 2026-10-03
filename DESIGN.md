@@ -53,7 +53,7 @@ Rules:
 ## 4. Space, shape, layout
 
 - Spacing scale (px): 4, 6, 8, 12, 16, 20, 24, 32, 40, 56.
-- Radius: **0** everywhere. Squares come from tiles and setts. The one exception is the location dot, which is round.
+- Radius: **0** everywhere. Squares come from tiles and setts. The exceptions are on the map: fountain pins, photo thumbnails and the location dot are round, so they read as points against the street grid.
 - Borders: 1.5 px. Ink for containers, cobalt for icon tiles, wash for list dividers.
 - Desktop layout at 1440:
   - **Header:** 80 px.
@@ -79,14 +79,17 @@ Use the wave once per view. It is a signature, not a texture.
 
 | State | Pin / mark | Word (pt) | Word (en) |
 | --- | --- | --- | --- |
-| A funcionar | solid cobalt square, ✓ | A funcionar | Working |
-| Sem informação recente | white square, dashed cobalt border, dashed circle mark | Sem informação recente | No recent info |
-| Avariado | white square, solid red border, red ✕ | Avariado | Not working |
-| Selected | the state's square at 38 px, with a 4 px white ring and a 1.5 px cobalt ring | — | — |
+| Bebedouro (no report yet) | solid cobalt circle with a white ring; 13 px far out, 20–23 px at street zoom | — (no status word) | — |
+| Bebedouro, zoom 16+ | 32 px cobalt circle with a white glyph: ♿ if accessible, a water drop otherwise | — | — |
+| Bebedouro with photos, zoom 15+ | 46 px round photo thumbnail, cobalt ring, ♿ badge if accessible | — | — |
+| A funcionar (Block 5) | cobalt circle with ✓ | A funcionar | Working |
+| Avariado (Block 5) | white circle, red ring, red ✕ | Avariado | Not working |
+| Selected | 44 px: cobalt dot, white gap, cobalt ring (thumbnails grow to 60 px) | — | — |
 | Chafariz / bica (heritage) | 10 px cobalt outline diamond | Chafariz / Bica | Fountain / Spout |
 
-- Every fountain is "Sem informação recente" until Block 5. The dashed state has to look calm and inviting, never broken.
-- Clusters are cobalt squares with a white count in Archivo Black.
+- No status word until there is a status to report: "Sem informação recente" was dropped (3 Oct 2026) as vague. Block 5 adds "A funcionar" and "Avariado" only.
+- Clusters (below zoom 11) are larger cobalt circles with a white count.
+- Pin artwork lives in `js/pins.js` and is used by both the map and the legend, so they always match.
 - Your location is a cobalt dot with a white ring and a 12% cobalt halo. A dotted cobalt line runs to the selected fountain (a straight line, not a route).
 
 ## 7. Icons
@@ -221,6 +224,6 @@ OpenFreeMap Liberty, restyled:
 ## 12. Not yet designed
 
 - The mobile companion in detail.
-- The full "Ainda sem fotos" and "Sem informação recente" empty states.
+- The full "Ainda sem fotos" empty state.
 - The Sobre page, the English version and posters.
 - A new `preview.html` for this version; the v0.1 preview no longer applies.

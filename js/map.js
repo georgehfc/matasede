@@ -1,5 +1,7 @@
 // The map: OpenFreeMap "Liberty" restyled to DESIGN.md, plus our pins.
 
+import { pins, pinImage } from "./pins.js";
+
 // ── Map colours. Change these to restyle the base map. ─────────────────
 const MAP = {
   land: "#FFFFFF",       // glaze
@@ -20,7 +22,9 @@ const MAP = {
 // ────────────────────────────────────────────────────────────────────────
 
 const STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
-const CLUSTER_UNTIL_ZOOM = 11; // below this zoom fountains group into squares
+const CLUSTER_UNTIL_ZOOM = 11; // below this zoom fountains group into circles with a count
+const FEATURES_FROM_ZOOM = 16; // from here pins show a glyph (♿ or a drop)
+const PHOTOS_FROM_ZOOM = 15; // from here fountains with photos show a round thumbnail
 
 const HIDE = [/^natural_earth$/, /^poi_/, /^airport$/, /shield/, /one_way/, /hatching/, /^building-3d$/, /^boundary/, /^park_outline$/, /^landuse_/, /^aeroway/, /^label_country/, /^label_state/];
 
@@ -68,51 +72,13 @@ function restyle(style) {
   return style;
 }
 
-// Pin images are drawn on a canvas at 2× for sharp edges.
-function squareImage(size, { fill, stroke, dashed = false, ring = false }) {
-  const s = size * 2;
-  const pad = ring ? 10 : 2;
-  const c = document.createElement("canvas");
-  c.width = c.height = s + pad * 2;
-  const g = c.getContext("2d");
-  if (ring) {
-    g.fillStyle = MAP.pin;
-    g.fillRect(0, 0, c.width, c.height);
-    g.fillStyle = "#FFFFFF";
-    g.fillRect(3, 3, c.width - 6, c.height - 6);
-  }
-  g.fillStyle = fill;
-  g.fillRect(pad, pad, s, s);
-  g.strokeStyle = stroke;
-  g.lineWidth = 3;
-  if (dashed) g.setLineDash([5, 4]);
-  g.strokeRect(pad + 1.5, pad + 1.5, s - 3, s - 3);
-  return { width: c.width, height: c.height, data: g.getImageData(0, 0, c.width, c.height).data };
-}
-
-function diamondImage(size) {
-  const s = size * 2 + 4;
-  const c = document.createElement("canvas");
-  c.width = c.height = s;
-  const g = c.getContext("2d");
-  g.translate(s / 2, s / 2);
-  g.rotate(Math.PI / 4);
-  g.fillStyle = "#FFFFFF";
-  g.strokeStyle = MAP.pin;
-  g.lineWidth = 3;
-  const h = size * 0.72;
-  g.fillRect(-h, -h, h * 2, h * 2);
-  g.strokeRect(-h, -h, h * 2, h * 2);
-  return { width: s, height: s, data: g.getImageData(0, 0, s, s).data };
-}
-
 function toCollection(points) {
   return {
     type: "FeatureCollection",
     features: points.map((p) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: [p.lng, p.lat] },
-      properties: { id: p.id },
+      properties: { id: p.id, accessible: !!p.accessible },
     })),
   };
 }
@@ -134,10 +100,17 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
 
   await new Promise((resolve) => map.on("load", resolve));
 
-  map.addImage("sem-info", squareImage(12, { fill: "#FFFFFF", stroke: MAP.pin, dashed: true }), { pixelRatio: 2 });
-  map.addImage("sem-info-sel", squareImage(22, { fill: "#FFFFFF", stroke: MAP.pin, dashed: true, ring: true }), { pixelRatio: 2 });
-  map.addImage("cluster", squareImage(15, { fill: MAP.pin, stroke: MAP.pin }), { pixelRatio: 2 });
-  map.addImage("patrimonio", diamondImage(7), { pixelRatio: 2 });
+  const images = {
+    pino: [pins.bebedouro, 20],
+    "pino-gota": [pins.bebedouroGota, 32],
+    "pino-acessivel": [pins.bebedouroAcessivel, 32],
+    "pino-sel": [pins.selecionado, 44],
+    grupo: [pins.grupo, 36],
+    patrimonio: [pins.patrimonio, 16],
+  };
+  await Promise.all(
+    Object.entries(images).map(async ([name, [draw, size]]) => map.addImage(name, await pinImage(draw, size), { pixelRatio: 2 }))
+  );
 
   map.addSource("bebedouros", {
     type: "geojson",
@@ -153,7 +126,12 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
     id: "patrimonio",
     type: "symbol",
     source: "patrimonio",
-    layout: { visibility: "none", "icon-image": "patrimonio", "icon-allow-overlap": true },
+    layout: {
+      visibility: "none",
+      "icon-image": "patrimonio",
+      "icon-allow-overlap": true,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.7, 16, 1.2],
+    },
   });
   map.addLayer({
     id: "grupos",
@@ -161,7 +139,7 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
     source: "bebedouros",
     filter: ["has", "point_count"],
     layout: {
-      "icon-image": "cluster",
+      "icon-image": "grupo",
       "icon-allow-overlap": true,
       "text-field": ["get", "point_count_abbreviated"],
       "text-font": ["Noto Sans Bold"],
@@ -175,13 +153,19 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
     type: "symbol",
     source: "bebedouros",
     filter: ["!", ["has", "point_count"]],
-    layout: { "icon-image": "sem-info", "icon-allow-overlap": true, "icon-ignore-placement": true },
+    layout: {
+      // Plain dots further out; close up, a glyph for what the fountain has.
+      "icon-image": ["step", ["zoom"], "pino", FEATURES_FROM_ZOOM, ["case", ["get", "accessible"], "pino-acessivel", "pino-gota"]],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.65, 14, 1, 15.99, 1.15, 16, 0.9, 18, 1.1],
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+    },
   });
   map.addLayer({
     id: "selecionado",
     type: "symbol",
     source: "selecionado",
-    layout: { "icon-image": "sem-info-sel", "icon-allow-overlap": true, "icon-ignore-placement": true },
+    layout: { "icon-image": "pino-sel", "icon-allow-overlap": true, "icon-ignore-placement": true },
   });
 
   // Clicks: a pin opens its detail; a group zooms in.
@@ -206,6 +190,38 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
     if (near.length) onSelect(near[0].properties.id);
   });
 
+  // Fountains with photos: a round thumbnail once you're close enough to see it.
+  let photoMarkers = new Map(); // id -> marker
+  let selectedId = null;
+  function setPhotoMarkers(list) {
+    photoMarkers.forEach((m) => m.remove());
+    photoMarkers = new Map();
+    for (const p of list) {
+      if (!p.photos?.length) continue;
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "pino-foto";
+      el.style.backgroundImage = `url("${p.photos[0].thumb}")`;
+      el.setAttribute("aria-label", p.title);
+      if (p.accessible) el.innerHTML = '<span class="pino-foto-selo" aria-hidden="true"></span>';
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        onSelect(p.id);
+      });
+      photoMarkers.set(p.id, new maplibregl.Marker({ element: el }).setLngLat([p.lng, p.lat]));
+    }
+    updatePhotoMarkers();
+  }
+  function updatePhotoMarkers() {
+    const show = map.getZoom() >= PHOTOS_FROM_ZOOM;
+    photoMarkers.forEach((m, id) => {
+      show ? m.addTo(map) : m.remove();
+      m.getElement().classList.toggle("pino-foto--sel", id === selectedId);
+    });
+  }
+  map.on("zoomend", updatePhotoMarkers);
+  setPhotoMarkers(fountains);
+
   let userMarker = null;
   let numberMarkers = [];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -219,12 +235,15 @@ export async function createMap({ container, fountains, heritage, onSelect }) {
   return {
     setFountains(list) {
       map.getSource("bebedouros").setData(toCollection(list));
+      setPhotoMarkers(list);
     },
     setHeritage(visible) {
       map.setLayoutProperty("patrimonio", "visibility", visible ? "visible" : "none");
     },
     select(point) {
       map.getSource("selecionado").setData(toCollection(point ? [point] : []));
+      selectedId = point?.id ?? null;
+      updatePhotoMarkers();
       if (point) {
         const zoom = Math.max(map.getZoom(), 15);
         map.easeTo({ center: [point.lng, point.lat], zoom, padding: visible(0), duration: reduceMotion ? 0 : 600 });

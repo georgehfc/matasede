@@ -4,6 +4,7 @@
 import pt from "./strings.pt.js";
 import en from "./strings.en.js";
 import { icons, fillIcons } from "./icons.js";
+import { fillPins } from "./pins.js";
 import { loadPoints, attachPhotos, search, nearest, distance, walkMinutes } from "./data.js";
 import { loadWeather, renderWeather } from "./weather.js";
 import { createMap } from "./map.js";
@@ -94,7 +95,6 @@ function cardHTML(p, { number, metres } = {}) {
         <span class="cartao-num">${number ?? ""}</span>
         <span class="cartao-meio">
           <span class="cartao-nome">${esc(p.title)}</span>
-          <span class="cartao-estado"><span class="icone">${icons.noInfo}</span>${t.statusNoInfo}</span>
           ${p.accessible || p.photos?.length ? `<span class="cartao-icones">${p.accessible ? `<span class="tile" title="${t.featAccessible}">${icons.accessible}</span>` : ""}${p.photos?.length ? `<span class="tile tile--fotos" title="${photoCount(p)}">${icons.photoSmall}<span>${p.photos.length}</span></span>` : ""}</span>` : ""}
         </span>
         ${metres != null ? `<span class="cartao-dist"><span class="dist">${formatDistance(metres)}</span><span class="min">${fill(t.minutes, { m: walkMinutes(metres) })}</span></span>` : ""}
@@ -134,9 +134,10 @@ function albumHTML(p) {
     : "";
   return `
     <figure class="album">
-      <a class="album-grande" href="${first.src}" target="_blank" rel="noopener" title="${t.photoOpen}">
+      <button type="button" class="album-grande" data-abrir title="${t.photoOpen}">
         <img src="${first.src}" alt="${esc(fill(t.photoAlt, { name: p.title, d: photoDate(first.date) }))}">
-      </a>
+        <span class="album-expandir" aria-hidden="true">${icons.expand}</span>
+      </button>
       <figcaption class="album-legenda"><span data-legenda>${fill(t.photoTaken, { d: photoDate(first.date) })}</span><span>${photoCount(p)}</span></figcaption>
       ${tiles}
       <p class="nota">${t.albumSoon}</p>
@@ -144,17 +145,85 @@ function albumHTML(p) {
     </figure>`;
 }
 
+let photoIndex = 0;
+
 function showPhoto(i) {
   const p = byId.get(state.selected);
   const ph = p?.photos[i];
   if (!ph) return;
+  photoIndex = i;
   const big = panel.querySelector(".album-grande");
-  big.href = ph.src;
   big.querySelector("img").src = ph.src;
   big.querySelector("img").alt = fill(t.photoAlt, { name: p.title, d: photoDate(ph.date) });
   panel.querySelector("[data-legenda]").textContent = fill(t.photoTaken, { d: photoDate(ph.date) });
   panel.querySelectorAll("[data-foto]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.foto === String(i)));
 }
+
+// ── Photo viewer: a modal over everything, with full screen ─────────────
+const viewer = document.createElement("dialog");
+viewer.className = "visor";
+viewer.innerHTML = `
+  <div class="visor-barra">
+    <p class="visor-info"><strong data-visor-titulo></strong><span data-visor-legenda></span></p>
+    <button type="button" class="botao botao--contorno-claro" data-visor-ecra>${icons.expand}<span>${t.viewerFull}</span></button>
+    <button type="button" class="botao botao--claro" data-visor-fechar>${icons.close}<span>${t.viewerClose}</span></button>
+  </div>
+  <div class="visor-palco">
+    <button type="button" class="visor-seta visor-seta--ant" data-visor-ant aria-label="${t.viewerPrev}">${icons.back}</button>
+    <img alt="">
+    <button type="button" class="visor-seta" data-visor-seg aria-label="${t.viewerNext}">${icons.next}</button>
+  </div>`;
+document.body.append(viewer);
+
+function viewerShow(i) {
+  const p = byId.get(state.selected);
+  const n = p.photos.length;
+  photoIndex = (i + n) % n;
+  const ph = p.photos[photoIndex];
+  const img = viewer.querySelector("img");
+  img.src = ph.src;
+  img.alt = fill(t.photoAlt, { name: p.title, d: photoDate(ph.date) });
+  viewer.querySelector("[data-visor-titulo]").textContent = p.title;
+  viewer.querySelector("[data-visor-legenda]").textContent =
+    `${fill(t.photoTaken, { d: photoDate(ph.date) })}${n > 1 ? ` · ${fill(t.photoOf, { i: photoIndex + 1, n })}` : ""}`;
+  viewer.querySelectorAll(".visor-seta").forEach((b) => (b.hidden = n < 2));
+  showPhoto(photoIndex); // keep the album in step
+}
+function viewerOpen() {
+  viewerShow(photoIndex);
+  viewer.showModal();
+  viewer.querySelector("[data-visor-fechar]").focus();
+}
+function viewerClose() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  viewer.close();
+}
+function viewerFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else viewer.requestFullscreen?.().catch(() => {});
+}
+document.addEventListener("fullscreenchange", () => {
+  viewer.querySelector("[data-visor-ecra] span").textContent = document.fullscreenElement ? t.viewerExitFull : t.viewerFull;
+  viewer.classList.toggle("visor--ecra", !!document.fullscreenElement);
+});
+viewer.addEventListener("click", (e) => {
+  if (e.target === viewer || e.target.classList.contains("visor-palco")) return viewerClose(); // click outside the photo
+  const el = e.target.closest("button");
+  if (!el) return;
+  if (el.hasAttribute("data-visor-fechar")) viewerClose();
+  if (el.hasAttribute("data-visor-ecra")) viewerFullscreen();
+  if (el.hasAttribute("data-visor-ant")) viewerShow(photoIndex - 1);
+  if (el.hasAttribute("data-visor-seg")) viewerShow(photoIndex + 1);
+});
+viewer.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") viewerShow(photoIndex - 1);
+  if (e.key === "ArrowRight") viewerShow(photoIndex + 1);
+});
+viewer.addEventListener("cancel", (e) => {
+  // Esc: leave full screen is handled by the browser; this closes the viewer.
+  e.preventDefault();
+  viewerClose();
+});
 
 function detailHTML(p) {
   const metres = state.located ? distance(state.located, p) : null;
@@ -168,7 +237,7 @@ function detailHTML(p) {
         ${metres != null ? `<span class="detalhe-dist">${formatDistance(metres)} · ${fill(t.minutes, { m: walkMinutes(metres) })}</span>` : ""}
       </div>
       <h2 class="titulo">${esc(p.title)}</h2>
-      ${isFountain ? `<p class="estado"><span class="icone">${icons.noInfo}</span>${t.statusNoInfo}</p>` : `<p class="nota">${t.heritageNote}</p>`}
+      ${isFountain ? "" : `<p class="nota">${t.heritageNote}</p>`}
       ${isFountain ? `
       ${albumHTML(p)}
       <div class="caracteristicas">
@@ -256,6 +325,7 @@ function select(id) {
   const p = byId.get(id);
   if (!p) return;
   state.selected = id;
+  photoIndex = 0;
   map?.select(p);
   const url = new URL(location.href);
   url.searchParams.set("b", id);
@@ -308,6 +378,7 @@ panel.addEventListener("click", async (e) => {
   if (!el) return;
   if (el.dataset.id) return select(el.dataset.id);
   if (el.dataset.foto) return showPhoto(Number(el.dataset.foto));
+  if (el.hasAttribute("data-abrir")) return viewerOpen();
   if (el.hasAttribute("data-locate")) return locate();
   if (el.hasAttribute("data-skip")) return searchInput.focus();
   if (el.hasAttribute("data-all")) return go("todos");
@@ -350,7 +421,7 @@ searchInput.addEventListener("keydown", (e) => {
 document.getElementById("patrimonio").addEventListener("change", (e) => map?.setHeritage(e.target.checked));
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && state.view === "detalhe") closeDetail();
+  if (e.key === "Escape" && state.view === "detalhe" && !viewer.open) closeDetail();
 });
 
 // The bottom sheet handle (phones only; hidden on desktop by CSS).
@@ -369,6 +440,7 @@ panel.before(handle);
 async function start() {
   applyStrings();
   fillIcons();
+  fillPins();
   setSheet("espreita");
 
   // The weather doesn't depend on the map, so it starts straight away.

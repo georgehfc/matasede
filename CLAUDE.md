@@ -65,7 +65,7 @@ The founder is a web designer, not a programmer. So:
 
 **In scope**
 
-- Full-screen map of the 438 bebedouros with clustering and status pins (everything is "Sem informação recente" until Block 5 brings photos and reports).
+- Full-screen map of the 438 bebedouros with clustering and round pins (no status word until Block 5 brings reports; close up, pins show feature glyphs and photo thumbnails).
 - Heritage layer toggle (chafarizes and bicas), off by default.
 - Search by fountain name and address.
 - Filter chips with icons: Taça, Garrafa, Acessível, A funcionar, Com fotos. Only ♿ has data now; the others show but match nothing until Block 5 (explain this in the empty result state).
