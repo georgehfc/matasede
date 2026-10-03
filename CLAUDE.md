@@ -4,7 +4,7 @@
 
 ## Project brief (the whole project in one page)
 
-**What.** Mata-Sede is an independent, mobile-first web map of every public drinking fountain (*bebedouro*) in Lisbon, kept current by the people who use them. Tagline: *o mapa que Lisboa nunca fez* — the map Lisbon never made. Domain: matasede.pt. Launch: May 2027, before the heat season.
+**What.** Mata-Sede is an independent, desktop-first web map of every public drinking fountain (*bebedouro*) in Lisbon, kept current by the people who use them. Tagline: *o mapa que Lisboa nunca fez* — the map Lisbon never made. Domain: matasede.pt. Launch: May 2027, before the heat season.
 
 **Why.** Lisbon's open data lists 438 bebedouros, 200 of them from the 2020–2024 EPAL/CML/GEOTA network, but there is no working public map: EPAL's app is dead and the data is filed under "elementos de água", so nobody finds it. Nothing anywhere records which fountains are broken. That gap is the product.
 
@@ -14,11 +14,11 @@
 
 **Who.** The founder is a web designer with minimal programming experience, building this solo. Data and copy must stay editable without touching logic.
 
-**Brand.** Named from the calçada: limestone canvas, basalt dark, deep navy ink, periwinkle for water, acid lime for attention, heat red for heat mode and broken fountains. Structure and type from Clay, colours from Refill, and the Mar Largo wave from Rossio's pavement as the Lisbon signature. Icons are Fluent Emoji files, never system emoji. All of it is specified in DESIGN.md.
+**Brand.** Cobalt on tin-glaze white, from azulejo; pavement type (Archivo Black and Archivo), from the calçada; the Mar Largo wave from Rossio's pavement as the Lisbon signature. Red only ever means a broken fountain. Icons are drawn geometric SVGs, never system emoji. All of it is specified in DESIGN.md (v1.0, Oct 2026).
 
 **Content.** Interface in European Portuguese (pt-PT), informal "tu", with a full English version at `/en`.
 
-**Roadmap.** Blocks 0–3 (data audit, spec, data pack, design system) are done. **Block 4 is current: the map, drawer, filters and PT/EN.** Block 5 adds uploads, reports and moderation on Supabase. Block 6 is the domain, launch and press. Block 7 (summer 2027) adds a reports and trends area.
+**Roadmap.** Blocks 0–3 (data audit, spec, data pack, design system) are done. **Block 4 is current: the map, drawer, filters, PT/EN and the IPMA heat header (proof of concept).** Block 5 adds uploads, reports and moderation on Supabase. Block 6 is the domain, launch and press. Block 7 (summer 2027) adds a reports and trends area.
 
 **Beyond v1.** The data model is deliberately generic (`points` + `photos` + `reports`, one `vertical` per project) so the same engine can later run sibling maps, such as graffiti or potholes.
 
@@ -49,7 +49,7 @@ The founder is a web designer, not a programmer. So:
 - Libraries load from a CDN with a pinned version (MapLibre GL JS).
 - Map tiles: OpenFreeMap, style Liberty (`https://tiles.openfreemap.org/styles/liberty`), restyled toward DESIGN.md colours. Never a service that needs an API key. Keep the attribution visible.
 - Colours, type, spacing and radii come from DESIGN.md tokens, defined once as CSS custom properties.
-- Icons are the Fluent Emoji files in `assets/emoji/`, never system emoji.
+- Icons are the drawn SVG files in `assets/icons/` (using `currentColor`), never system emoji.
 - Never edit `data/raw/`. Regenerate `data/pontos.geojson` only through `scripts/converter.py`.
 - Secrets: only the Supabase `anon` key may ever appear in code. Never write, request or commit the `service_role` key. Never commit `.env` files.
 - Performance: first load under 300 KB before map tiles; lazy-load photos.
@@ -61,25 +61,26 @@ The founder is a web designer, not a programmer. So:
 - English version at `/en` from the same code, using one strings file per language.
 - Code, comments and commit messages in English.
 
-## Current block: Block 4 (map, drawer, filters, PT/EN)
+## Current block: Block 4 (map, drawer, filters, PT/EN, heat header)
 
 **In scope**
 
 - Full-screen map of the 438 bebedouros with clustering and status pins (everything is "Sem informação recente" until Block 5 brings photos and reports).
 - Heritage layer toggle (chafarizes and bicas), off by default.
 - Search by fountain name and address.
-- Filter chips: 🐕 Taça, 🚰 Garrafa, ♿ Acessível, ✅ A funcionar, 📷 Com fotos. Only ♿ has data now; the others show but match nothing until Block 5 (explain this in the empty result state).
+- Filter chips with icons: Taça, Garrafa, Acessível, A funcionar, Com fotos. Only ♿ has data now; the others show but match nothing until Block 5 (explain this in the empty result state).
 - "Perto de mim" (geolocation, nearest 3).
-- Fountain drawer: bottom sheet on mobile (peek, half, full), left panel on desktop. Album area shows the empty state ("Ainda sem fotos") for now.
+- Fountain drawer: left panel on desktop (replaces the list), bottom sheet on mobile (peek, half, full). Album area shows the empty state ("Ainda sem fotos") for now.
 - "Como chegar" opening the phone's maps app.
 - Shareable URL per fountain (`/b/<id>` or `?b=<id>` if Pages routing needs it).
 - List view with the same search and filters.
 - pt-PT and English.
 - Sobre page, first draft of the copy, for the founder to edit.
+- Heat header, proof of concept: today's maximum and any IPMA "Tempo Quente" warning for Lisboa, read in the browser from IPMA open data (see DESIGN.md, weather module). Hides itself if IPMA fails.
 
-**Not in this block:** photo upload, reports, Supabase, heat mode, the custom domain.
+**Not in this block:** photo upload, reports, Supabase, the full heat mode (climate refuges, heat-specific map), the custom domain.
 
-**Done means:** works on iPhone Safari and Android Chrome at 375 px, published on GitHub Pages, and the founder has clicked through it.
+**Done means:** designed for and works on desktop Chrome, Safari and Firefox at 1440 px, still works on iPhone Safari and Android Chrome at 375 px, published on GitHub Pages, and the founder has clicked through it.
 
 ## Working style
 

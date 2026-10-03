@@ -1,6 +1,6 @@
 # Mata-Sede — Context and decision log
 
-Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 20 Sep 2026.
+Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 3 Oct 2026.
 
 Read order for a new session: `CLAUDE.md` → `docs/SPEC.md` → `DESIGN.md` → this file.
 
@@ -40,9 +40,14 @@ Sources are named rather than linked because links rot; search the outlet plus t
 | 19 Sep 2026 | Map style: OpenFreeMap **Liberty**, restyled to the brand. No API-key services. |
 | 19 Sep 2026 | Repo `matasede` with **no licence** for now (all rights reserved). Revisit between MIT and AGPL-3.0 later. |
 | 19 Sep 2026 | Domain matasede.pt registered. Supabase project created (EU region). |
-| 20 Sep 2026 | Design system: Clay's structure and typography, Refill's colours, calçada naming (limestone, basalt), Mar Largo wave as the Lisbon signature. *(Under review, Oct 2026 — see docs/design/IDEATION.md.)* |
-| 20 Sep 2026 | Icons: Fluent Emoji files (MIT), never system emoji. 🍶 replaced by 🚰 because 🍶 is a sake bottle. *(Under review.)* |
+| 20 Sep 2026 | Design system: Clay's structure and typography, Refill's colours, calçada naming (limestone, basalt), Mar Largo wave as the Lisbon signature. *(Superseded 3 Oct 2026.)* |
+| 20 Sep 2026 | Icons: Fluent Emoji files (MIT), never system emoji. 🍶 replaced by 🚰 because 🍶 is a sake bottle. *(Superseded 3 Oct 2026.)* |
 | 20 Sep 2026 | PamPam integration shelved: it can't hold data we want to own, and it's a competitor for the generic points engine. |
+| 3 Oct 2026 | **Desktop-first.** The main experience is exploring at a monitor; mobile is the companion for "where's water now" and photos, and must still work at 375 px. Replaces mobile-first. |
+| 3 Oct 2026 | **Design system v1.0 (direction D):** cobalt on tin-glaze white from azulejo, Archivo Black + Archivo from the calçada, structure from the signage sketch (weather in the header, nearest-fountain cards), Mar Largo wave as signature. DESIGN.md rewritten. |
+| 3 Oct 2026 | **Icons:** drawn geometric SVGs replace Fluent Emoji in the interface. Emoji only for occasional playful moments outside the UI, case by case. |
+| 3 Oct 2026 | **Location scope:** browser geolocation, nearest first, straight-line distance and ≈ walking minutes, "Como chegar" hands off to the phone's maps app. No in-app routing. |
+| 3 Oct 2026 | **Heat header pulled into Block 4** as a proof of concept, reading IPMA open data in the browser (Lisboa codes: warnings `LSB`, forecast `1110600`; no key, CORS open). Full heat mode stays later. |
 
 ## Still open
 
@@ -51,7 +56,6 @@ Sources are named rather than linked because links rot; search the outlet plus t
 - Repo licence, once the engine is worth protecting.
 - Verify the "nova rede = accessible" hypothesis by checking three NÃO fountains in person.
 - Find a stable download URL for the Lisboa Aberta export (for the monthly update Action).
-- IPMA warnings feed: exact URL, format and Lisboa district code.
 - The official list of 49 climate refuges as coordinates.
 
 ## Marketing plan (for Block 6, May 2027)
