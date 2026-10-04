@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mapa · Mata-Sede</title>
+<meta name="description" content="Todos os bebedouros, chafarizes e bicas de Lisboa num só mapa.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231D3A8A'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  html,body{height:100%;overflow:hidden}
+  body{display:grid;grid-template-rows:auto 1fr}
+  .bar{display:flex;flex-direction:column;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+    background:var(--chao);border-bottom:2px solid var(--basalto);z-index:5}
+  .row1{display:flex;align-items:center;gap:14px}
+  .find{position:relative;flex:1;min-width:0;max-width:440px}
+  .find input{width:100%;height:42px;padding:0 12px;font:500 16px var(--texto);color:var(--basalto);
+    background:var(--chao);border:2px solid var(--basalto);border-radius:2px}
+  .results{position:absolute;left:0;right:0;top:46px;margin:0;padding:0;list-style:none;background:var(--chao);
+    border:2px solid var(--basalto);max-height:60vh;overflow:auto;z-index:20}
+  .results button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 12px;cursor:pointer;border-top:1px solid var(--linha)}
+  .results li:first-child button{border-top:0}
+  .results button:hover,.results button:focus-visible{background:var(--azul-fundo)}
+  .results b{display:block;font-weight:600;font-size:15px}
+  .results span{font-size:13px;color:var(--cinza)}
+  .count{margin-left:auto;font-size:14px;color:var(--cinza);white-space:nowrap}
+  @media (max-width:899px){.count{display:none!important}}
+  .count b{color:var(--azul);font-variant-numeric:tabular-nums}
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .stage{position:relative;min-height:0}
+  #map{position:absolute;inset:0}
+  .send{position:absolute;right:16px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .card{position:absolute;z-index:4;background:var(--chao);border:2px solid var(--basalto);display:flex;flex-direction:column;overflow:hidden;
+    left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-height:72%}
+  @media (min-width:900px){
+    .card{left:16px;right:auto;top:16px;bottom:auto;width:380px;max-height:calc(100% - 32px)}
+  }
+  .card .media{position:relative;flex:none}
+  .card .media:not(.invite){background:var(--azul-fundo)}
+  .card .media img{display:block;width:100%;height:200px;object-fit:cover;cursor:pointer}
+  @media (min-width:900px){.card .media img{height:240px}}
+  .card .media .n{position:absolute;right:10px;top:10px;font:600 12px/1 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
+  .card .media .credit{position:absolute;left:10px;bottom:10px;font:500 12px/1.2 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
+  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;overflow:auto}
+  .card h2{margin:0;font:21px/1.1 var(--display);letter-spacing:-.01em;padding-right:36px;text-wrap:balance}
+  .card .meta{margin:0;font-size:14px;color:var(--cinza)}
+  .card .walk{margin:0;font-weight:600;font-size:15px;color:var(--azul);font-variant-numeric:tabular-nums}
+  .card .note{margin:0;font-size:14px}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .card .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .card .acts .btn{flex:1 1 130px;min-width:0;padding:0 12px;white-space:nowrap}
+  .close{position:absolute;right:8px;top:8px;z-index:2;width:36px;height:36px;border:0;border-radius:2px;background:var(--chao);color:var(--basalto);
+    font:400 24px/1 var(--texto);cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--basalto)}
+  .ppin{width:44px;height:44px;border:3px solid var(--azul);background:var(--chao) center/cover no-repeat;cursor:pointer;padding:0;
+    box-shadow:0 0 0 2px #fff,0 4px 10px rgba(0,0,0,.25);transform:rotate(-4deg)}
+  .ppin.sel{width:58px;height:58px}
+  .err{position:absolute;left:16px;right:16px;top:16px;z-index:6;padding:12px 14px;background:var(--chao);border:2px solid var(--erro);color:var(--basalto)}
+  .maplibregl-ctrl-group{border-radius:2px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="row1">
+    <a class="wm" href="/">Mata-Sede</a>
+    <div class="find">
+      <label for="q" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Procurar</label>
+      <input id="q" type="search" placeholder="Procurar rua ou bebedouro" autocomplete="off" enterkeyhint="search">
+      <ul class="results" id="results" hidden></ul>
+    </div>
+    <span class="count" id="count" hidden></span>
+  </div>
+  <div class="chips" role="group" aria-label="Mostrar">
+    <button type="button" class="chip" data-f="bebedouro" aria-pressed="true">Bebedouros</button>
+    <button type="button" class="chip" data-f="heritage" aria-pressed="true">Chafarizes e bicas</button>
+    <button type="button" class="chip" data-f="acc" aria-pressed="false">Só acessíveis</button>
+    <button type="button" class="chip" data-f="fotos" aria-pressed="false">Com foto</button>
+  </div>
+</header>
+<main class="stage">
+  <div id="map" aria-label="Mapa de bebedouros"></div>
+  <a class="btn pri send" id="send" href="/enviar/">Enviar foto</a>
+  <article class="card" id="card" hidden aria-live="polite"></article>
+</main>
+
+<script src="/assets/vendor/maplibre-gl.js"></script>
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/assets/config.js"></script>
+<script src="/assets/common.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var STYLE = params.get("estilo") === "teste"
+    ? { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": "#ECECE8" } }] }
+    : "https://tiles.openfreemap.org/styles/liberty";
+  var AZUL = "#1D3A8A";
+  var all = null, byId = {}, photos = {}, thumbs = {}, me = null, sel = null, photoIx = 0;
+  var filters = { bebedouro: true, heritage: true, acc: false, fotos: false };
+  var markers = {};
+  var card = document.getElementById("card");
+
+  var map = new maplibregl.Map({
+    container: "map", style: STYLE, center: [-9.1393, 38.7223], zoom: 12.2, maxZoom: 19,
+    attributionControl: { compact: true }
+  });
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+  var geo = new maplibregl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true });
+  map.addControl(geo, "bottom-right");
+  geo.on("geolocate", function (e) { me = [e.coords.longitude, e.coords.latitude]; if (sel) renderCard(); });
+
+  function visible(f) {
+    var p = f.properties;
+    if (p.kind === "bebedouro" && !filters.bebedouro) return false;
+    if (p.kind !== "bebedouro" && !filters.heritage) return false;
+    if (filters.acc && p.accessible !== true) return false;
+    if (filters.fotos && !p.fotos) return false;
+    return true;
+  }
+  function data() { return { type: "FeatureCollection", features: all.features.filter(visible) }; }
+
+  function showError(msg) {
+    var d = document.createElement("div"); d.className = "err"; d.textContent = msg;
+    document.querySelector(".stage").appendChild(d);
+  }
+
+  map.on("error", function (e) { console.warn(e && e.error); });
+
+  map.on("load", function () {
+    if (map.getLayer("water")) { try { map.setPaintProperty("water", "fill-color", "#C7D3EC"); } catch (e) {} }
+    Promise.all([MS.points(), MS.approvedPhotos()]).then(function (res) {
+      all = res[0];
+      res[1].forEach(function (ph) { (photos[ph.point_id] = photos[ph.point_id] || []).push(ph); });
+      all.features.forEach(function (f) { byId[f.id] = f; f.properties.fotos = (photos[f.id] || []).length; });
+      var withPhoto = all.features.filter(function (f) { return f.properties.kind === "bebedouro" && f.properties.fotos; }).length;
+      if (MS.db) {
+        var c = document.getElementById("count");
+        c.innerHTML = "<b>" + withPhoto + "</b> de 438 bebedouros com foto"; c.hidden = false;
+      }
+      var tpaths = res[1].map(function (ph) { return MS.thumbPath(ph.storage_path); });
+      var fpaths = res[1].map(function (ph) { return ph.storage_path; });
+      return MS.signed(tpaths.concat(fpaths)).then(function (urls) { thumbs = urls; addLayers(); });
+    }).catch(function (e) {
+      console.error(e); showError("Não foi possível carregar os pontos. Tenta recarregar a página.");
+    });
+  });
+
+  function addLayers() {
+    map.addSource("pts", { type: "geojson", data: data(), cluster: true, clusterMaxZoom: 14, clusterRadius: 46 });
+    map.addLayer({ id: "clusters", type: "circle", source: "pts", filter: ["has", "point_count"],
+      paint: { "circle-color": AZUL, "circle-stroke-color": "#fff", "circle-stroke-width": 2,
+        "circle-radius": ["step", ["get", "point_count"], 16, 10, 20, 40, 26] } });
+    if (typeof STYLE === "string") {
+      map.addLayer({ id: "cluster-n", type: "symbol", source: "pts", filter: ["has", "point_count"],
+        layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": ["Noto Sans Bold"], "text-size": 13, "text-allow-overlap": true },
+        paint: { "text-color": "#fff" } });
+    }
+    map.addLayer({ id: "pt", type: "circle", source: "pts", filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 4, 16, 8],
+        "circle-color": ["match", ["get", "kind"], "bebedouro", AZUL, "#FFFFFF"],
+        "circle-stroke-color": ["match", ["get", "kind"], "bebedouro", "#FFFFFF", AZUL],
+        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5]
+      } });
+    map.addLayer({ id: "pt-sel", type: "circle", source: "pts", filter: ["==", ["get", "id"], ""],
+      paint: { "circle-radius": 14, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#141414", "circle-stroke-width": 3 } });
+
+    map.on("click", "clusters", function (e) {
+      var f = e.features[0];
+      map.getSource("pts").getClusterExpansionZoom(f.properties.cluster_id).then(function (z) {
+        map.easeTo({ center: f.geometry.coordinates, zoom: z + 0.5 });
+      });
+    });
+    map.on("click", "pt", function (e) { select(e.features[0].properties.id, false); });
+    ["clusters", "pt"].forEach(function (l) {
+      map.on("mouseenter", l, function () { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", l, function () { map.getCanvas().style.cursor = ""; });
+    });
+    map.on("render", syncPhotoPins);
+
+    var start = params.get("ponto");
+    if (start && byId[start]) select(start, true);
+  }
+
+  // Photo thumbnails replace the dot for points that have an approved photo, once they are out of a cluster.
+  var syncQueued = false;
+  function syncPhotoPins() {
+    if (syncQueued) return; syncQueued = true;
+    requestAnimationFrame(function () {
+      syncQueued = false;
+      if (!map.getSource("pts")) return;
+      var seen = {};
+      map.querySourceFeatures("pts").forEach(function (f) {
+        var p = f.properties;
+        if (p.cluster || !p.fotos || seen[p.id]) return;
+        var ph = photos[p.id] && photos[p.id][0];
+        var url = ph && thumbs[MS.thumbPath(ph.storage_path)];
+        if (!url) return;
+        seen[p.id] = true;
+        if (!markers[p.id]) {
+          var el = document.createElement("button");
+          el.type = "button"; el.className = "ppin"; el.style.backgroundImage = "url(\"" + url + "\")";
+          el.setAttribute("aria-label", p.name);
+          el.addEventListener("click", function (ev) { ev.stopPropagation(); select(p.id, false); });
+          markers[p.id] = new maplibregl.Marker({ element: el }).setLngLat(byId[p.id].geometry.coordinates).addTo(map);
+        }
+        markers[p.id].getElement().classList.toggle("sel", p.id === sel);
+      });
+      Object.keys(markers).forEach(function (id) {
+        if (!seen[id]) { markers[id].remove(); delete markers[id]; }
+      });
+    });
+  }
+
+  function select(id, fly) {
+    sel = id; photoIx = 0;
+    var f = byId[id];
+    if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], id]);
+    history.replaceState(null, "", "?ponto=" + encodeURIComponent(id));
+    var off = window.innerWidth < 900 ? [0, -140] : [190, 0];
+    if (fly) map.flyTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 16.5), offset: off, duration: 900 });
+    else if (window.innerWidth < 900) map.easeTo({ center: f.geometry.coordinates, offset: [0, -140], duration: 400 });
+    renderCard();
+    syncPhotoPins();
+  }
+
+  function renderCard() {
+    var f = byId[sel]; if (!f) return;
+    var p = f.properties, list = photos[p.id] || [];
+    var ll = f.geometry.coordinates;
+    var media;
+    if (list.length) {
+      var ph = list[photoIx % list.length];
+      var url = thumbs[ph.storage_path] || thumbs[MS.thumbPath(ph.storage_path)];
+      var who = ph.credit ? MS.esc(ph.credit) : "Anónimo";
+      var when = MS.monthYear(ph.taken_at || ph.created_at);
+      media = '<div class="media"><img src="' + MS.esc(url) + '" alt="Foto de ' + MS.esc(p.name) + '" id="ph">' +
+        (list.length > 1 ? '<span class="n">' + (photoIx % list.length + 1) + "/" + list.length + "</span>" : "") +
+        '<span class="credit">Foto: ' + who + (when ? " · " + when : "") + "</span></div>";
+    } else {
+      var what = p.kind === "bica" ? "esta bica" : p.kind === "chafariz" ? "este chafariz" : p.kind === "nevoeiro" ? "este ponto" : "este bebedouro";
+      media = '<div class="media invite"><strong>Ainda ninguém fotografou ' + what + ".</strong><span>Passas por cá? Envia uma foto e ajuda a completar o mapa.</span></div>";
+    }
+    var walk = me ? '<p class="walk">' + MS.walkMin(MS.dist(me, ll)) + " min a pé · " + MS.fmtDist(MS.dist(me, ll)) + "</p>" : "";
+    var tags = p.accessible === true ? '<div class="tags"><span class="tag">Acessível a mobilidade reduzida</span></div>' : "";
+    var note = MS.NOTE[p.kind] ? '<p class="note">' + MS.NOTE[p.kind] + "</p>" : "";
+    var dir = "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + ll[1] + "," + ll[0];
+    card.innerHTML = '<button type="button" class="close" id="close" aria-label="Fechar">×</button>' + media +
+      '<div class="body"><h2>' + MS.esc(p.name) + '</h2><p class="meta">' + MS.esc(p.address) + " · " + MS.KIND[p.kind] + "</p>" +
+      walk + tags + note +
+      '<div class="acts"><a class="btn pri" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '">Enviar foto</a>' +
+      '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">Como lá chegar</a></div></div>';
+    card.hidden = false;
+    document.getElementById("send").hidden = true;
+    document.getElementById("close").onclick = closeCard;
+    var img = document.getElementById("ph");
+    if (img && list.length > 1) img.onclick = function () { photoIx++; renderCard(); };
+  }
+  function closeCard() {
+    sel = null; card.hidden = true; document.getElementById("send").hidden = false;
+    if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], ""]);
+    history.replaceState(null, "", location.pathname);
+    syncPhotoPins();
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sel) closeCard(); });
+
+  document.querySelector(".chips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-f]"); if (!b || !all) return;
+    filters[b.dataset.f] = !filters[b.dataset.f];
+    b.setAttribute("aria-pressed", filters[b.dataset.f]);
+    map.getSource("pts").setData(data());
+  });
+
+  var q = document.getElementById("q"), results = document.getElementById("results");
+  q.addEventListener("input", function () {
+    if (!all) return;
+    var hits = MS.search(all.features, q.value, 8);
+    results.innerHTML = hits.map(function (f) {
+      return '<li><button type="button" data-id="' + f.id + '"><b>' + MS.esc(f.properties.name) + "</b><span>" +
+        MS.esc(f.properties.address) + " · " + MS.KIND[f.properties.kind] + "</span></button></li>";
+    }).join("");
+    results.hidden = !hits.length;
+  });
+  results.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-id]"); if (!b) return;
+    results.hidden = true; q.value = ""; q.blur();
+    select(b.dataset.id, true);
+  });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".find")) results.hidden = true; });
+})();
+</script>
+</body>
+</html>

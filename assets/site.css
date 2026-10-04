@@ -1,0 +1,35 @@
+/* Mata-Sede shared tokens: limestone ground, basalt type, azulejo cobalt-navy accent. */
+:root{
+  --chao:#FFFFFF; --basalto:#141414; --cinza:#5E5E58; --linha:#DADAD4;
+  --azul:#1D3A8A; --azul-fundo:#E9EEF8; --sobre-azul:#FFFFFF; --erro:#B3261E;
+  --display:"Archivo Black","Arial Black",Arial,sans-serif;
+  --texto:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{--chao:#141414; --basalto:#F3F2EE; --cinza:#A6A59E; --linha:#34342F;
+    --azul:#9DB4F2; --azul-fundo:#1C2338; --sobre-azul:#0E1530; --erro:#FF8A80; color-scheme:dark}
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--chao);color:var(--basalto);font:17px/1.5 var(--texto)}
+a{color:var(--azul);text-underline-offset:3px}
+.wm{font:22px/1 var(--display);letter-spacing:-.02em;color:var(--basalto);text-decoration:none;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;
+  font:600 16px/1 var(--texto);border:2px solid var(--azul);color:var(--azul);background:var(--chao);
+  text-decoration:none;cursor:pointer;border-radius:2px}
+.btn.pri{background:var(--azul);color:var(--sobre-azul)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1.5px solid var(--linha);
+  background:var(--chao);color:var(--basalto);font:500 14px/1 var(--texto);cursor:pointer;border-radius:2px;white-space:nowrap}
+.chip[aria-pressed="true"]{border-color:var(--azul);background:var(--azul);color:var(--sobre-azul)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1.5px solid var(--linha);font:500 13px/1.2 var(--texto)}
+.invite{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:16px;min-height:150px;
+  background:
+    linear-gradient(transparent 15%,var(--chao) 85%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16'%3E%3Cpath d='M0 12 Q12 0 24 12 T48 12' fill='none' stroke='%231D3A8A' stroke-width='3'/%3E%3C/svg%3E") 0 0/48px 16px repeat,
+    var(--chao)}
+.invite strong{font:600 16px/1.3 var(--texto)}
+.invite span{font-size:14px;color:var(--cinza)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

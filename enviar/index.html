@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enviar foto · Mata-Sede</title>
+<meta name="description" content="Fotografaste um bebedouro em Lisboa? Envia a foto e ajuda a completar o mapa.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231D3A8A'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  body{padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(40px + env(safe-area-inset-bottom,0px))}
+  .top{max-width:560px;margin:0 auto 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding-bottom:12px;border-bottom:2px solid var(--basalto)}
+  .top a:last-child{font-size:15px}
+  main{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+  h1{margin:0;font:clamp(30px,8vw,40px)/1.02 var(--display);letter-spacing:-.02em;text-wrap:balance}
+  .lead{margin:6px 0 0;color:var(--cinza)}
+  section{display:flex;flex-direction:column;gap:12px}
+  h2{margin:0;font:600 13px/1 var(--texto);letter-spacing:.08em;text-transform:uppercase;color:var(--cinza)}
+  h2 b{color:var(--azul)}
+  .pick{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:170px;
+    border:2px dashed var(--azul);background:var(--azul-fundo);color:var(--azul);font-weight:600;cursor:pointer;text-align:center;padding:16px}
+  .pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .pick .plus{font:400 40px/1 var(--texto)}
+  .pick small{font-weight:400;color:var(--cinza)}
+  .pick:focus-within{outline:3px solid var(--azul);outline-offset:2px}
+  .preview{position:relative}
+  .preview img{display:block;width:100%;max-height:360px;object-fit:cover;border:2px solid var(--basalto)}
+  .preview button{position:absolute;right:8px;bottom:8px}
+  .hint{margin:0;font-size:14px;color:var(--cinza)}
+  .opts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+  .opt{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:center;
+    padding:12px 14px;border:2px solid var(--linha);cursor:pointer;background:var(--chao)}
+  .opt:hover{border-color:var(--basalto)}
+  .opt:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+  .opt i{width:18px;height:18px;border:2px solid var(--basalto);border-radius:50%;display:block}
+  .opt[aria-pressed="true"]{border-color:var(--azul);background:var(--azul-fundo)}
+  .opt[aria-pressed="true"] i{border-color:var(--azul);background:radial-gradient(var(--azul) 45%,transparent 50%)}
+  .opt b{display:block;font-weight:600;font-size:15.5px;line-height:1.3}
+  .opt span{display:block;font-size:13.5px;color:var(--cinza)}
+  .opt em{font-style:normal;font-weight:600;color:var(--azul);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tools{display:flex;flex-wrap:wrap;gap:8px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-weight:600;font-size:15px}
+  .field input{height:46px;padding:0 12px;font:500 16px var(--texto);color:var(--basalto);background:var(--chao);border:2px solid var(--basalto);border-radius:2px}
+  .check{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;font-size:15px;cursor:pointer}
+  .check input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--azul)}
+  .go{width:100%;min-height:54px;font-size:17px}
+  .msg{margin:0;padding:12px 14px;border:2px solid var(--erro);font-size:15px}
+  .done{border:2px solid var(--azul);padding:20px;display:flex;flex-direction:column;gap:12px}
+  .done h2{font:24px/1.1 var(--display);letter-spacing:-.01em;text-transform:none;color:var(--basalto)}
+  .done p{margin:0}
+  .done .tools .btn{flex:1 1 160px}
+</style>
+</head>
+<body>
+<div class="top"><a class="wm" href="/">Mata-Sede</a><a href="/mapa/">Ver o mapa</a></div>
+<main>
+  <header>
+    <h1>Envia uma foto de um bebedouro</h1>
+    <p class="lead">Cada foto mostra a quem vem a seguir como está o bebedouro. Revemos todas antes de aparecerem no mapa.</p>
+  </header>
+
+  <form id="form" novalidate>
+    <div style="display:flex;flex-direction:column;gap:26px">
+      <section>
+        <h2><b>1</b> · A foto</h2>
+        <label class="pick" id="pick">
+          <span class="plus" aria-hidden="true">+</span>
+          <span>Escolher foto</span>
+          <small>Do rolo da câmara ou tira uma agora</small>
+          <input type="file" id="file" accept="image/*">
+        </label>
+        <div class="preview" id="preview" hidden>
+          <img id="previewImg" alt="A foto escolhida">
+          <button type="button" class="btn" id="change">Trocar foto</button>
+        </div>
+        <p class="hint" id="photoHint" hidden></p>
+      </section>
+
+      <section id="whereSec">
+        <h2><b>2</b> · Qual é?</h2>
+        <p class="hint" id="whereHint">Escolhe a foto primeiro. Se ela tiver a localização, sugerimos o bebedouro mais perto.</p>
+        <ul class="opts" id="opts"></ul>
+        <div class="tools" id="whereTools">
+          <button type="button" class="btn" id="locate">Usar a minha localização</button>
+        </div>
+        <div class="field">
+          <label for="q">Ou procura pelo nome ou pela rua</label>
+          <input id="q" type="search" placeholder="Ex.: Praça das Flores" autocomplete="off">
+        </div>
+      </section>
+
+      <section>
+        <h2><b>3</b> · Quem tirou</h2>
+        <div class="field">
+          <label for="credit">Nome para o crédito (opcional)</label>
+          <input id="credit" maxlength="60" placeholder="Anónimo" autocomplete="nickname">
+        </div>
+        <label class="check"><input type="checkbox" id="ok"><span>Tirei esta foto e autorizo o Mata-Sede a publicá-la no mapa.</span></label>
+      </section>
+
+      <p class="msg" id="msg" role="alert" hidden></p>
+      <button type="submit" class="btn pri go" id="go" disabled>Enviar foto</button>
+      <p class="hint">Antes de enviar, a foto é reduzida e perde a localização e outros dados guardados pelo telemóvel.</p>
+    </div>
+  </form>
+
+  <div class="done" id="done" hidden>
+    <h2>Recebido. Obrigado!</h2>
+    <p id="doneText">A foto aparece no mapa depois de revista.</p>
+    <div class="tools">
+      <button type="button" class="btn pri" id="again">Enviar outra</button>
+      <a class="btn" id="seeIt" href="/mapa/">Ver no mapa</a>
+    </div>
+  </div>
+</main>
+
+<script src="/assets/vendor/exifr-lite.umd.js"></script>
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/assets/config.js"></script>
+<script src="/assets/common.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var feats = [], chosen = null, file = null, takenAt = null, options = [], sending = false;
+
+  MS.points().then(function (fc) {
+    feats = fc.features;
+    var pre = new URLSearchParams(location.search).get("ponto");
+    var f = pre && feats.find(function (x) { return x.id === pre; });
+    if (f) { options = [{ f: f, m: null }]; chosen = f.id; showOptions("Escolhido no mapa:"); }
+  }).catch(function () { error("Não foi possível carregar a lista de bebedouros. Tenta recarregar a página."); });
+
+  function error(t) { var m = $("msg"); m.textContent = t; m.hidden = !t; }
+  function update() { $("go").disabled = sending || !file || !chosen || !$("ok").checked; }
+
+  function showOptions(hint) {
+    $("whereHint").textContent = hint;
+    $("opts").innerHTML = options.map(function (o) {
+      var p = o.f.properties;
+      return '<li><button type="button" class="opt" data-id="' + o.f.id + '" aria-pressed="' + (o.f.id === chosen) + '"><i></i>' +
+        "<span><b>" + MS.esc(p.name) + "</b><span>" + MS.esc(p.address) + " · " + MS.KIND[p.kind] + "</span></span>" +
+        (o.m != null ? "<em>" + MS.fmtDist(o.m) + "</em>" : "<em></em>") + "</button></li>";
+    }).join("");
+    update();
+  }
+  $("opts").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-id]"); if (!b) return;
+    chosen = b.dataset.id; showOptions($("whereHint").textContent);
+  });
+
+  function suggestNear(at, source) {
+    var near = MS.nearest(feats, at, 5);
+    options = near; chosen = near[0] && near[0].m < 60 ? near[0].f.id : null;
+    showOptions(source === "foto"
+      ? (near[0].m < 300 ? "Pela localização da foto, deve ser um destes:" : "A foto foi tirada longe de qualquer bebedouro do mapa. O mais perto:")
+      : "Perto de ti:");
+  }
+
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    error("");
+    if (!/^image\//.test(f.type) && !/\.(heic|heif|jpe?g|png)$/i.test(f.name)) { error("Esse ficheiro não é uma foto."); return; }
+    file = f; takenAt = null;
+    $("previewImg").src = URL.createObjectURL(f);
+    $("pick").hidden = true; $("preview").hidden = false;
+    var hint = $("photoHint");
+    Promise.all([
+      window.exifr ? exifr.gps(f).catch(function () { return null; }) : null,
+      window.exifr ? exifr.parse(f, ["DateTimeOriginal"]).catch(function () { return null; }) : null
+    ]).then(function (r) {
+      var gps = r[0], meta = r[1];
+      if (meta && meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal)) takenAt = meta.DateTimeOriginal.toISOString();
+      if (gps && isFinite(gps.latitude) && isFinite(gps.longitude) && feats.length) {
+        hint.hidden = true;
+        if (!chosen || options.length > 1) suggestNear([gps.longitude, gps.latitude], "foto");
+      } else {
+        hint.textContent = "Esta foto não traz localização. Escolhe o bebedouro abaixo.";
+        hint.hidden = false;
+        if (!chosen) $("whereHint").textContent = "Usa a tua localização, se estás perto, ou procura pelo nome.";
+      }
+      update();
+    });
+  });
+  $("change").addEventListener("click", function () { $("file").value = ""; $("file").click(); });
+
+  $("locate").addEventListener("click", function () {
+    if (!navigator.geolocation) { error("Este navegador não deixa usar a localização. Procura pelo nome."); return; }
+    var b = this; b.disabled = true; b.textContent = "A localizar…";
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      b.disabled = false; b.textContent = "Usar a minha localização";
+      suggestNear([pos.coords.longitude, pos.coords.latitude], "eu");
+    }, function () {
+      b.disabled = false; b.textContent = "Usar a minha localização";
+      error("Não conseguimos a tua localização. Procura pelo nome ou pela rua.");
+    }, { enableHighAccuracy: true, timeout: 12000 });
+  });
+
+  $("q").addEventListener("input", function () {
+    var hits = MS.search(feats, this.value, 8);
+    if (!this.value.trim()) return;
+    options = hits.map(function (f) { return { f: f, m: null }; });
+    if (!hits.some(function (f) { return f.id === chosen; })) chosen = null;
+    showOptions(hits.length ? "Resultados:" : "Nada encontrado com esse nome. Tenta só a rua.");
+  });
+  $("ok").addEventListener("change", update);
+
+  // Re-encode through a canvas: smaller file, and no EXIF (location, phone model) survives.
+  function decode(f) {
+    if (window.createImageBitmap) {
+      return createImageBitmap(f, { imageOrientation: "from-image" }).catch(function () { return viaImg(f); });
+    }
+    return viaImg(f);
+  }
+  function viaImg(f) {
+    return new Promise(function (res, rej) {
+      var i = new Image();
+      i.onload = function () { res(i); };
+      i.onerror = function () { rej(new Error("decode")); };
+      i.src = URL.createObjectURL(f);
+    });
+  }
+  function toJpeg(src, max, q) {
+    var w = src.naturalWidth || src.width, h = src.naturalHeight || src.height;
+    var s = Math.min(1, max / Math.max(w, h));
+    var c = document.createElement("canvas");
+    c.width = Math.round(w * s); c.height = Math.round(h * s);
+    c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+    return new Promise(function (res, rej) {
+      c.toBlob(function (b) { b ? res(b) : rej(new Error("encode")); }, "image/jpeg", q);
+    });
+  }
+  function uuid() {
+    if (crypto.randomUUID) return crypto.randomUUID();
+    var b = crypto.getRandomValues(new Uint8Array(16)); b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
+    var h = Array.prototype.map.call(b, function (x) { return (x + 256).toString(16).slice(1); }).join("");
+    return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
+  }
+
+  $("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if ($("go").disabled) return;
+    if (!MS.db) { error("O envio de fotos ainda não está ligado. Volta daqui a pouco."); return; }
+    sending = true; update(); error("");
+    var go = $("go"); go.textContent = "A preparar a foto…";
+    var id = uuid(), path = "fotos/" + id + ".jpg";
+    var credit = $("credit").value.trim().slice(0, 60) || null;
+    decode(file).then(function (img) {
+      return Promise.all([toJpeg(img, 2048, 0.85), toJpeg(img, 480, 0.8)]);
+    }).then(function (blobs) {
+      go.textContent = "A enviar…";
+      var bucket = MS.db.storage.from("fotos");
+      return bucket.upload(path, blobs[0], { contentType: "image/jpeg", upsert: false }).then(function (r) {
+        if (r.error) throw r.error;
+        return bucket.upload(MS.thumbPath(path), blobs[1], { contentType: "image/jpeg", upsert: false });
+      });
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      return MS.db.from("photos").insert({ point_id: chosen, storage_path: path, taken_at: takenAt, credit: credit });
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      var f = feats.find(function (x) { return x.id === chosen; });
+      $("doneText").textContent = "A foto de " + (f ? f.properties.name : "este bebedouro") + " aparece no mapa depois de revista.";
+      $("seeIt").href = "/mapa/?ponto=" + encodeURIComponent(chosen);
+      $("form").hidden = true; $("done").hidden = false;
+      window.scrollTo(0, 0);
+    }).catch(function (err) {
+      console.error(err);
+      error(err && err.message === "decode"
+        ? "Não conseguimos abrir esta foto neste navegador. Tenta com uma foto em JPEG."
+        : "A foto não foi enviada. Verifica a ligação à internet e tenta outra vez.");
+    }).then(function () {
+      sending = false; go.textContent = "Enviar foto"; update();
+    });
+  });
+
+  $("again").addEventListener("click", function () {
+    file = null; takenAt = null; $("file").value = ""; $("ok").checked = $("ok").checked;
+    $("pick").hidden = false; $("preview").hidden = true; $("photoHint").hidden = true;
+    var keep = new URLSearchParams(location.search).get("ponto");
+    if (!keep) { chosen = null; options = []; showOptions("Escolhe a foto primeiro. Se ela tiver a localização, sugerimos o bebedouro mais perto."); }
+    $("done").hidden = true; $("form").hidden = false; update();
+  });
+})();
+</script>
+</body>
+</html>

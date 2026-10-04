@@ -4,30 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mata-Sede · o mapa que Lisboa nunca fez</title>
-<meta name="description" content="Todos os bebedouros públicos de Lisboa num só mapa, com fotos recentes e se estão a funcionar. Lançamento na primavera de 2027.">
+<meta name="description" content="Todos os bebedouros públicos de Lisboa num só mapa, com fotos de quem lá passou.">
 <meta property="og:title" content="Mata-Sede">
-<meta property="og:description" content="O mapa que Lisboa nunca fez. 438 bebedouros, um só mapa. Primavera de 2027.">
+<meta property="og:description" content="O mapa que Lisboa nunca fez. 438 bebedouros, um só mapa.">
 <meta property="og:url" content="https://matasede.pt/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_PT">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23141414'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231D3A8A'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&display=swap">
 <style>
   /* Holding page: limestone ground, basalt type, the Mar Largo wave as the one graphic. */
   :root{
-    --chao:#FFFFFF; --basalto:#141414; --cinza:#5E5E58; --linha:#DADAD4;
+    --chao:#FFFFFF; --basalto:#141414; --cinza:#5E5E58; --linha:#DADAD4; --azul:#1D3A8A; --sobre-azul:#FFFFFF;
     --display:"Archivo Black","Arial Black",Arial,sans-serif;
     --texto:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
     color-scheme:light;
   }
   @media (prefers-color-scheme: dark){
-    :root{--chao:#141414; --basalto:#F3F2EE; --cinza:#A6A59E; --linha:#34342F; color-scheme:dark}
+    :root{--chao:#141414; --basalto:#F3F2EE; --cinza:#A6A59E; --linha:#34342F; --azul:#9DB4F2; --sobre-azul:#0E1530; color-scheme:dark}
   }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
   html,body{height:100%}
   body{margin:0;background:var(--chao);color:var(--basalto);font:17px/1.55 var(--texto);
     display:flex;flex-direction:column;min-height:100%;
@@ -39,13 +40,17 @@
   .nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--basalto);border-bottom:1px solid var(--linha);max-width:720px}
   .nums div{padding:16px 16px 14px 0}
   .nums div+div{padding-left:16px;border-left:1px solid var(--linha)}
-  .nums b{display:block;font:clamp(32px,6vw,52px)/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .nums b{color:var(--azul);display:block;font:clamp(32px,6vw,52px)/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   .nums span{display:block;margin-top:6px;font-size:14px;color:var(--cinza)}
-  .when{display:inline-flex;align-self:flex-start;align-items:center;gap:10px;font-weight:600;border:2px solid var(--basalto);padding:10px 14px}
-  .when i{flex:none;width:10px;height:10px;background:var(--basalto);transform:rotate(9deg)}
+  .ctas{display:flex;flex-wrap:wrap;gap:10px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 22px;font:600 17px/1 var(--texto);border:2px solid var(--azul);color:var(--azul);background:var(--chao);text-decoration:none;border-radius:2px}
+  .btn.pri{background:var(--azul);color:var(--sobre-azul)}
+  .btn:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+  .prog{margin:0;font-size:15px;color:var(--cinza)}
+  .prog b{color:var(--azul);font-variant-numeric:tabular-nums}
   .en{max-width:40em;margin:0;color:var(--cinza);font-size:15px}
   .en strong{color:var(--basalto);font-weight:600}
-  .mar{flex:none;display:block;width:100%;height:150px;color:var(--basalto)}
+  .mar{flex:none;display:block;width:100%;height:150px;color:var(--azul)}
   .mar path{fill:none;stroke:currentColor;stroke-width:9;stroke-linecap:butt}
   footer{border-top:1px solid var(--linha);padding:18px 20px calc(22px + env(safe-area-inset-bottom,0px));font-size:13px;color:var(--cinza)}
   footer p{max-width:980px;margin:0 auto 4px}
@@ -64,7 +69,7 @@
     <p class="tag">O mapa que Lisboa nunca fez.</p>
   </header>
 
-  <p class="lede">Lisboa tem mais de 400 bebedouros públicos e nenhum mapa para os encontrar. O Mata-Sede junta-os todos num só mapa, pensado para o telemóvel: encontra o bebedouro mais perto, vê fotos recentes e sabe se está a funcionar antes de lá chegares.</p>
+  <p class="lede">Lisboa tem mais de 400 bebedouros públicos e nenhum mapa para os encontrar. O Mata-Sede junta-os todos num só mapa, pensado para o telemóvel: encontra o bebedouro mais perto e vê como está, pelas fotos de quem lá passou.</p>
 
   <div class="nums" aria-label="O que vai estar no mapa">
     <div><b>438</b><span>bebedouros</span></div>
@@ -72,9 +77,10 @@
     <div><b>106</b><span>bicas</span></div>
   </div>
 
-  <p class="when"><i aria-hidden="true"></i>Em construção. Lançamento na primavera de 2027.</p>
+  <div class="ctas"><a class="btn pri" href="/mapa/">Abrir o mapa</a><a class="btn" href="/enviar/">Enviar uma foto</a></div>
+  <p class="prog" id="prog" hidden><b id="nfotos"></b> de 438 bebedouros já têm foto. Passas por um? Fotografa-o e ajuda a completar o mapa.</p>
 
-  <p class="en" lang="en"><strong>In English:</strong> every public drinking fountain in Lisbon on one mobile-first map, with recent photos and whether each one is working. Launching spring 2027.</p>
+  <p class="en" lang="en"><strong>In English:</strong> every public drinking fountain in Lisbon on one mobile-first map, with photos from the people who pass by. Spotted one? Send us a photo.</p>
 </main>
 
 <svg class="mar" viewBox="0 0 1400 170" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
@@ -91,5 +97,18 @@
   <p>Dados base: Câmara Municipal de Lisboa, <a href="https://dados.cm-lisboa.pt/">Lisboa Aberta</a>. Projeto independente, sem afiliação à Câmara Municipal de Lisboa, à EPAL ou ao GEOTA.</p>
   <p>© 2026 Mata-Sede</p>
 </footer>
+<script src="/assets/vendor/supabase.js"></script>
+<script src="/assets/config.js"></script>
+<script src="/assets/common.js"></script>
+<script>
+  if (window.MS && MS.db) {
+    Promise.all([MS.points(), MS.approvedPhotos()]).then(function (r) {
+      var beb = {}; r[0].features.forEach(function (f) { if (f.properties.kind === "bebedouro") beb[f.id] = 1; });
+      var seen = {}; r[1].forEach(function (p) { if (beb[p.point_id]) seen[p.point_id] = 1; });
+      document.getElementById("nfotos").textContent = Object.keys(seen).length;
+      document.getElementById("prog").hidden = false;
+    }).catch(function () {});
+  }
+</script>
 </body>
 </html>
