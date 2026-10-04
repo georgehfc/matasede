@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mata-Sede · o mapa que Lisboa nunca fez</title>
+<meta name="description" content="Todos os bebedouros públicos de Lisboa num só mapa, com fotos recentes e se estão a funcionar. Lançamento na primavera de 2027.">
+<meta property="og:title" content="Mata-Sede">
+<meta property="og:description" content="O mapa que Lisboa nunca fez. 438 bebedouros, um só mapa. Primavera de 2027.">
+<meta property="og:url" content="https://matasede.pt/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_PT">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23141414'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&display=swap">
+<style>
+  /* Holding page: limestone ground, basalt type, the Mar Largo wave as the one graphic. */
+  :root{
+    --chao:#FFFFFF; --basalto:#141414; --cinza:#5E5E58; --linha:#DADAD4;
+    --display:"Archivo Black","Arial Black",Arial,sans-serif;
+    --texto:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--chao:#141414; --basalto:#F3F2EE; --cinza:#A6A59E; --linha:#34342F; color-scheme:dark}
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--chao);color:var(--basalto);font:17px/1.55 var(--texto);
+    display:flex;flex-direction:column;min-height:100%;
+    padding-top:env(safe-area-inset-top,0px)}
+  main{flex:1;width:100%;max-width:980px;margin:0 auto;padding:clamp(40px,9vh,96px) 20px 48px;display:flex;flex-direction:column;gap:clamp(28px,5vh,44px)}
+  h1{font:clamp(56px,13vw,148px)/.9 var(--display);letter-spacing:-.025em;margin:0}
+  .tag{font:600 clamp(20px,3.2vw,28px)/1.2 var(--texto);margin:14px 0 0;letter-spacing:-.005em}
+  .lede{max-width:34em;margin:0;font-size:clamp(17px,2vw,19px)}
+  .nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--basalto);border-bottom:1px solid var(--linha);max-width:720px}
+  .nums div{padding:16px 16px 14px 0}
+  .nums div+div{padding-left:16px;border-left:1px solid var(--linha)}
+  .nums b{display:block;font:clamp(32px,6vw,52px)/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .nums span{display:block;margin-top:6px;font-size:14px;color:var(--cinza)}
+  .when{display:inline-flex;align-self:flex-start;align-items:center;gap:10px;font-weight:600;border:2px solid var(--basalto);padding:10px 14px}
+  .when i{flex:none;width:10px;height:10px;background:var(--basalto);transform:rotate(9deg)}
+  .en{max-width:40em;margin:0;color:var(--cinza);font-size:15px}
+  .en strong{color:var(--basalto);font-weight:600}
+  .mar{flex:none;display:block;width:100%;height:150px;color:var(--basalto)}
+  .mar path{fill:none;stroke:currentColor;stroke-width:9;stroke-linecap:butt}
+  footer{border-top:1px solid var(--linha);padding:18px 20px calc(22px + env(safe-area-inset-bottom,0px));font-size:13px;color:var(--cinza)}
+  footer p{max-width:980px;margin:0 auto 4px}
+  footer a{color:inherit;text-underline-offset:3px}
+  @media (max-width:480px){
+    .nums div{padding-right:8px}
+    .nums div+div{padding-left:10px}
+    .nums span{font-size:13px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Mata-Sede</h1>
+    <p class="tag">O mapa que Lisboa nunca fez.</p>
+  </header>
+
+  <p class="lede">Lisboa tem mais de 400 bebedouros públicos e nenhum mapa para os encontrar. O Mata-Sede junta-os todos num só mapa, pensado para o telemóvel: encontra o bebedouro mais perto, vê fotos recentes e sabe se está a funcionar antes de lá chegares.</p>
+
+  <div class="nums" aria-label="O que vai estar no mapa">
+    <div><b>438</b><span>bebedouros</span></div>
+    <div><b>101</b><span>chafarizes</span></div>
+    <div><b>106</b><span>bicas</span></div>
+  </div>
+
+  <p class="when"><i aria-hidden="true"></i>Em construção. Lançamento na primavera de 2027.</p>
+
+  <p class="en" lang="en"><strong>In English:</strong> every public drinking fountain in Lisbon on one mobile-first map, with recent photos and whether each one is working. Launching spring 2027.</p>
+</main>
+
+<svg class="mar" viewBox="0 0 1400 170" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+<path d="M-200 24 Q-150 10 -100 24 T0 24 T100 24 T200 24 T300 24 T400 24 T500 24 T600 24 T700 24 T800 24 T900 24 T1000 24 T1100 24 T1200 24 T1300 24 T1400 24 T1500 24 T1600 24"/>
+<path d="M-200 46 Q-150 32 -100 46 T0 46 T100 46 T200 46 T300 46 T400 46 T500 46 T600 46 T700 46 T800 46 T900 46 T1000 46 T1100 46 T1200 46 T1300 46 T1400 46 T1500 46 T1600 46"/>
+<path d="M-200 68 Q-150 54 -100 68 T0 68 T100 68 T200 68 T300 68 T400 68 T500 68 T600 68 T700 68 T800 68 T900 68 T1000 68 T1100 68 T1200 68 T1300 68 T1400 68 T1500 68 T1600 68"/>
+<path d="M-200 90 Q-150 76 -100 90 T0 90 T100 90 T200 90 T300 90 T400 90 T500 90 T600 90 T700 90 T800 90 T900 90 T1000 90 T1100 90 T1200 90 T1300 90 T1400 90 T1500 90 T1600 90"/>
+<path d="M-200 112 Q-150 98 -100 112 T0 112 T100 112 T200 112 T300 112 T400 112 T500 112 T600 112 T700 112 T800 112 T900 112 T1000 112 T1100 112 T1200 112 T1300 112 T1400 112 T1500 112 T1600 112"/>
+<path d="M-200 134 Q-150 120 -100 134 T0 134 T100 134 T200 134 T300 134 T400 134 T500 134 T600 134 T700 134 T800 134 T900 134 T1000 134 T1100 134 T1200 134 T1300 134 T1400 134 T1500 134 T1600 134"/>
+<path d="M-200 156 Q-150 142 -100 156 T0 156 T100 156 T200 156 T300 156 T400 156 T500 156 T600 156 T700 156 T800 156 T900 156 T1000 156 T1100 156 T1200 156 T1300 156 T1400 156 T1500 156 T1600 156"/>
+</svg>
+
+<footer>
+  <p>Dados base: Câmara Municipal de Lisboa, <a href="https://dados.cm-lisboa.pt/">Lisboa Aberta</a>. Projeto independente, sem afiliação à Câmara Municipal de Lisboa, à EPAL ou ao GEOTA.</p>
+  <p>© 2026 Mata-Sede</p>
+</footer>
+</body>
+</html>
