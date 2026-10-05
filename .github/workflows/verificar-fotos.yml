@@ -1,0 +1,31 @@
+# Verifica as fotos enviadas em matasede.pt/enviar (ver scripts/verificar_fotos.py).
+name: Verificar fotos
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: verificar-fotos
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install anthropic==1.11.0
+      - run: python3 scripts/verificar_fotos.py
+        env:
+          SUPABASE_URL: https://zqqslkwalviwivzzslxz.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AUTO_APROVAR: ${{ vars.AUTO_APROVAR }}
