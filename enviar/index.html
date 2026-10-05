@@ -61,7 +61,7 @@
 <main>
   <header>
     <h1>Envia uma foto de um bebedouro</h1>
-    <p class="lead">Cada foto mostra a quem vem a seguir como está o bebedouro. Revemos todas antes de aparecerem no mapa.</p>
+    <p class="lead">Cada foto mostra a quem vem a seguir como está o bebedouro. Tira-a junto ao bebedouro, com a localização do telemóvel ligada. Revemos todas antes de aparecerem no mapa.</p>
   </header>
 
   <form id="form" novalidate>
@@ -71,7 +71,7 @@
         <label class="pick" id="pick">
           <span class="plus" aria-hidden="true">+</span>
           <span>Escolher foto</span>
-          <small>Do rolo da câmara ou tira uma agora</small>
+          <small>Uma foto tirada junto ao bebedouro, com localização</small>
           <input type="file" id="file" accept="image/*">
         </label>
         <div class="preview" id="preview" hidden>
@@ -83,15 +83,8 @@
 
       <section id="whereSec">
         <h2><b>2</b> · Qual é?</h2>
-        <p class="hint" id="whereHint">Escolhe a foto primeiro. Se ela tiver a localização, sugerimos o bebedouro mais perto.</p>
+        <p class="hint" id="whereHint">Escolhe a foto primeiro. Pela localização da foto, mostramos os bebedouros ali ao lado.</p>
         <ul class="opts" id="opts"></ul>
-        <div class="tools" id="whereTools">
-          <button type="button" class="btn" id="locate">Usar a minha localização</button>
-        </div>
-        <div class="field">
-          <label for="q">Ou procura pelo nome ou pela rua</label>
-          <input id="q" type="search" placeholder="Ex.: Praça das Flores" autocomplete="off">
-        </div>
       </section>
 
       <section>
@@ -105,7 +98,7 @@
 
       <p class="msg" id="msg" role="alert" hidden></p>
       <button type="submit" class="btn pri go" id="go" disabled>Enviar foto</button>
-      <p class="hint">Antes de enviar, a foto é reduzida e perde os dados que o telemóvel lá guarda. Se a foto tiver localização, guardamos só as coordenadas, à parte, para confirmar o bebedouro. Nunca são publicadas.</p>
+      <p class="hint">Antes de enviar, a foto é reduzida e perde os dados que o telemóvel lá guarda. Guardamos só as coordenadas, à parte, para confirmar o bebedouro. Nunca são publicadas.</p>
     </div>
   </form>
 
@@ -125,92 +118,79 @@
 <script src="/assets/common.js"></script>
 <script>
 (function () {
+  // Rules shared with the database check (supabase/002_bebedouros.sql): only bebedouros,
+  // and the photo's own location must be within MAX_M metres of one.
+  var MAX_M = 50;
   var $ = function (id) { return document.getElementById(id); };
-  var feats = [], chosen = null, file = null, takenAt = null, gpsAt = null, options = [], sending = false;
+  var bebedouros = [], chosen = null, file = null, takenAt = null, gpsAt = null, options = [], sending = false;
+  var wanted = new URLSearchParams(location.search).get("ponto");
 
   MS.points().then(function (fc) {
-    feats = fc.features;
-    var pre = new URLSearchParams(location.search).get("ponto");
-    var f = pre && feats.find(function (x) { return x.id === pre; });
-    if (f) { options = [{ f: f, m: null }]; chosen = f.id; showOptions("Escolhido no mapa:"); }
+    bebedouros = fc.features.filter(function (f) { return f.properties.kind === "bebedouro"; });
   }).catch(function () { error("Não foi possível carregar a lista de bebedouros. Tenta recarregar a página."); });
 
   function error(t) { var m = $("msg"); m.textContent = t; m.hidden = !t; }
-  function update() { $("go").disabled = sending || !file || !chosen || !$("ok").checked; }
+  function update() { $("go").disabled = sending || !file || !gpsAt || !chosen || !$("ok").checked; }
+  function where(t) { $("whereHint").textContent = t; }
 
-  function showOptions(hint) {
-    $("whereHint").textContent = hint;
+  function showOptions() {
     $("opts").innerHTML = options.map(function (o) {
       var p = o.f.properties;
       return '<li><button type="button" class="opt" data-id="' + o.f.id + '" aria-pressed="' + (o.f.id === chosen) + '"><i></i>' +
-        "<span><b>" + MS.esc(p.name) + "</b><span>" + MS.esc(p.address) + " · " + MS.KIND[p.kind] + "</span></span>" +
-        (o.m != null ? "<em>" + MS.fmtDist(o.m) + "</em>" : "<em></em>") + "</button></li>";
+        "<span><b>" + MS.esc(p.name) + "</b><span>" + MS.esc(p.address) + "</span></span><em>" + MS.fmtDist(o.m) + "</em></button></li>";
     }).join("");
     update();
   }
   $("opts").addEventListener("click", function (e) {
     var b = e.target.closest("[data-id]"); if (!b) return;
-    chosen = b.dataset.id; showOptions($("whereHint").textContent);
+    chosen = b.dataset.id; showOptions();
   });
 
-  function suggestNear(at, source) {
-    var near = MS.nearest(feats, at, 5);
-    options = near; chosen = near[0] && near[0].m < 60 ? near[0].f.id : null;
-    showOptions(source === "foto"
-      ? (near[0].m < 300 ? "Pela localização da foto, deve ser um destes:" : "A foto foi tirada longe de qualquer bebedouro do mapa. O mais perto:")
-      : "Perto de ti:");
+  function reset(msg) {
+    gpsAt = null; chosen = null; options = []; showOptions(); where(msg);
   }
 
   $("file").addEventListener("change", function () {
     var f = this.files && this.files[0]; if (!f) return;
     error("");
     if (!/^image\//.test(f.type) && !/\.(heic|heif|jpe?g|png)$/i.test(f.name)) { error("Esse ficheiro não é uma foto."); return; }
-    file = f; takenAt = null; gpsAt = null;
+    file = f; takenAt = null;
     $("previewImg").src = URL.createObjectURL(f);
-    $("pick").hidden = true; $("preview").hidden = false;
-    var hint = $("photoHint");
+    $("pick").hidden = true; $("preview").hidden = false; $("photoHint").hidden = true;
+    reset("A ler a localização da foto…");
+    // One read of the photo's metadata gives both its location and when it was taken.
     Promise.all([
-      window.exifr ? exifr.gps(f).catch(function () { return null; }) : null,
-      window.exifr ? exifr.parse(f, ["DateTimeOriginal"]).catch(function () { return null; }) : null
+      window.exifr ? exifr.parse(f).catch(function () { return null; }) : null,
+      MS.points()
     ]).then(function (r) {
-      var gps = r[0], meta = r[1];
-      if (meta && meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal)) takenAt = meta.DateTimeOriginal.toISOString();
-      if (gps && isFinite(gps.latitude) && isFinite(gps.longitude) && feats.length) {
-        gpsAt = [Math.round(gps.longitude * 1e6) / 1e6, Math.round(gps.latitude * 1e6) / 1e6];
-        hint.hidden = true;
-        if (!chosen || options.length > 1) suggestNear([gps.longitude, gps.latitude], "foto");
-      } else {
-        hint.textContent = "Esta foto não traz localização. Escolhe o bebedouro abaixo.";
-        hint.hidden = false;
-        if (!chosen) $("whereHint").textContent = "Usa a tua localização, se estás perto, ou procura pelo nome.";
+      var gps = r[0] || {}, meta = r[0] || {};
+      if (meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal)) takenAt = meta.DateTimeOriginal.toISOString();
+      if (!isFinite(gps.latitude) || !isFinite(gps.longitude)) {
+        reset("Esta foto não traz a localização, por isso não a podemos associar a um bebedouro. " +
+          "Liga a localização da câmara (Definições → Privacidade → Localização → Câmara) e tira a foto junto ao bebedouro. " +
+          "No iPhone, ao escolher a foto, toca em Opções e ativa Localização, se aparecer.");
+        return;
       }
-      update();
+      var at = [Math.round(gps.longitude * 1e6) / 1e6, Math.round(gps.latitude * 1e6) / 1e6];
+      var near = MS.nearest(bebedouros, at, 5);
+      options = near.filter(function (o) { return o.m <= MAX_M; });
+      if (!options.length) {
+        reset(near.length
+          ? "Esta foto foi tirada a " + MS.fmtDist(near[0].m) + " do bebedouro mais perto. Só aceitamos fotos tiradas junto a um bebedouro (até " + MAX_M + " m)."
+          : "Esta foto não foi tirada em Lisboa.");
+        return;
+      }
+      gpsAt = at;
+      var pre = wanted && options.some(function (o) { return o.f.id === wanted; }) ? wanted : options[0].f.id;
+      chosen = pre;
+      where(options.length > 1 ? "Há mais de um bebedouro aqui. Confirma qual é:" : "Pela localização da foto, é este:");
+      showOptions();
     });
   });
   $("change").addEventListener("click", function () { $("file").value = ""; $("file").click(); });
-
-  $("locate").addEventListener("click", function () {
-    if (!navigator.geolocation) { error("Este navegador não deixa usar a localização. Procura pelo nome."); return; }
-    var b = this; b.disabled = true; b.textContent = "A localizar…";
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      b.disabled = false; b.textContent = "Usar a minha localização";
-      suggestNear([pos.coords.longitude, pos.coords.latitude], "eu");
-    }, function () {
-      b.disabled = false; b.textContent = "Usar a minha localização";
-      error("Não conseguimos a tua localização. Procura pelo nome ou pela rua.");
-    }, { enableHighAccuracy: true, timeout: 12000 });
-  });
-
-  $("q").addEventListener("input", function () {
-    var hits = MS.search(feats, this.value, 8);
-    if (!this.value.trim()) return;
-    options = hits.map(function (f) { return { f: f, m: null }; });
-    if (!hits.some(function (f) { return f.id === chosen; })) chosen = null;
-    showOptions(hits.length ? "Resultados:" : "Nada encontrado com esse nome. Tenta só a rua.");
-  });
   $("ok").addEventListener("change", update);
 
-  // Re-encode through a canvas: smaller file, and no EXIF (location, phone model) survives.
+  // Re-encode through a canvas: smaller file, and nothing the phone stored in the file survives.
   function decode(f) {
     if (window.createImageBitmap) {
       return createImageBitmap(f, { imageOrientation: "from-image" }).catch(function () { return viaImg(f); });
@@ -241,6 +221,13 @@
     var h = Array.prototype.map.call(b, function (x) { return (x + 256).toString(16).slice(1); }).join("");
     return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
   }
+  // Messages for the database's refusals (raise exception in supabase/002_bebedouros.sql).
+  var REFUSED = {
+    sem_localizacao: "A foto não tem localização.",
+    fora_de_lisboa: "A foto não foi tirada em Lisboa.",
+    longe_de_bebedouro: "A foto não foi tirada junto a um bebedouro.",
+    foto_em_falta: "A foto não chegou inteira. Tenta outra vez."
+  };
 
   $("form").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -261,27 +248,22 @@
       });
     }).then(function (r) {
       if (r.error) throw r.error;
-      var row = { point_id: chosen, storage_path: path, taken_at: takenAt, credit: credit };
-      if (gpsAt) { row.photo_lng = gpsAt[0]; row.photo_lat = gpsAt[1]; }
-      return MS.db.from("photos").insert(row).then(function (r) {
-        // Before 002_verificacao.sql runs, the location columns don't exist yet: send without them.
-        if (r.error && gpsAt && r.error.code === "PGRST204") {
-          delete row.photo_lat; delete row.photo_lng;
-          return MS.db.from("photos").insert(row);
-        }
-        return r;
+      return MS.db.from("photos").insert({
+        point_id: chosen, storage_path: path, taken_at: takenAt, credit: credit,
+        photo_lat: gpsAt[1], photo_lng: gpsAt[0]
       });
     }).then(function (r) {
       if (r.error) throw r.error;
-      var f = feats.find(function (x) { return x.id === chosen; });
+      var f = bebedouros.find(function (x) { return x.id === chosen; });
       $("doneText").textContent = "A foto de " + (f ? f.properties.name : "este bebedouro") + " aparece no mapa depois de revista.";
       $("seeIt").href = "/mapa/?ponto=" + encodeURIComponent(chosen);
       $("form").hidden = true; $("done").hidden = false;
       window.scrollTo(0, 0);
     }).catch(function (err) {
       console.error(err);
-      error(err && err.message === "decode"
-        ? "Não conseguimos abrir esta foto neste navegador. Tenta com uma foto em JPEG."
+      var known = err && REFUSED[err.message];
+      error(known ? known
+        : err && err.message === "decode" ? "Não conseguimos abrir esta foto neste navegador. Tenta com uma foto em JPEG."
         : "A foto não foi enviada. Verifica a ligação à internet e tenta outra vez.");
     }).then(function () {
       sending = false; go.textContent = "Enviar foto"; update();
@@ -289,10 +271,9 @@
   });
 
   $("again").addEventListener("click", function () {
-    file = null; takenAt = null; gpsAt = null; $("file").value = ""; $("ok").checked = $("ok").checked;
+    file = null; takenAt = null; $("file").value = "";
     $("pick").hidden = false; $("preview").hidden = true; $("photoHint").hidden = true;
-    var keep = new URLSearchParams(location.search).get("ponto");
-    if (!keep) { chosen = null; options = []; showOptions("Escolhe a foto primeiro. Se ela tiver a localização, sugerimos o bebedouro mais perto."); }
+    reset("Escolhe a foto primeiro. Pela localização da foto, mostramos os bebedouros ali ao lado.");
     $("done").hidden = true; $("form").hidden = false; update();
   });
 })();

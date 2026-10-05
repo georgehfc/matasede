@@ -245,9 +245,10 @@
       media = '<div class="media"><img src="' + MS.esc(url) + '" alt="Foto de ' + MS.esc(p.name) + '" id="ph">' +
         (list.length > 1 ? '<span class="n">' + (photoIx % list.length + 1) + "/" + list.length + "</span>" : "") +
         '<span class="credit">Foto: ' + who + (when ? " · " + when : "") + "</span></div>";
+    } else if (p.kind === "bebedouro") {
+      media = '<div class="media invite"><strong>Ainda ninguém fotografou este bebedouro.</strong><span>Passas por cá? Envia uma foto e ajuda a completar o mapa.</span></div>';
     } else {
-      var what = p.kind === "bica" ? "esta bica" : p.kind === "chafariz" ? "este chafariz" : p.kind === "nevoeiro" ? "este ponto" : "este bebedouro";
-      media = '<div class="media invite"><strong>Ainda ninguém fotografou ' + what + ".</strong><span>Passas por cá? Envia uma foto e ajuda a completar o mapa.</span></div>";
+      media = "";
     }
     var walk = me ? '<p class="walk">' + MS.walkMin(MS.dist(me, ll)) + " min a pé · " + MS.fmtDist(MS.dist(me, ll)) + "</p>" : "";
     var tags = p.accessible === true ? '<div class="tags"><span class="tag">Acessível a mobilidade reduzida</span></div>' : "";
@@ -256,7 +257,7 @@
     card.innerHTML = '<button type="button" class="close" id="close" aria-label="Fechar">×</button>' + media +
       '<div class="body"><h2>' + MS.esc(p.name) + '</h2><p class="meta">' + MS.esc(p.address) + " · " + MS.KIND[p.kind] + "</p>" +
       walk + tags + note +
-      '<div class="acts"><a class="btn pri" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '">Enviar foto</a>' +
+      '<div class="acts">' + (p.kind === "bebedouro" ? '<a class="btn pri" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '">Enviar foto</a>' : "") +
       '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">Como lá chegar</a></div></div>';
     card.hidden = false;
     document.getElementById("send").hidden = true;
