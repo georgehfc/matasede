@@ -42,6 +42,31 @@ def strip_metadata(path):
     path.write_bytes(bytes(out))
 
 
+def exif_orientation(path):
+    """The camera's rotation flag (1 = upright, 3 = 180°, 6 = 90° clockwise, 8 = 90° anticlockwise).
+    Phones often save portrait photos sideways with this flag; `sips -g orientation` doesn't always report it."""
+    data = Path(path).read_bytes()
+    i = 2
+    while i + 4 < len(data) and data[i] == 0xFF:
+        marker, length = data[i + 1], int.from_bytes(data[i + 2:i + 4], "big")
+        if marker == 0xDA:
+            break
+        if marker == 0xE1 and data[i + 4:i + 10] == b"Exif\0\0":
+            t = data[i + 10:i + 2 + length]
+            order = "big" if t[:2] == b"MM" else "little"
+            ifd = int.from_bytes(t[4:8], order)
+            for n in range(int.from_bytes(t[ifd:ifd + 2], order)):
+                e = ifd + 2 + 12 * n
+                if int.from_bytes(t[e:e + 2], order) == 0x0112:
+                    return int.from_bytes(t[e + 8:e + 10], order)
+            return 1
+        i += 2 + length
+    return 1
+
+
+ROTATE = {3: "180", 6: "90", 8: "270"}  # sips -r turns clockwise
+
+
 def make_photos(source):
     seed = json.loads((ROOT / "data/fotos-semente.json").read_text())
     for folder in SIZES:
@@ -57,8 +82,9 @@ def make_photos(source):
         for folder, size in SIZES.items():
             dest = ROOT / folder / name
             resize = ["-Z", str(size)] if longest > size else []  # shrink only, never enlarge
+            turn = ["-r", ROTATE[exif_orientation(src)]] if exif_orientation(src) in ROTATE else []
             subprocess.run(["sips", "-s", "format", "jpeg", "-s", "formatOptions", QUALITY,
-                            *resize, str(src), "--out", str(dest)],
+                            *turn, *resize, str(src), "--out", str(dest)],
                            check=True, capture_output=True)
             strip_metadata(dest)
     total = sum(p.stat().st_size for p in (ROOT / "fotos").rglob("*.jpg"))
