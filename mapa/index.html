@@ -61,9 +61,10 @@
   .card .acts .btn{flex:1 1 130px;min-width:0;padding:0 12px;white-space:nowrap}
   .close{position:absolute;right:8px;top:8px;z-index:2;width:36px;height:36px;border:0;border-radius:2px;background:var(--chao);color:var(--basalto);
     font:400 24px/1 var(--texto);cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--basalto)}
-  .ppin{width:44px;height:44px;border:3px solid var(--azul);background:var(--chao) center/cover no-repeat;cursor:pointer;padding:0;
-    box-shadow:0 0 0 2px #fff,0 4px 10px rgba(0,0,0,.25);transform:rotate(-4deg)}
-  .ppin.sel{width:58px;height:58px}
+  /* Round photo pins. --ppin is set from the zoom in sizePhotoPins(): bigger when zoomed out. */
+  .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:3px solid var(--azul);background:var(--chao) center/cover no-repeat;cursor:pointer;padding:0;
+    box-shadow:0 0 0 2px #fff,0 4px 10px rgba(0,0,0,.25)}
+  .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px)}
   .err{position:absolute;left:16px;right:16px;top:16px;z-index:6;padding:12px 14px;background:var(--chao);border:2px solid var(--erro);color:var(--basalto)}
   .maplibregl-ctrl-group{border-radius:2px}
 </style>
@@ -185,9 +186,16 @@
       map.on("mouseleave", l, function () { map.getCanvas().style.cursor = ""; });
     });
     map.on("render", syncPhotoPins);
+    map.on("zoom", sizePhotoPins); sizePhotoPins();
 
     var start = params.get("ponto");
     if (start && byId[start]) select(start, true);
+  }
+
+  // Photo pin size: 56 px up to zoom 14 (when they first leave the clusters), easing to 50 px from zoom 17.
+  function sizePhotoPins() {
+    var z = Math.min(17, Math.max(14, map.getZoom()));
+    map.getContainer().style.setProperty("--ppin", Math.round(56 - (z - 14) * 2) + "px");
   }
 
   // Photo thumbnails replace the dot for points that have an approved photo, once they are out of a cluster.
