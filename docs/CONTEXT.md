@@ -1,6 +1,6 @@
 # Mata-Sede — Context and decision log
 
-Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 5 Oct 2026.
+Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 6 Oct 2026.
 
 Read order for a new session: `CLAUDE.md` → `docs/SPEC.md` → `DESIGN.md` → this file.
 
@@ -53,6 +53,9 @@ Sources are named rather than linked because links rot; search the outlet plus t
 | 3 Oct 2026 | **Seed albums in Block 4:** the founder's 44 located photos (27 fountains) show in the detail album, resized and with camera data stripped by `scripts/fotos.py`. "Com fotos" filter is live. |
 | 3 Oct 2026 | **Map pins round and filled; "Sem informação recente" dropped.** Dashed squares were illegible zoomed in and the label was vague. Pins grow with zoom, show ♿/drop glyphs from zoom 16 and photo thumbnails from zoom 15. Photos open in a modal viewer (Esc, Fechar, full screen), not a new tab. |
 | 3 Oct 2026 | **CML photos: link only.** The 18 CML photos that match a fountain appear as "Ver foto no site da CML ↗" links; we never copy or embed CML images (rights unclear, independence). |
+| 5 Oct 2026 | **matasede.pt went live early** from the `gh-pages` branch: a small separate site (holding page, `/mapa/`, `/enviar/` photo upload on Supabase, `supabase/` SQL). The database refuses photos without GPS or more than 50 m from a bebedouro, using a private `bebedouros` table (id + position only). |
+| 6 Oct 2026 | **Seed photos moved to Supabase.** 43 of the founder's photos (26 fountains) uploaded through the same path as `/enviar/`, credited "George Chaves", approved. Left out: Pavilhão do Conhecimento (72 m away) and Rua do Caribe (no GPS). |
+| 6 Oct 2026 | **One site, built from `block-4/map`.** It follows DESIGN.md, the spec and the accessibility rules; `gh-pages` was a quick launch. Until the switch, `gh-pages` stays live and gets small fixes only. Before the switch, `block-4/map` takes over from `gh-pages`: photos read from Supabase (the only photo source, so the repo's `fotos/` copies and static seed albums go; supersedes the 3 Oct seed-albums line), `/enviar/` restyled to DESIGN.md, `supabase/` SQL and `scripts/gerar_sql.py`, and old `/mapa/?ponto=<id>` links redirect to the new fountain URL. Then merge to `main`, point GitHub Pages at `main`, and delete `gh-pages` a week later. |
 
 ## Still open
 
