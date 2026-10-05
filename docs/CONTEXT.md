@@ -1,6 +1,6 @@
 # Mata-Sede — Context and decision log
 
-Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 3 Oct 2026.
+Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 5 Oct 2026.
 
 Read order for a new session: `CLAUDE.md` → `docs/SPEC.md` → `DESIGN.md` → this file.
 
@@ -14,6 +14,7 @@ The founder is a web designer with minimal programming experience. The project m
 
 - Lisbon's open data lists **438 bebedouros**; an August 2024 article counted 411, so the network is still growing.
 - **200 of them** come from the EPAL/CML/GEOTA network launched in January 2020, with a budget of about €800,000. The new units combine a drinking jet, a bottle tap, an animal bowl and reduced-mobility access.
+- The launch (Time Out Lisboa, 27 Jan 2020) promised all 200 **by 2021**, tied to Lisbon's year as European Green Capital 2020. The first unit went in on **Avenida da Liberdade**, with 30 more in the first phase. Presented at EPAL headquarters by José Sá Fernandes, the councillor for environment. Stated aim: promote tap water and good water management in the city. Each unit is designed for children, adults and people with reduced mobility, and also has a bowl for pets.
 - The rollout was slow: in mid-2022 only about 30 were installed, a 15% completion rate at that point.
 - **There is no usable public map.** EPAL's *H2O Quality* app has disappeared from Google Play and no longer works on iOS. In the city's open data portal the fountains are filed under "elementos de água", so searching for "bebedouro" finds nothing. Neighbouring Cascais publishes a fountain map; Lisbon does not.
 - **Nobody tracks which fountains work.** The official data has no condition field. This is the gap Mata-Sede fills with photos and reports.
@@ -25,7 +26,7 @@ The founder is a web designer with minimal programming experience. The project m
 - **Crowdsourcing precedent:** the Refill app lists over 295,000 water points worldwide and moderates every submission before it appears.
 - **Wildfire reporting is deliberately out of scope:** that space is well covered (for example fogos.pt, refreshed every two minutes from civil protection data), and real emergencies belong to 112.
 
-Sources are named rather than linked because links rot; search the outlet plus the fact. Main sources: Lisboa Aberta (dados.cm-lisboa.pt), Lisboa para Pessoas, Mensagem de Lisboa, EPAL, ERSAR, Câmara Municipal de Lisboa.
+Sources are named rather than linked because links rot; search the outlet plus the fact. Main sources: Lisboa Aberta (dados.cm-lisboa.pt), Lisboa para Pessoas, Time Out Lisboa, Mensagem de Lisboa, EPAL, ERSAR, Câmara Municipal de Lisboa.
 
 ## Decision log
 
