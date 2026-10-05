@@ -105,7 +105,7 @@
 
       <p class="msg" id="msg" role="alert" hidden></p>
       <button type="submit" class="btn pri go" id="go" disabled>Enviar foto</button>
-      <p class="hint">Antes de enviar, a foto é reduzida e perde a localização e outros dados guardados pelo telemóvel.</p>
+      <p class="hint">Antes de enviar, a foto é reduzida e perde os dados que o telemóvel lá guarda. Se a foto tiver localização, guardamos só as coordenadas, à parte, para confirmar o bebedouro. Nunca são publicadas.</p>
     </div>
   </form>
 
@@ -126,7 +126,7 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var feats = [], chosen = null, file = null, takenAt = null, options = [], sending = false;
+  var feats = [], chosen = null, file = null, takenAt = null, gpsAt = null, options = [], sending = false;
 
   MS.points().then(function (fc) {
     feats = fc.features;
@@ -165,7 +165,7 @@
     var f = this.files && this.files[0]; if (!f) return;
     error("");
     if (!/^image\//.test(f.type) && !/\.(heic|heif|jpe?g|png)$/i.test(f.name)) { error("Esse ficheiro não é uma foto."); return; }
-    file = f; takenAt = null;
+    file = f; takenAt = null; gpsAt = null;
     $("previewImg").src = URL.createObjectURL(f);
     $("pick").hidden = true; $("preview").hidden = false;
     var hint = $("photoHint");
@@ -176,6 +176,7 @@
       var gps = r[0], meta = r[1];
       if (meta && meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal)) takenAt = meta.DateTimeOriginal.toISOString();
       if (gps && isFinite(gps.latitude) && isFinite(gps.longitude) && feats.length) {
+        gpsAt = [Math.round(gps.longitude * 1e6) / 1e6, Math.round(gps.latitude * 1e6) / 1e6];
         hint.hidden = true;
         if (!chosen || options.length > 1) suggestNear([gps.longitude, gps.latitude], "foto");
       } else {
@@ -260,7 +261,16 @@
       });
     }).then(function (r) {
       if (r.error) throw r.error;
-      return MS.db.from("photos").insert({ point_id: chosen, storage_path: path, taken_at: takenAt, credit: credit });
+      var row = { point_id: chosen, storage_path: path, taken_at: takenAt, credit: credit };
+      if (gpsAt) { row.photo_lng = gpsAt[0]; row.photo_lat = gpsAt[1]; }
+      return MS.db.from("photos").insert(row).then(function (r) {
+        // Before 002_verificacao.sql runs, the location columns don't exist yet: send without them.
+        if (r.error && gpsAt && r.error.code === "PGRST204") {
+          delete row.photo_lat; delete row.photo_lng;
+          return MS.db.from("photos").insert(row);
+        }
+        return r;
+      });
     }).then(function (r) {
       if (r.error) throw r.error;
       var f = feats.find(function (x) { return x.id === chosen; });
@@ -279,7 +289,7 @@
   });
 
   $("again").addEventListener("click", function () {
-    file = null; takenAt = null; $("file").value = ""; $("ok").checked = $("ok").checked;
+    file = null; takenAt = null; gpsAt = null; $("file").value = ""; $("ok").checked = $("ok").checked;
     $("pick").hidden = false; $("preview").hidden = true; $("photoHint").hidden = true;
     var keep = new URLSearchParams(location.search).get("ponto");
     if (!keep) { chosen = null; options = []; showOptions("Escolhe a foto primeiro. Se ela tiver a localização, sugerimos o bebedouro mais perto."); }
