@@ -47,10 +47,23 @@
   }
   .card .media{position:relative;flex:none}
   .card .media:not(.invite){background:var(--azul-fundo)}
-  .card .media img{display:block;width:100%;height:200px;object-fit:cover;cursor:pointer}
+  .card .media img{display:block;width:100%;height:200px;object-fit:cover;cursor:zoom-in}
+  .card .media img:focus-visible{outline:3px solid var(--azul);outline-offset:-3px}
   @media (min-width:900px){.card .media img{height:240px}}
-  .card .media .n{position:absolute;right:10px;top:10px;font:600 12px/1 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
+  .card .media .n{position:absolute;right:10px;bottom:10px;font:600 12px/1 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
   .card .media .credit{position:absolute;left:10px;bottom:10px;font:500 12px/1.2 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
+  /* Gallery, for fountains with more than one photo: arrows on the photo, a strip of thumbnails below. Newest first. */
+  .card .media .nav{position:absolute;top:50%;margin-top:-20px;width:40px;height:40px;border:0;border-radius:50%;padding:0;cursor:pointer;
+    background:rgba(0,0,0,.6);color:#fff;font:400 26px/1 var(--texto);display:grid;place-items:center}
+  .card .media .nav:hover{background:rgba(0,0,0,.8)}
+  .card .media .nav:focus-visible,.card .strip button:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+  .card .media .prev{left:10px}
+  .card .media .next{right:10px}
+  .card .strip{flex:none;display:flex;gap:6px;overflow-x:auto;padding:8px 10px;margin:0;list-style:none;background:var(--azul-fundo);scrollbar-width:thin}
+  .card .strip button{flex:none;display:block;width:48px;height:48px;padding:0;border:2px solid transparent;border-radius:2px;cursor:pointer;
+    background:var(--chao) center/cover no-repeat;opacity:.7}
+  .card .strip button:hover{opacity:1}
+  .card .strip button[aria-current="true"]{border-color:var(--azul);opacity:1}
   .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;overflow:auto}
   .card h2{margin:0;font:21px/1.1 var(--display);letter-spacing:-.01em;padding-right:36px;text-wrap:balance}
   .card .meta{margin:0;font-size:14px;color:var(--cinza)}
@@ -65,6 +78,29 @@
   .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:3px solid var(--azul);background:var(--chao) center/cover no-repeat;cursor:pointer;padding:0;
     box-shadow:0 0 0 2px #fff,0 4px 10px rgba(0,0,0,.25)}
   .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px)}
+  /* Full-screen photo viewer. Clicking the dark area around the photo closes it. */
+  .viewer{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;
+    background:rgba(8,10,16,.94);color:#fff;overflow:hidden}
+  .viewer::backdrop{background:transparent}
+  .viewer .frame{position:absolute;inset:68px 84px 64px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none}
+  .viewer .x{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;padding:0;cursor:pointer;
+    background:rgba(255,255,255,.14);color:#fff;font:400 28px/1 var(--texto);display:grid;place-items:center}
+  .viewer .nav{position:absolute;top:50%;margin-top:-24px;width:48px;height:48px;border:0;border-radius:50%;padding:0;cursor:pointer;
+    background:rgba(255,255,255,.14);color:#fff;font:400 32px/1 var(--texto);display:grid;place-items:center}
+  .viewer .x:hover,.viewer .nav:hover{background:rgba(255,255,255,.28)}
+  .viewer .x:focus-visible,.viewer .nav:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .viewer .prev{left:16px}
+  .viewer .next{right:16px}
+  .viewer .info{position:absolute;left:84px;right:84px;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin:0;display:flex;gap:16px;
+    justify-content:center;text-align:center;font:500 14px/1.3 var(--texto);pointer-events:none}
+  .viewer .info b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  @media (max-width:600px){
+    .viewer .frame{inset:68px 0 96px}
+    .viewer .nav{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-top:0;width:44px;height:44px}
+    .viewer .prev{left:12px}
+    .viewer .next{right:12px}
+    .viewer .info{left:68px;right:68px;flex-direction:column;gap:2px;font-size:13px;bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
   .err{position:absolute;left:16px;right:16px;top:16px;z-index:6;padding:12px 14px;background:var(--chao);border:2px solid var(--erro);color:var(--basalto)}
   .maplibregl-ctrl-group{border-radius:2px}
 </style>
@@ -91,6 +127,13 @@
   <div id="map" aria-label="Mapa de bebedouros"></div>
   <a class="btn pri send" id="send" href="/enviar/">Enviar foto</a>
   <article class="card" id="card" hidden aria-live="polite"></article>
+  <dialog class="viewer" id="viewer" aria-label="Foto em grande">
+    <div class="frame"><img id="vimg" src="" alt=""></div>
+    <button type="button" class="nav prev" id="vprev" aria-label="Foto anterior">‹</button>
+    <button type="button" class="nav next" id="vnext" aria-label="Foto seguinte">›</button>
+    <button type="button" class="x" id="vclose" aria-label="Fechar">×</button>
+    <p class="info"><span id="vcap"></span><b id="vn"></b></p>
+  </dialog>
 </main>
 
 <script src="/assets/vendor/maplibre-gl.js"></script>
@@ -140,6 +183,9 @@
     Promise.all([MS.points(), MS.approvedPhotos()]).then(function (res) {
       all = res[0];
       res[1].forEach(function (ph) { (photos[ph.point_id] = photos[ph.point_id] || []).push(ph); });
+      Object.keys(photos).forEach(function (id) {
+        photos[id].sort(function (a, b) { return (b.taken_at || b.created_at).localeCompare(a.taken_at || a.created_at); });
+      });
       all.features.forEach(function (f) { byId[f.id] = f; f.properties.fotos = (photos[f.id] || []).length; });
       var withPhoto = all.features.filter(function (f) { return f.properties.kind === "bebedouro" && f.properties.fotos; }).length;
       if (MS.db) {
@@ -246,13 +292,17 @@
     var ll = f.geometry.coordinates;
     var media;
     if (list.length) {
-      var ph = list[photoIx % list.length];
-      var url = thumbs[ph.storage_path] || thumbs[MS.thumbPath(ph.storage_path)];
-      var who = ph.credit ? MS.esc(ph.credit) : "Anónimo";
-      var when = MS.monthYear(ph.taken_at || ph.created_at);
-      media = '<div class="media"><img src="' + MS.esc(url) + '" alt="Foto de ' + MS.esc(p.name) + '" id="ph">' +
-        (list.length > 1 ? '<span class="n">' + (photoIx % list.length + 1) + "/" + list.length + "</span>" : "") +
-        '<span class="credit">Foto: ' + who + (when ? " · " + when : "") + "</span></div>";
+      var many = list.length > 1;
+      media = '<div class="media"><img src="" alt="" id="ph" tabindex="0" role="button">' +
+        (many ? '<span class="n" id="phn"></span>' +
+          '<button type="button" class="nav prev" id="phprev" aria-label="Foto anterior">‹</button>' +
+          '<button type="button" class="nav next" id="phnext" aria-label="Foto seguinte">›</button>' : "") +
+        '<span class="credit" id="phc"></span></div>' +
+        (many ? '<ul class="strip" aria-label="Fotos deste bebedouro">' + list.map(function (ph, i) {
+          var t = thumbs[MS.thumbPath(ph.storage_path)] || "";
+          return '<li><button type="button" data-ph="' + i + '" style="background-image:url(&quot;' + MS.esc(t) + '&quot;)" aria-label="Foto ' +
+            (i + 1) + " de " + list.length + '"></button></li>';
+        }).join("") + "</ul>" : "");
     } else if (p.kind === "bebedouro") {
       media = '<div class="media invite"><strong>Ainda ninguém fotografou este bebedouro.</strong><span>Passas por cá? Envia uma foto e ajuda a completar o mapa.</span></div>';
     } else {
@@ -270,16 +320,96 @@
     card.hidden = false;
     document.getElementById("send").hidden = true;
     document.getElementById("close").onclick = closeCard;
-    var img = document.getElementById("ph");
-    if (img && list.length > 1) img.onclick = function () { photoIx++; renderCard(); };
+    if (list.length) {
+      var hero = document.getElementById("ph");
+      hero.onclick = openViewer;
+      hero.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openViewer(); } };
+      showPhoto(photoIx);
+    }
+    if (list.length > 1) {
+      var img = document.getElementById("ph"), x0 = null;
+      document.getElementById("phprev").onclick = function () { showPhoto(photoIx - 1); };
+      document.getElementById("phnext").onclick = function () { showPhoto(photoIx + 1); };
+      card.querySelector(".strip").onclick = function (e) {
+        var b = e.target.closest("[data-ph]"); if (b) showPhoto(Number(b.dataset.ph));
+      };
+      img.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+      img.addEventListener("touchend", function (e) {
+        if (x0 === null) return;
+        var dx = e.changedTouches[0].clientX - x0; x0 = null;
+        if (Math.abs(dx) > 40) showPhoto(photoIx + (dx < 0 ? 1 : -1));
+      });
+    }
   }
+
+  // Shows photo i of the selected fountain's album (wraps around) without redrawing the card.
+  function showPhoto(i) {
+    var p = byId[sel] && byId[sel].properties, list = p && photos[p.id] || [];
+    if (!list.length) return;
+    photoIx = (i % list.length + list.length) % list.length;
+    var ph = list[photoIx];
+    var img = document.getElementById("ph");
+    img.src = thumbs[ph.storage_path] || thumbs[MS.thumbPath(ph.storage_path)] || "";
+    var when = MS.monthYear(ph.taken_at || ph.created_at);
+    img.alt = "Foto de " + p.name + (when ? ", " + when : "");
+    img.setAttribute("aria-label", "Ver em grande: " + img.alt);
+    var cap = "Foto: " + (ph.credit || "Anónimo") + (when ? " · " + when : "");
+    document.getElementById("phc").textContent = cap;
+    vimg.src = thumbs[ph.storage_path] || img.src;
+    vimg.alt = img.alt;
+    document.getElementById("vcap").textContent = p.name + " — " + cap;
+    document.getElementById("vn").textContent = list.length > 1 ? (photoIx + 1) + " / " + list.length : "";
+    vprev.hidden = vnext.hidden = list.length < 2;
+    if (list.length > 1) {
+      document.getElementById("phn").textContent = (photoIx + 1) + "/" + list.length;
+      card.querySelectorAll("[data-ph]").forEach(function (b) {
+        var on = Number(b.dataset.ph) === photoIx;
+        b.setAttribute("aria-current", on);
+        if (on) b.scrollIntoView({ block: "nearest", inline: "nearest" });
+      });
+    }
+  }
+  // Full-screen viewer: same album and position as the card. Esc, the × button or a click outside the photo close it.
+  var viewer = document.getElementById("viewer"), vimg = document.getElementById("vimg");
+  var vprev = document.getElementById("vprev"), vnext = document.getElementById("vnext");
+  function openViewer() {
+    if (!viewer.open) viewer.showModal();
+    document.getElementById("vclose").focus();
+  }
+  function closeViewer() {
+    if (!viewer.open) return;
+    viewer.close();
+    var hero = document.getElementById("ph"); if (hero) hero.focus();
+  }
+  document.getElementById("vclose").onclick = closeViewer;
+  vprev.onclick = function () { showPhoto(photoIx - 1); };
+  vnext.onclick = function () { showPhoto(photoIx + 1); };
+  viewer.addEventListener("click", function (e) { if (e.target === viewer || e.target.classList.contains("info")) closeViewer(); });
+  viewer.addEventListener("cancel", function (e) { e.preventDefault(); closeViewer(); });
+  var vx0 = null;
+  viewer.addEventListener("touchstart", function (e) { vx0 = e.touches[0].clientX; }, { passive: true });
+  viewer.addEventListener("touchend", function (e) {
+    if (vx0 === null) return;
+    var dx = e.changedTouches[0].clientX - vx0; vx0 = null;
+    if (Math.abs(dx) > 40 && !vnext.hidden) showPhoto(photoIx + (dx < 0 ? 1 : -1));
+  });
+
   function closeCard() {
-    sel = null; card.hidden = true; document.getElementById("send").hidden = false;
+    closeViewer(); sel = null; card.hidden = true; document.getElementById("send").hidden = false;
     if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], ""]);
     history.replaceState(null, "", location.pathname);
     syncPhotoPins();
   }
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sel) closeCard(); });
+  document.addEventListener("keydown", function (e) {
+    if (viewer.open) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); if (!vnext.hidden) showPhoto(photoIx + (e.key === "ArrowRight" ? 1 : -1)); }
+      return; // Esc is handled by the dialog's cancel event, so it closes only the viewer
+    }
+    if (e.key === "Escape" && sel) closeCard();
+    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && sel && !card.hidden && (card.contains(e.target) || e.target === document.body)) {
+      showPhoto(photoIx + (e.key === "ArrowRight" ? 1 : -1));
+    }
+  });
 
   document.querySelector(".chips").addEventListener("click", function (e) {
     var b = e.target.closest("[data-f]"); if (!b || !all) return;
