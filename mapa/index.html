@@ -35,6 +35,10 @@
     margin:0 -16px;padding:0 16px;scroll-padding:0 16px;
     -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
   .chips .chip{flex:none}
+  /* Drawn icons (DESIGN.md §7), in the chip's text colour. A small pop when a filter switches on. */
+  .chip .ic{flex:none;display:block}
+  .chip[aria-pressed="true"] .ic{animation:pop .28s ease-out}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
   .chips::after{content:"";flex:none;width:8px}
   .chips::-webkit-scrollbar{display:none}
   .stage{position:relative;min-height:0;min-width:0;overflow:hidden}
@@ -118,10 +122,10 @@
     <span class="count" id="count" hidden></span>
   </div>
   <div class="chips" role="group" aria-label="Mostrar">
-    <button type="button" class="chip" data-f="bebedouro" aria-pressed="true">Bebedouros</button>
-    <button type="button" class="chip" data-f="heritage" aria-pressed="true">Chafarizes e bicas</button>
-    <button type="button" class="chip" data-f="acc" aria-pressed="false">Só acessíveis</button>
-    <button type="button" class="chip" data-f="fotos" aria-pressed="false">Com foto</button>
+    <button type="button" class="chip" data-f="bebedouro" aria-pressed="true"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 1.5S2.8 6.4 2.8 9a4.2 4.2 0 0 0 8.4 0C11.2 6.4 7 1.5 7 1.5z"/></svg>Bebedouros</button>
+    <button type="button" class="chip" data-f="heritage" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.6" y="3.6" width="6.8" height="6.8" transform="rotate(45 7 7)"/></svg>Chafarizes e bicas</button>
+    <button type="button" class="chip" data-f="acc" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="2" r="1.2" fill="currentColor" stroke="none"/><path d="M7 5v4h4l1 3"/><path d="M5 7a4 4 0 1 0 5 5"/></svg>Só acessíveis</button>
+    <button type="button" class="chip" data-f="fotos" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1" y="3.5" width="12" height="8.5"/><circle cx="7" cy="7.8" r="2.3"/><path d="M4.5 3.5 5.5 1.5h3l1 2"/></svg>Com foto</button>
   </div>
 </header>
 <main class="stage">
@@ -149,7 +153,7 @@
     : "https://tiles.openfreemap.org/styles/liberty";
   var AZUL = "#1D3A8A";
   var all = null, byId = {}, photos = {}, thumbs = {}, me = null, sel = null, photoIx = 0;
-  var filters = { bebedouro: true, heritage: true, acc: false, fotos: false };
+  var filters = { bebedouro: true, heritage: false, acc: false, fotos: false }; // chafarizes e bicas off by default
   var markers = {};
   var card = document.getElementById("card");
 
