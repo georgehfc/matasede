@@ -36,7 +36,22 @@
     -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
   .chips .chip{flex:none}
   /* Drawn icons (DESIGN.md §7), in the chip's text colour. A small pop when a filter switches on. */
-  .chip .ic{flex:none;display:block}
+  .chip .ic,.switch .ic{flex:none;display:block}
+  /* Filters with no data until people send photos and reports: grey, still clickable to explain "em breve". */
+  .chip.soon{color:var(--cinza);border-color:var(--linha);opacity:.6;cursor:pointer}
+  .chips .sep{flex:none;width:1.5px;align-self:stretch;margin:4px 2px;background:var(--linha)}
+  /* "Com foto": an on/off switch rather than a chip. */
+  .switch{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 4px 0 6px;border:0;background:none;
+    color:var(--basalto);font:500 14px/1 var(--texto);cursor:pointer;white-space:nowrap}
+  .switch .track{position:relative;width:34px;height:20px;border-radius:10px;background:var(--linha);transition:background .18s}
+  .switch .knob{position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .18s}
+  .switch[aria-checked="true"] .track{background:var(--azul)}
+  .switch[aria-checked="true"] .knob{transform:translateX(14px)}
+  .switch[aria-checked="true"] .ic{color:var(--azul);animation:pop .28s ease-out}
+  @media (max-width:899px){.chips .switch{order:-2}.chips .sep{order:-1}} /* phones: the switch first, not at the end of the scroll */
+  .soon-note{position:absolute;left:50%;top:12px;z-index:6;transform:translateX(-50%);max-width:calc(100% - 32px);padding:10px 14px;
+    background:var(--basalto);color:var(--chao);font:500 14px/1.35 var(--texto);border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
   .chip[aria-pressed="true"] .ic{animation:pop .28s ease-out}
   @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
   .chips::after{content:"";flex:none;width:8px}
@@ -125,7 +140,11 @@
     <button type="button" class="chip" data-f="bebedouro" aria-pressed="true"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 1.5S2.8 6.4 2.8 9a4.2 4.2 0 0 0 8.4 0C11.2 6.4 7 1.5 7 1.5z"/></svg>Bebedouros</button>
     <button type="button" class="chip" data-f="heritage" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.6" y="3.6" width="6.8" height="6.8" transform="rotate(45 7 7)"/></svg>Chafarizes e bicas</button>
     <button type="button" class="chip" data-f="acc" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="2" r="1.2" fill="currentColor" stroke="none"/><path d="M7 5v4h4l1 3"/><path d="M5 7a4 4 0 1 0 5 5"/></svg>Só acessíveis</button>
-    <button type="button" class="chip" data-f="fotos" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1" y="3.5" width="12" height="8.5"/><circle cx="7" cy="7.8" r="2.3"/><path d="M4.5 3.5 5.5 1.5h3l1 2"/></svg>Com foto</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 7h12A6 5 0 0 1 1 7z"/></svg>Taça</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 1h4v2l1 2v8H4V5l1-2z"/></svg>Garrafa</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M2 7.5 5.5 11 12 3"/></svg>A funcionar</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" class="switch" data-f="fotos" role="switch" aria-checked="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1" y="3.5" width="12" height="8.5"/><circle cx="7" cy="7.8" r="2.3"/><path d="M4.5 3.5 5.5 1.5h3l1 2"/></svg>Com foto<span class="track" aria-hidden="true"><span class="knob"></span></span></button>
   </div>
 </header>
 <main class="stage">
@@ -418,11 +437,25 @@
   });
 
   document.querySelector(".chips").addEventListener("click", function (e) {
+    if (e.target.closest("[data-soon]")) return soonNote();
     var b = e.target.closest("[data-f]"); if (!b || !all) return;
     filters[b.dataset.f] = !filters[b.dataset.f];
-    b.setAttribute("aria-pressed", filters[b.dataset.f]);
+    b.setAttribute(b.getAttribute("role") === "switch" ? "aria-checked" : "aria-pressed", filters[b.dataset.f]);
     map.getSource("pts").setData(data());
   });
+  // Taça, Garrafa and A funcionar have no data yet: say so instead of filtering everything out.
+  var soonTimer = null;
+  function soonNote() {
+    var n = document.querySelector(".soon-note");
+    if (!n) {
+      n = document.createElement("p"); n.className = "soon-note"; n.setAttribute("role", "status");
+      document.querySelector(".stage").appendChild(n);
+    }
+    n.textContent = "Em breve! Taça, garrafa e estado chegam com as tuas fotos e relatos.";
+    n.hidden = false;
+    clearTimeout(soonTimer);
+    soonTimer = setTimeout(function () { n.hidden = true; }, 4000);
+  }
 
   var q = document.getElementById("q"), results = document.getElementById("results");
   q.addEventListener("input", function () {
