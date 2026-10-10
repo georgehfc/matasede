@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Design v2 · Mata-Sede</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/site.css?v=12">
+<style>
+  /* DESIGN.md v2 rendered. Everything uses the real assets/site.css; this block only lays the page out.
+     Pins are drawn here to match mapa/index.html (the map is the source of truth for them). */
+  main{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+  header.pv{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+  .pv-note{margin:0 0 40px;color:var(--cinza);max-width:46em}
+  h1{margin:0;font:800 44px/1 var(--display);letter-spacing:-.04em}
+  h2{margin:56px 0 6px;font:700 30px/1.05 var(--display);letter-spacing:-.035em}
+  h2 small{font:500 14px var(--texto);letter-spacing:0;color:var(--cinza);margin-left:10px}
+  .why{margin:0 0 18px;color:var(--cinza);font-size:14.5px;max-width:52em}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .sw{width:150px;border-radius:18px;overflow:hidden;background:var(--chao);border:1px solid var(--vidro-borda);box-shadow:var(--sombra-leve)}
+  .sw i{display:block;height:72px}
+  .sw div{padding:9px 11px 11px;font-size:12.5px;line-height:1.35}
+  .sw b{display:block;font-size:13px}
+  .sw code{color:var(--cinza);font-variant-numeric:tabular-nums}
+  .type > div{display:grid;grid-template-columns:170px 1fr;gap:18px;align-items:baseline;padding:14px 0;border-top:1px solid var(--linha)}
+  .type span{font-size:12.5px;color:var(--cinza)}
+  .stage{position:relative;padding:28px;border-radius:var(--raio);overflow:hidden;
+    background:linear-gradient(135deg,#F1F4FA,#E6EBF5 40%,#CAD7FD)}
+  .stage.dark{background:linear-gradient(180deg,var(--abismo),var(--azul-profundo) 70%,var(--azul))}
+  .lbl{display:block;margin-top:8px;font-size:12px;color:var(--cinza);text-align:center}
+  .stage.dark .lbl{color:rgba(255,255,255,.8)}
+  .item{display:flex;flex-direction:column;align-items:center}
+  .switch{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 6px 0 11px;border:1px solid var(--vidro-borda);border-radius:999px;
+    background:var(--vidro);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);box-shadow:0 4px 14px rgba(7,20,71,.10);font:500 13.5px/1 var(--texto);color:var(--basalto)}
+  .switch .track{position:relative;width:34px;height:22px;border-radius:11px;background:rgba(11,16,32,.14)}
+  .switch .knob{position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .switch.on .track{background:var(--noite);box-shadow:inset 0 0 0 1px var(--azul)}
+  .switch.on .knob{transform:translateX(12px)}
+  /* Pins, as the map draws them at street zoom. */
+  .dot{width:16px;height:16px;border-radius:50%;background:var(--azul);box-shadow:0 0 0 2.5px #fff}
+  .dot.her{background:#fff;box-shadow:0 0 0 2.5px var(--azul)}
+  .dot.mau{width:22px;height:22px;background:#D3263A;display:grid;place-items:center}
+  .dot.sel{box-shadow:0 0 0 2.5px #fff,0 0 0 6px #071447}
+  .clu{width:40px;height:40px;border-radius:50%;background:var(--azul);color:#fff;display:grid;place-items:center;font:700 13px var(--texto);
+    box-shadow:0 0 0 2px #fff,0 0 0 9px rgba(36,87,245,.18)}
+  .ppin{position:relative;width:52px;height:52px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 2px var(--azul),0 4px 12px rgba(11,16,32,.3);
+    background:linear-gradient(160deg,#9DB7C9,#4F6B57 60%,#2E3A30)}
+  .ppin.mau{border-color:#D3263A}
+  .ppin.mau::after{content:"";position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px #fff;
+    background:#D3263A url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E") center/12px no-repeat}
+  .toast{display:inline-flex;align-items:center;gap:9px;padding:11px 16px 11px 13px;background:var(--noite);color:#fff;font:500 13.5px/1.35 var(--texto);
+    border-radius:999px;box-shadow:inset 0 0 0 1px var(--azul),0 10px 28px rgba(7,20,71,.35)}
+  .toast .ic{color:#fff}
+  .disc{width:40px;height:40px;padding:10px;border-radius:50%;background:var(--noite);color:var(--azul-claro);box-shadow:inset 0 0 0 1px var(--azul)}
+  .frame{width:100%;height:760px;border:1px solid var(--vidro-borda);border-radius:var(--raio);box-shadow:var(--sombra);background:var(--fundo)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+  .invite{border-radius:18px}
+  @media (max-width:640px){.type > div{grid-template-columns:1fr;gap:4px}.frame{height:640px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="pv">
+    <a class="wm" href="/"><svg class="gota" viewBox="0 0 22 28" width="11" height="13" aria-hidden="true"><defs><clipPath id="gc"><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z"/></clipPath><linearGradient id="gg" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#5AD2F4"/><stop offset="1" stop-color="#2457F5"/></linearGradient></defs><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z" fill="url(#gg)"/><g clip-path="url(#gc)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M-3 16.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/><path d="M-3 22.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/></g></svg><span>Mata<span class="hifen">-</span>Sede</span></a>
+    <span class="tag">Design v2 · 10 out 2026</span>
+  </header>
+  <p class="pv-note">O DESIGN.md desenhado. Tudo nesta página usa o <code>assets/site.css</code> verdadeiro, por isso muda quando o site muda. Para ver o modo escuro, põe o computador em modo escuro.</p>
+
+  <h1>Design v2</h1>
+
+  <h2>Cor <small>secção 2</small></h2>
+  <p class="why">Uma escala de azuis faz o trabalho. O vermelho só quer dizer avariado. Os valores abaixo são lidos do CSS ao vivo.</p>
+  <div class="row" id="blues"></div>
+  <div class="row" id="neutros" style="margin-top:12px"></div>
+
+  <h2>Letra <small>secção 3</small></h2>
+  <p class="why">Bricolage Grotesque para o logótipo, títulos e números grandes. Inter para tudo o resto.</p>
+  <div class="type">
+    <div><span>Título grande · Bricolage 800</span><b style="font:800 72px/.9 var(--display);letter-spacing:-.05em;font-variation-settings:'opsz' 96">Mata a sede.</b></div>
+    <div><span>Título de secção · Bricolage 700</span><b style="font:700 36px/1.05 var(--display);letter-spacing:-.035em">Como funciona</b></div>
+    <div><span>Número · Bricolage 800</span><b style="font:800 56px/1 var(--display);letter-spacing:-.04em;color:var(--azul-texto);font-variant-numeric:tabular-nums">438</b></div>
+    <div><span>Nome no cartão · Bricolage 700</span><b style="font:700 23px/1.1 var(--display);letter-spacing:-.03em;font-variation-settings:'opsz' 48">Bebedouro 2 na Avenida da Liberdade</b></div>
+    <div><span>Texto · Inter 400 16</span><p style="margin:0">Todos os bebedouros de Lisboa num só mapa. Encontra o mais perto e vê como está.</p></div>
+    <div><span>Secundário · Inter 13.5</span><p style="margin:0;font-size:13.5px;color:var(--cinza)">Passeio dos Heróis do Mar · 6 min a pé · 450 m</p></div>
+    <div><span>Eyebrow · Inter 600, maiúsculas</span><p style="margin:0;font:600 11px/1 var(--texto);letter-spacing:.07em;text-transform:uppercase;color:var(--azul-texto)">Bebedouro</p></div>
+  </div>
+
+  <h2>Botões <small>secção 8</small></h2>
+  <p class="why">Um principal por ecrã: o "brilho", azul-noite com uma luz que corre à volta (passa o rato ou usa o Tab). Todos os outros são de vidro.</p>
+  <div class="stage"><div class="row">
+    <div class="item"><a class="btn brilho" href="#"><span class="brilho-txt"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Enviar foto</span></a><span class="lbl">Principal</span></div>
+    <div class="item"><button class="btn brilho" disabled><span class="brilho-txt">Enviar foto</span></button><span class="lbl">Principal, desativado</span></div>
+    <div class="item"><a class="btn" href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Como lá chegar</a><span class="lbl">Secundário (vidro)</span></div>
+  </div></div>
+  <div class="stage dark" style="margin-top:12px"><div class="row hero" style="min-height:0;flex-direction:row;overflow:visible">
+    <div class="item"><a class="btn brilho" href="#"><span class="brilho-txt">Abrir o mapa</span></a><span class="lbl">Principal no herói</span></div>
+    <div class="item"><a class="btn" href="#">Enviar uma foto</a><span class="lbl">Secundário no escuro</span></div>
+  </div></div>
+
+  <h2>Filtros, etiquetas, avisos <small>secção 8</small></h2>
+  <p class="why">Chips de vidro; ativo = azul-noite. "Com foto" é um interruptor, não um chip.</p>
+  <div class="stage"><div class="row">
+    <button class="chip" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Bebedouros</button>
+    <button class="chip" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>A funcionar</button>
+    <span class="switch"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Com foto<span class="track"><span class="knob"></span></span></span>
+    <span class="switch on">Com foto<span class="track"><span class="knob"></span></span></span>
+    <span class="tag"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>Acessível a mobilidade reduzida</span>
+  </div>
+  <div class="row" style="margin-top:16px">
+    <span class="toast"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>Obrigado! Já está no mapa.</span>
+    <span class="disc"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg></span>
+  </div></div>
+
+  <h2>Pinos e estado <small>secção 6</small></h2>
+  <p class="why">O vermelho nunca aparece sozinho: vem sempre com um ✕. Desenhados aqui como o mapa os desenha perto da rua.</p>
+  <div class="stage"><div class="row" style="gap:34px">
+    <div class="item"><span class="dot"></span><span class="lbl">Bebedouro</span></div>
+    <div class="item"><span class="dot mau"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></span><span class="lbl">Avariado</span></div>
+    <div class="item"><span class="dot sel"></span><span class="lbl">Escolhido</span></div>
+    <div class="item"><span class="dot her"></span><span class="lbl">Chafariz / bica</span></div>
+    <div class="item"><span class="clu">24</span><span class="lbl">Grupo</span></div>
+    <div class="item"><span class="ppin"></span><span class="lbl">Com foto</span></div>
+    <div class="item"><span class="ppin mau"></span><span class="lbl">Com foto, avariado</span></div>
+  </div></div>
+
+  <h2>Álbum vazio <small>secção 8</small></h2>
+  <div class="grid2"><div class="invite"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><strong>Ainda sem fotos. Sê o primeiro!</strong><span>Passas por cá? Tira uma foto e ajuda a completar o mapa.</span></div></div>
+
+  <h2>O mapa a sério <small>secções 4, 6, 8</small></h2>
+  <p class="why">O cartão do bebedouro, "O que sabemos", os filtros e os pinos, no mapa verdadeiro. Não respondas aqui: no site a sério, as respostas contam.</p>
+  <iframe class="frame" src="/mapa/?ponto=c3e7c6da-6de7-47ec-b372-a5a7daaa8181" title="O mapa do Mata-Sede" loading="lazy"></iframe>
+</main>
+<script>
+  // Swatches read the live tokens, so the hex shown is always what the site uses.
+  var css = getComputedStyle(document.documentElement);
+  function swatches(id, list) {
+    document.getElementById(id).innerHTML = list.map(function (t) {
+      var v = css.getPropertyValue("--" + t[0]).trim();
+      return '<div class="sw"><i style="background:var(--' + t[0] + ')"></i><div><b>' + t[0] + "</b>" + t[1] + "<br><code>" + v + "</code></div></div>";
+    }).join("");
+  }
+  swatches("blues", [["abismo", "herói"], ["noite", "principal, ativo"], ["azul-profundo", "degradês"], ["azul", "marca, pinos"],
+    ["azul-texto", "texto, ligações"], ["azul-claro", "sobre azul-noite"], ["agua", "brilho da água"], ["azul-fundo", "tinta suave"]]);
+  swatches("neutros", [["basalto", "texto"], ["cinza", "secundário"], ["fundo", "chão da página"], ["chao", "cartões"], ["erro", "só avariado"]]);
+</script>
+</body>
+</html>
