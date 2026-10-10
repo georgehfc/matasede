@@ -1,0 +1,125 @@
+{
+ "description": "Fotos de bebedouros publicadas pela Câmara Municipal de Lisboa (informacoeseservicos.lisboa.pt), copiadas com crédito. Decisão de 10 Out 2026.",
+ "photos": [
+  {
+   "point_id": "c3e7c6da-6de7-47ec-b372-a5a7daaa8181",
+   "point_name": "Bebedouro 2 na Avenida da Liberdade",
+   "file": "bebedouro_sao_jorge.jpg",
+   "cml_name": "Bebedouro São Jorge",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_sao_jorge.jpg",
+   "distance_m": 40
+  },
+  {
+   "point_id": "c3e7c6da-6de7-47ec-b372-a5a7daaa8181",
+   "point_name": "Bebedouro 2 na Avenida da Liberdade",
+   "file": "bebedouroavliberdade_ala_2190.jpg",
+   "cml_name": "Bebedouro EPAL",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouroAvLiberdade_ALA_2190.jpg",
+   "distance_m": 40
+  },
+  {
+   "point_id": "ec135b30-a4e7-4d5e-8659-bfd6a4028db4",
+   "point_name": "Bebedouro junto ao Teatro Tivoli",
+   "file": "bebedouro_tivoli.jpg",
+   "cml_name": "Bebedouro Tivoli",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_tivoli.jpg",
+   "distance_m": 28
+  },
+  {
+   "point_id": "8788b1a4-553d-4026-a99f-228b994cfc19",
+   "point_name": "Bebedouro na Avenida Duque d'Ávila",
+   "file": "bebedouro_duque_avila.jpg",
+   "cml_name": "Bebedouro Av. República",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_duque_avila.jpg",
+   "distance_m": 8
+  },
+  {
+   "point_id": "72d09256-df8c-4390-86f8-c280b6cbedbb",
+   "point_name": "Bebedouro junto ao Edifício CML (Campo Grande 27)",
+   "file": "bebedouro_campo_grande.jpg",
+   "cml_name": "Bebedouro Campo Grande",
+   "taken_at": "2021-09-01",
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_campo_grande.jpg",
+   "distance_m": 31
+  },
+  {
+   "point_id": "ef318ef4-2bf1-44e8-9cd2-0d6b6ba2e8f2",
+   "point_name": "Bebedouro na Rua Cipriano Dourado",
+   "file": "bebedouro_nos.jpg",
+   "cml_name": "Bebedouro Edifício NOS",
+   "taken_at": "2021-07-16",
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_NOS.jpg",
+   "distance_m": 5
+  },
+  {
+   "point_id": "e58042b4-2b11-40e6-8c59-3406be0b5990",
+   "point_name": "Bebedouro 2 no Parque Eduardo VII de Inglaterra",
+   "file": "bebedouro_marques_pombal.jpg",
+   "cml_name": "Bebedouro Marquês de Pombal",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_marques_pombal.jpg",
+   "distance_m": 28
+  },
+  {
+   "point_id": "466420a4-f8da-4cb2-ba21-f51fd075fc13",
+   "point_name": "Bebedouro junto às Escadinhas da Saúde",
+   "file": "bebedouro_martim_moniz.jpg",
+   "cml_name": "Bebedouro Martim Moniz",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_martim_moniz.jpg",
+   "distance_m": 0
+  },
+  {
+   "point_id": "d96b0bd7-818e-4377-aeda-00cb4060c3f0",
+   "point_name": "Bebedouro na Praça D. Pedro IV",
+   "file": "bebedouro_rossio.jpg",
+   "cml_name": "Bebedouro Rossio",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_rossio.jpg",
+   "distance_m": 4
+  },
+  {
+   "point_id": "e037b526-5cc3-4b96-9f55-b31449d59a74",
+   "point_name": "Bebedouro 3 no Eixo Central – Saldanha",
+   "file": "bebedouro_saldanha.jpg",
+   "cml_name": "Bebedouro Saldanha",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_saldanha.jpg",
+   "distance_m": 1
+  },
+  {
+   "point_id": "a087fe91-8540-4346-b5e7-f913f015a35a",
+   "point_name": "Bebedouro junto ao Terminal Ferroviário de Santa Apolónia",
+   "file": "bebedouro_santa_apolonia.jpg",
+   "cml_name": "Bebedouro Santa Apolónia",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_santa_apolonia.jpg",
+   "distance_m": 15
+  },
+  {
+   "point_id": "2a72990f-1825-4053-803f-37493149f76f",
+   "point_name": "Bebedouro junto ao Terminal Fluvial do Terreiro do Paço",
+   "file": "bebedouro_praca_comercio.jpg",
+   "cml_name": "Bebedouro Terreiro Paço",
+   "taken_at": null,
+   "credit": "Câmara Municipal de Lisboa",
+   "source": "https://informacoeseservicos.lisboa.pt/fileadmin/espacos/imagens/bebedouro_praca_comercio.jpg",
+   "distance_m": 14
+  }
+ ]
+}

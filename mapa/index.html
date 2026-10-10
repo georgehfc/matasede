@@ -5,157 +5,226 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mapa · Mata-Sede</title>
 <meta name="description" content="Todos os bebedouros, chafarizes e bicas de Lisboa num só mapa.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231D3A8A'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23071447'/%3E%3Cpath d='M-4 12 Q0 6 4 12 T12 12 T20 12 T28 12 T36 12 M-4 22 Q0 16 4 22 T12 22 T20 22 T28 22 T36 22' fill='none' stroke='%23fff' stroke-width='3.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/site.css?v=12">
 <style>
+  /* Map page, DESIGN v2: the map fills the screen; logo, search, filters and the fountain card float over it. Crisp: hairlines, tight shadows. */
   html,body{height:100%;overflow:hidden}
-  body{display:grid;grid-template-rows:auto 1fr;grid-template-columns:minmax(0,1fr)}
-  .bar{min-width:0;display:flex;flex-direction:column;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
-    background:var(--chao);border-bottom:2px solid var(--basalto);z-index:5}
-  .row1{display:flex;align-items:center;gap:12px;min-width:0}
-  @media (max-width:420px){.row1 .wm{font-size:19px}}
-  .find{position:relative;flex:1;min-width:0;max-width:440px}
-  .find input{width:100%;height:42px;padding:0 12px;font:500 16px var(--texto);color:var(--basalto);
-    background:var(--chao);border:2px solid var(--basalto);border-radius:2px}
-  .results{position:absolute;left:0;right:0;top:46px;margin:0;padding:0;list-style:none;background:var(--chao);
-    border:2px solid var(--basalto);max-height:60vh;overflow:auto;z-index:20}
-  .results button{all:unset;box-sizing:border-box;display:block;width:100%;padding:10px 12px;cursor:pointer;border-top:1px solid var(--linha)}
-  .results li:first-child button{border-top:0}
-  .results button:hover,.results button:focus-visible{background:var(--azul-fundo)}
-  .results b{display:block;font-weight:600;font-size:15px}
-  .results span{font-size:13px;color:var(--cinza)}
-  .count{margin-left:auto;font-size:14px;color:var(--cinza);white-space:nowrap}
-  @media (max-width:899px){.count{display:none!important}}
-  .count b{color:var(--azul);font-variant-numeric:tabular-nums}
-  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
-    margin:0 -16px;padding:0 16px;scroll-padding:0 16px;
-    -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent)}
-  .chips .chip{flex:none}
-  /* Drawn icons (DESIGN.md §7), in the chip's text colour. A small pop when a filter switches on. */
-  .chip .ic,.switch .ic{flex:none;display:block}
-  /* Filters with no data until people send photos and reports: grey, still clickable to explain "em breve". */
-  .chip.soon{color:var(--cinza);border-color:var(--linha);opacity:.6;cursor:pointer}
-  .chips .sep{flex:none;width:1.5px;align-self:stretch;margin:4px 2px;background:var(--linha)}
-  /* "Com foto": an on/off switch rather than a chip. */
-  .switch{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 4px 0 6px;border:0;background:none;
-    color:var(--basalto);font:500 14px/1 var(--texto);cursor:pointer;white-space:nowrap}
-  .switch .track{position:relative;width:34px;height:20px;border-radius:10px;background:var(--linha);transition:background .18s}
-  .switch .knob{position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;
-    box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .18s}
-  .switch[aria-checked="true"] .track{background:var(--azul)}
-  .switch[aria-checked="true"] .knob{transform:translateX(14px)}
-  .switch[aria-checked="true"] .ic{color:var(--azul);animation:pop .28s ease-out}
-  @media (max-width:899px){.chips .switch{order:-2}.chips .sep{order:-1}} /* phones: the switch first, not at the end of the scroll */
-  .soon-note{position:absolute;left:50%;top:12px;z-index:6;transform:translateX(-50%);max-width:calc(100% - 32px);padding:10px 14px;
-    background:var(--basalto);color:var(--chao);font:500 14px/1.35 var(--texto);border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-  .chip[aria-pressed="true"] .ic{animation:pop .28s ease-out}
-  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.35) rotate(-8deg)}100%{transform:scale(1)}}
-  .chips::after{content:"";flex:none;width:8px}
-  .chips::-webkit-scrollbar{display:none}
-  .stage{position:relative;min-height:0;min-width:0;overflow:hidden}
+  .stage{position:fixed;inset:0;overflow:hidden;background:var(--fundo)}
   #map{position:absolute;inset:0}
-  .send{position:absolute;left:16px;white-space:nowrap;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-  .card{position:absolute;z-index:4;background:var(--chao);border:2px solid var(--basalto);display:flex;flex-direction:column;overflow:hidden;
-    left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-height:72%}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* Floating header. The wrapper lets clicks through to the map; the controls take them. */
+  .top{position:absolute;left:14px;right:14px;top:calc(14px + env(safe-area-inset-top,0px));z-index:5;
+    display:flex;flex-direction:column;align-items:flex-start;gap:10px;pointer-events:none}
+  .top > *{pointer-events:auto}
+  .row1{display:flex;align-items:flex-start;gap:10px;width:100%;pointer-events:none}
+  .row1 > *{pointer-events:auto}
+  .brand{display:flex;flex-direction:column;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:28px;box-shadow:0 8px 28px rgba(7,20,71,.16);
+    max-width:100%;overflow:hidden}
+  .brand.open{width:min(420px,100%)}
+  .top.searching .chips,.top.searching .count{display:none!important} /* searching: the panel has the stage to itself */
+  @media (max-width:899px){.brand{width:100%}}
+  .brand-row{display:flex;align-items:center;gap:18px;padding:6px 6px 6px 14px;min-height:50px}
+  .brand .wm{font-size:23px}
+  .find-pill{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 12px;border:1px solid var(--vidro-borda);
+    border-radius:999px;background:rgba(11,16,32,.04);color:var(--cinza);font:500 14px/1 var(--texto);cursor:pointer;transition:background .15s,color .15s}
+  .find-pill:hover{color:var(--basalto)}
+  .find-pill kbd{margin-left:6px;font:500 11px/1 var(--texto);padding:3px 6px;border:1px solid var(--linha);border-radius:999px;background:var(--chao);color:var(--cinza)}
+  @media (max-width:899px){.find-pill kbd{display:none}}
+  .find-pill[aria-expanded="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul)}
+
+  /* Search opens like an accordion under the logo. */
+  .find-panel{padding:2px 10px 10px;border-top:1px solid var(--linha);animation:drop .18s ease-out}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .find-panel .field{position:relative;margin-top:8px}
+  .find-panel .field .ic{position:absolute;left:12px;top:13px;color:var(--cinza)}
+  .find-panel input{width:100%;height:44px;padding:0 12px 0 38px;font:500 15px var(--texto);color:var(--basalto);
+    background:rgba(11,16,32,.04);border:1px solid var(--vidro-borda);border-radius:999px}
+  .find-panel input:focus{border-color:var(--azul);outline:none;background:var(--chao);box-shadow:0 0 0 3px rgba(36,87,245,.15)}
+  .find-panel .hint{margin:10px 4px 2px;font-size:13px;color:var(--cinza)}
+  .results{margin:6px 0 0;padding:0;list-style:none;max-height:min(52vh,420px);overflow:auto;display:flex;flex-direction:column}
+  .results button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:11px;width:100%;padding:9px 10px;border-radius:16px;cursor:pointer}
+  .results button:hover,.results button:focus-visible{background:var(--azul-fundo)}
+  .results .ico{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--noite);color:var(--azul-claro);box-shadow:inset 0 0 0 1px var(--azul)}
+  .results .ico .ic{width:17px;height:17px}
+  .results b{display:block;font-weight:600;font-size:14px;line-height:1.3}
+  .results span{display:block;font-size:12.5px;color:var(--cinza)}
+
+  /* The 438 challenge counter, top right on desktop. */
+  .count{margin-left:auto;display:flex;align-items:center;gap:10px;padding:9px 18px 9px 14px;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:999px;
+    box-shadow:var(--sombra);font-size:13px;color:var(--cinza);white-space:nowrap}
+  .count .ic{color:var(--azul-texto)}
+  .count b{color:var(--basalto);font-weight:700;font-variant-numeric:tabular-nums}
+  .count .bar{display:block;width:120px;height:5px;margin-top:6px;border-radius:99px;background:var(--azul-fundo);overflow:hidden}
+  .count .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--noite),var(--azul))}
+  @media (max-width:899px){.count{display:none!important}}
+
+  /* Filters. */
+  .chips{display:flex;gap:6px;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    margin:-6px -14px;padding:6px 14px 10px;scroll-padding:0 14px}
+  .chips::-webkit-scrollbar{display:none}
+  .chips::after{content:"";flex:none;width:4px}
+  .chips .chip{flex:none}
+  .chip[aria-pressed="true"] .ic{animation:pop .3s ease-out}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.3) rotate(-10deg)}100%{transform:scale(1)}}
+  /* Filters with no data until people send photos and reports: muted, still clickable to explain "em breve". */
+  .chip.soon{color:var(--cinza);background:color-mix(in srgb,var(--chao) 70%,transparent);box-shadow:none;border-style:dashed}
+  .chip.soon:hover{border-color:var(--linha)}
+  .chips .sep{flex:none;width:1px;margin:7px 3px;background:var(--linha)}
+  /* "Com foto": an on/off switch rather than a chip. */
+  .switch{flex:none;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 6px 0 11px;border:1px solid var(--vidro-borda);border-radius:999px;
+    background:var(--vidro);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);box-shadow:0 4px 14px rgba(7,20,71,.10);color:var(--basalto);font:500 13.5px/1 var(--texto);cursor:pointer;white-space:nowrap}
+  .switch .ic{width:16px;height:16px}
+  .switch .track{position:relative;width:34px;height:22px;border-radius:11px;background:rgba(11,16,32,.14);transition:background .2s}
+  .switch .knob{position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .2s}
+  @media (prefers-color-scheme:dark){.switch .track{background:rgba(255,255,255,.22)}}
+  .switch[aria-checked="true"] .track{background:var(--noite);box-shadow:inset 0 0 0 1px var(--azul)}
+  .switch[aria-checked="true"] .knob{transform:translateX(12px)}
+  .switch[aria-checked="true"] .ic{color:var(--azul-texto);animation:pop .3s ease-out}
+  @media (max-width:899px){.chips .switch{order:-2}.chips .sep{order:-1}}
+  .soon-note{position:absolute;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:6;transform:translateX(-50%);
+    width:max-content;max-width:calc(100% - 28px);display:flex;align-items:center;gap:9px;margin:0;padding:11px 16px 11px 13px;
+    background:var(--noite);color:#fff;font:500 13.5px/1.35 var(--texto);border-radius:999px;box-shadow:inset 0 0 0 1px var(--azul),0 10px 28px rgba(7,20,71,.35);animation:drop .18s ease-out}
+
+  /* "Enviar foto": bottom left (centred on phones). */
+  .send,.btn.brilho.send{position:absolute;left:14px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:3;white-space:nowrap}
+  @media (max-width:899px){.send,.btn.brilho.send{left:50%;transform:translateX(-50%)}}
+
+  /* Fountain card. Desktop: a panel you can drag by its handle. Phones: a bottom sheet you drag between peek, half and full. */
+  .card{position:absolute;z-index:4;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:var(--raio);box-shadow:0 14px 40px rgba(7,20,71,.22);
+    display:flex;flex-direction:column;overflow:hidden;animation:rise .22s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
   @media (min-width:900px){
-    .card{left:16px;right:auto;top:16px;bottom:auto;width:380px;max-height:calc(100% - 32px)}
+    .card{left:var(--card-x,14px);top:var(--card-y,var(--top-h,140px));width:380px;max-height:calc(100% - var(--card-y,var(--top-h,140px)) - 14px)}
   }
-  .card .media{position:relative;flex:none}
+  @media (max-width:899px){
+    /* Phones and small tablets: a fixed bottom sheet (no dragging); its content scrolls inside. */
+    .card{left:0;right:0;bottom:0;max-height:min(68%,calc(100% - 120px));border-radius:var(--raio) var(--raio) 0 0;
+      border-bottom:0;animation:rise .22s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px)}
+  }
+  .grip{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:40px;padding:0 6px 0 14px;user-select:none}
+  @media (min-width:1025px) and (pointer:fine){.grip{cursor:grab;touch-action:none}} /* only desktops can drag the card */
+  .grip:active{cursor:grabbing}
+  .grip .kind{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--texto);letter-spacing:.07em;text-transform:uppercase;color:var(--azul-texto)}
+  .grip .kind .ic{width:15px;height:15px}
+  .close{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--cinza);cursor:pointer;display:grid;place-items:center}
+  .close:hover{background:var(--fundo);color:var(--basalto)}
+  .card .scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+  .card .media{position:relative;margin:0 10px;border-radius:18px;overflow:hidden}
   .card .media:not(.invite){background:var(--azul-fundo)}
-  .card .media img{display:block;width:100%;height:200px;object-fit:cover;cursor:zoom-in}
-  .card .media img.tall{object-fit:contain} /* vertical photos: show the whole fountain, not a crop of its middle */
-  .card .media img:focus-visible{outline:3px solid var(--azul);outline-offset:-3px}
-  @media (min-width:900px){.card .media img{height:240px}}
-  .card .media .n{position:absolute;right:10px;bottom:10px;font:600 12px/1 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
-  .card .media .credit{position:absolute;left:10px;bottom:10px;font:500 12px/1.2 var(--texto);background:rgba(0,0,0,.65);color:#fff;padding:5px 7px}
-  /* Gallery, for fountains with more than one photo: arrows on the photo, a strip of thumbnails below. Newest first. */
-  .card .media .nav{position:absolute;top:50%;margin-top:-20px;width:40px;height:40px;border:0;border-radius:50%;padding:0;cursor:pointer;
-    background:rgba(0,0,0,.6);color:#fff;font:400 26px/1 var(--texto);display:grid;place-items:center}
-  .card .media .nav:hover{background:rgba(0,0,0,.8)}
-  .card .media .nav:focus-visible,.card .strip button:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
-  .card .media .prev{left:10px}
-  .card .media .next{right:10px}
-  .card .strip{flex:none;display:flex;gap:6px;overflow-x:auto;padding:8px 10px;margin:0;list-style:none;background:var(--azul-fundo);scrollbar-width:thin}
-  .card .strip button{flex:none;display:block;width:48px;height:48px;padding:0;border:2px solid transparent;border-radius:2px;cursor:pointer;
-    background:var(--chao) center/cover no-repeat;opacity:.7}
+  .card .media:not(.invite) img{display:block;width:100%;height:220px;object-fit:cover;cursor:zoom-in}
+  .card .media img.tall{object-fit:contain}
+  .card .media img:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+  .card .media .n,.card .media .credit{position:absolute;bottom:9px;font:500 11.5px/1 var(--texto);background:rgba(7,20,71,.6);color:#fff;
+    padding:6px 10px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .card .media .n{right:9px;font-variant-numeric:tabular-nums}
+  .card .media .credit{left:9px;max-width:calc(100% - 70px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card .media .nav{position:absolute;top:50%;margin-top:-17px;width:34px;height:34px;border:0;border-radius:50%;padding:0;cursor:pointer;
+    background:rgba(255,255,255,.94);color:#0B1020;display:grid;place-items:center;box-shadow:var(--sombra-leve)}
+  .card .media .prev{left:9px}
+  .card .media .next{right:9px}
+  .card .strip{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 0;margin:0;list-style:none;scrollbar-width:none}
+  .card .strip button{flex:none;display:block;width:46px;height:46px;padding:0;border:2px solid transparent;border-radius:14px;cursor:pointer;
+    background:var(--azul-fundo) center/cover no-repeat;opacity:.6;transition:opacity .15s}
   .card .strip button:hover{opacity:1}
   .card .strip button[aria-current="true"]{border-color:var(--azul);opacity:1}
-  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;overflow:auto}
-  .card h2{margin:0;font:21px/1.1 var(--display);letter-spacing:-.01em;padding-right:36px;text-wrap:balance}
-  .card .meta{margin:0;font-size:14px;color:var(--cinza)}
-  .card .walk{margin:0;font-weight:600;font-size:15px;color:var(--azul);font-variant-numeric:tabular-nums}
-  .card .note{margin:0;font-size:14px}
+  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px}
+  .card h2{margin:0;font:700 23px/1.1 var(--display);letter-spacing:-.03em;text-wrap:balance;font-variation-settings:"opsz" 48}
+  .card .meta{margin:-3px 0 0;font-size:13.5px;color:var(--cinza)}
+  .card .walk{margin:0;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--azul-texto);font-variant-numeric:tabular-nums}
+  .card .note{margin:0;font-size:13.5px;color:var(--cinza)}
   .card .tags{display:flex;flex-wrap:wrap;gap:6px}
   .card .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-  .card .acts .btn{flex:1 1 130px;min-width:0;padding:0 12px;white-space:nowrap}
-  .close{position:absolute;right:8px;top:8px;z-index:2;width:36px;height:36px;border:0;border-radius:2px;background:var(--chao);color:var(--basalto);
-    font:400 24px/1 var(--texto);cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--basalto)}
+  .card .acts .btn{flex:1 1 140px;min-width:0;padding:0 12px;white-space:nowrap}
+  .card .acts .btn .ic{width:17px;height:17px}
+
   /* Round photo pins. --ppin is set from the zoom in sizePhotoPins(): bigger when zoomed out. */
-  .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:3px solid var(--azul);background:var(--chao) center/cover no-repeat;cursor:pointer;padding:0;
-    box-shadow:0 0 0 2px #fff,0 4px 10px rgba(0,0,0,.25)}
-  .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px)}
+  .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:2.5px solid #fff;background:var(--azul-fundo) center/cover no-repeat;cursor:pointer;padding:0;
+    box-shadow:0 0 0 2px var(--azul),0 4px 12px rgba(11,16,32,.3);transition:width .18s,height .18s}
+  .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px);box-shadow:0 0 0 3px #0B1020,0 0 0 7px rgba(255,255,255,.9),0 8px 20px rgba(11,16,32,.4)}
+
   /* Full-screen photo viewer. Clicking the dark area around the photo closes it. */
   .viewer{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;
-    background:rgba(8,10,16,.94);color:#fff;overflow:hidden}
+    background:rgba(6,9,18,.95);color:#fff;overflow:hidden}
   .viewer::backdrop{background:transparent}
   .viewer .frame{position:absolute;inset:68px 84px 64px;display:flex;align-items:center;justify-content:center;pointer-events:none}
-  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none}
-  .viewer .x{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;padding:0;cursor:pointer;
-    background:rgba(255,255,255,.14);color:#fff;font:400 28px/1 var(--texto);display:grid;place-items:center}
-  .viewer .nav{position:absolute;top:50%;margin-top:-24px;width:48px;height:48px;border:0;border-radius:50%;padding:0;cursor:pointer;
-    background:rgba(255,255,255,.14);color:#fff;font:400 32px/1 var(--texto);display:grid;place-items:center}
-  .viewer .x:hover,.viewer .nav:hover{background:rgba(255,255,255,.28)}
-  .viewer .x:focus-visible,.viewer .nav:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none;border-radius:10px}
+  .viewer .x,.viewer .nav{position:absolute;border:0;border-radius:50%;padding:0;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center}
+  .viewer .x{right:12px;top:12px;width:42px;height:42px}
+  .viewer .nav{top:50%;margin-top:-23px;width:46px;height:46px}
+  .viewer .x:hover,.viewer .nav:hover{background:rgba(255,255,255,.24)}
+  .viewer .x:focus-visible,.viewer .nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
   .viewer .prev{left:16px}
   .viewer .next{right:16px}
   .viewer .info{position:absolute;left:84px;right:84px;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin:0;display:flex;gap:16px;
-    justify-content:center;text-align:center;font:500 14px/1.3 var(--texto);pointer-events:none}
+    justify-content:center;text-align:center;font:500 13.5px/1.3 var(--texto);pointer-events:none}
   .viewer .info b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
   @media (max-width:600px){
     .viewer .frame{inset:68px 0 96px}
-    .viewer .nav{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-top:0;width:44px;height:44px}
+    .viewer img{border-radius:0}
+    .viewer .nav{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-top:0;width:42px;height:42px}
     .viewer .prev{left:12px}
     .viewer .next{right:12px}
-    .viewer .info{left:68px;right:68px;flex-direction:column;gap:2px;font-size:13px;bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
-  .err{position:absolute;left:16px;right:16px;top:16px;z-index:6;padding:12px 14px;background:var(--chao);border:2px solid var(--erro);color:var(--basalto)}
-  .maplibregl-ctrl-group{border-radius:2px}
+    .viewer .info{left:64px;right:64px;flex-direction:column;gap:2px;font-size:12.5px;bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
+
+  .err{position:absolute;left:14px;right:14px;bottom:24px;z-index:6;padding:13px 18px;background:var(--vidro-forte);border:1px solid var(--vidro-borda);border-radius:18px;box-shadow:var(--sombra);
+    border-left:4px solid var(--erro);color:var(--basalto)}
+  .maplibregl-ctrl-group{border-radius:999px!important;border:1px solid var(--vidro-borda);box-shadow:0 4px 14px rgba(7,20,71,.12)!important;overflow:hidden;
+    background:var(--vidro-forte)!important;-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque)}
+  .maplibregl-ctrl-group button{background-color:transparent!important}
+  @media (prefers-color-scheme:dark){.maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:invert(1)}}
+  .maplibregl-ctrl-group button{width:36px!important;height:36px!important}
+  .maplibregl-ctrl-bottom-right{bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  @media (max-width:899px){.maplibregl-ctrl-bottom-right{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
 </style>
 </head>
 <body>
-<header class="bar">
-  <div class="row1">
-    <a class="wm" href="/">Mata-Sede</a>
-    <div class="find">
-      <label for="q" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Procurar</label>
-      <input id="q" type="search" placeholder="Rua ou bebedouro" autocomplete="off" enterkeyhint="search">
-      <ul class="results" id="results" hidden></ul>
-    </div>
-    <span class="count" id="count" hidden></span>
-  </div>
-  <div class="chips" role="group" aria-label="Mostrar">
-    <button type="button" class="chip" data-f="bebedouro" aria-pressed="true"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 1.5S2.8 6.4 2.8 9a4.2 4.2 0 0 0 8.4 0C11.2 6.4 7 1.5 7 1.5z"/></svg>Bebedouros</button>
-    <button type="button" class="chip" data-f="heritage" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.6" y="3.6" width="6.8" height="6.8" transform="rotate(45 7 7)"/></svg>Chafarizes e bicas</button>
-    <button type="button" class="chip" data-f="acc" aria-pressed="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="2" r="1.2" fill="currentColor" stroke="none"/><path d="M7 5v4h4l1 3"/><path d="M5 7a4 4 0 1 0 5 5"/></svg>Só acessíveis</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 7h12A6 5 0 0 1 1 7z"/></svg>Taça</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 1h4v2l1 2v8H4V5l1-2z"/></svg>Garrafa</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M2 7.5 5.5 11 12 3"/></svg>A funcionar</button>
-    <span class="sep" aria-hidden="true"></span>
-    <button type="button" class="switch" data-f="fotos" role="switch" aria-checked="false"><svg class="ic" viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1" y="3.5" width="12" height="8.5"/><circle cx="7" cy="7.8" r="2.3"/><path d="M4.5 3.5 5.5 1.5h3l1 2"/></svg>Com foto<span class="track" aria-hidden="true"><span class="knob"></span></span></button>
-  </div>
-</header>
+
 <main class="stage">
   <div id="map" aria-label="Mapa de bebedouros"></div>
-  <a class="btn pri send" id="send" href="/enviar/">Enviar foto</a>
+  <header class="top" id="top">
+    <div class="row1">
+      <div class="brand">
+        <div class="brand-row">
+          <a class="wm" href="/" aria-label="Mata-Sede, página inicial"><svg class="gota" viewBox="0 0 22 28" width="11" height="13" aria-hidden="true"><defs><clipPath id="gota-c"><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z"/></clipPath><linearGradient id="gota-g" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#5AD2F4"/><stop offset="1" stop-color="#2457F5"/></linearGradient></defs><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z" fill="url(#gota-g)"/><g clip-path="url(#gota-c)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M-3 16.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/><path d="M-3 22.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/></g></svg><span>Mata<span class="hifen">-</span>Sede</span></a>
+          <button type="button" class="find-pill" id="findBtn" aria-expanded="false" aria-controls="findPanel"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/> <path d="m21 21-4.3-4.3"/></svg><span>Procurar</span><kbd aria-hidden="true">/</kbd></button>
+        </div>
+        <div class="find-panel" id="findPanel" hidden>
+          <label for="q" class="sr">Procurar um bebedouro</label>
+          <div class="field"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/> <path d="m21 21-4.3-4.3"/></svg><input id="q" type="search" placeholder="Rua, jardim ou bebedouro" autocomplete="off" enterkeyhint="search"></div>
+          <p class="hint" id="hint">Escreve o nome de uma rua, praça ou jardim.</p>
+          <ul class="results" id="results" hidden></ul>
+        </div>
+      </div>
+      <div class="count" id="count" hidden></div>
+    </div>
+    <div class="chips" role="group" aria-label="Mostrar">
+    <button type="button" class="chip" data-f="bebedouro" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Bebedouros</button>
+    <button type="button" class="chip" data-f="heritage" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"/> <line x1="6" x2="6" y1="18" y2="11"/> <line x1="10" x2="10" y1="18" y2="11"/> <line x1="14" x2="14" y1="18" y2="11"/> <line x1="18" x2="18" y1="18" y2="11"/> <polygon points="12 2 20 7 4 7"/></svg>Chafarizes e bicas</button>
+    <button type="button" class="chip" data-f="acc" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/> <path d="m18 19 1-7-6 1"/> <path d="m5 8 3-3 5.5 3-2.36 3.5"/> <path d="M4.24 14.5a5 5 0 0 0 6.88 6"/> <path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>Só acessíveis</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.25 16.25h1.5L12 17z"/> <path d="M16 14v.5"/> <path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309"/> <path d="M8 14v.5"/> <path d="M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/></svg>Taça</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8"/> <path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/> <path d="M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/></svg>Garrafa</button>
+    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/> <path d="m9 12 2 2 4-4"/></svg>A funcionar</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" class="switch" data-f="fotos" role="switch" aria-checked="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/> <circle cx="12" cy="13" r="3"/></svg>Com foto<span class="track" aria-hidden="true"><span class="knob"></span></span></button>
+  </div>
+  </header>
+  <a class="btn brilho send" id="send" href="/enviar/"><span class="brilho-txt"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/> <circle cx="12" cy="13" r="3"/></svg>Enviar foto</span></a>
   <article class="card" id="card" hidden aria-live="polite"></article>
   <dialog class="viewer" id="viewer" aria-label="Foto em grande">
     <div class="frame"><img id="vimg" src="" alt=""></div>
-    <button type="button" class="nav prev" id="vprev" aria-label="Foto anterior">‹</button>
-    <button type="button" class="nav next" id="vnext" aria-label="Foto seguinte">›</button>
-    <button type="button" class="x" id="vclose" aria-label="Fechar">×</button>
+    <button type="button" class="nav prev" id="vprev" aria-label="Foto anterior"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button type="button" class="nav next" id="vnext" aria-label="Foto seguinte"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+    <button type="button" class="x" id="vclose" aria-label="Fechar"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/> <path d="m6 6 12 12"/></svg></button>
     <p class="info"><span id="vcap"></span><b id="vn"></b></p>
   </dialog>
 </main>
@@ -170,7 +239,14 @@
   var STYLE = params.get("estilo") === "teste"
     ? { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": "#ECECE8" } }] }
     : "https://tiles.openfreemap.org/styles/liberty";
-  var AZUL = "#1D3A8A";
+  var AZUL = "#2457F5";
+  // Line icons (Lucide, ISC licence): inner SVG markup by name.
+  var ICONS = {"gota": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>", "chafariz": "<line x1=\"3\" x2=\"21\" y1=\"22\" y2=\"22\"/> <line x1=\"6\" x2=\"6\" y1=\"18\" y2=\"11\"/> <line x1=\"10\" x2=\"10\" y1=\"18\" y2=\"11\"/> <line x1=\"14\" x2=\"14\" y1=\"18\" y2=\"11\"/> <line x1=\"18\" x2=\"18\" y1=\"18\" y2=\"11\"/> <polygon points=\"12 2 20 7 4 7\"/>", "acessivel": "<circle cx=\"16\" cy=\"4\" r=\"1\"/> <path d=\"m18 19 1-7-6 1\"/> <path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/> <path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/> <path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>", "taca": "<path d=\"M11.25 16.25h1.5L12 17z\"/> <path d=\"M16 14v.5\"/> <path d=\"M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309\"/> <path d=\"M8 14v.5\"/> <path d=\"M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5\"/>", "garrafa": "<path d=\"M8 2h8\"/> <path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\"/> <path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/>", "funciona": "<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"m9 12 2 2 4-4\"/>", "camara": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/> <circle cx=\"12\" cy=\"13\" r=\"3\"/>", "lupa": "<circle cx=\"11\" cy=\"11\" r=\"8\"/> <path d=\"m21 21-4.3-4.3\"/>", "andar": "<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/> <path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/> <path d=\"M16 17h4\"/> <path d=\"M4 13h4\"/>", "mapa": "<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>", "brilho": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/> <path d=\"M20 3v4\"/> <path d=\"M22 5h-4\"/> <path d=\"M4 17v2\"/> <path d=\"M5 18H3\"/>", "x": "<path d=\"M18 6 6 18\"/> <path d=\"m6 6 12 12\"/>", "esq": "<path d=\"m15 18-6-6 6-6\"/>", "dir": "<path d=\"m9 18 6-6-6-6\"/>"};
+  function ic(name) {
+    return '<svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (ICONS[name] || "") + "</svg>";
+  }
+  var KIND_ICON = { bebedouro: "gota", chafariz: "chafariz", bica: "chafariz" };
   var all = null, byId = {}, photos = {}, thumbs = {}, me = null, sel = null, photoIx = 0;
   var filters = { bebedouro: true, heritage: false, acc: false, fotos: false }; // chafarizes e bicas off by default
   var markers = {};
@@ -200,21 +276,51 @@
     document.querySelector(".stage").appendChild(d);
   }
 
+  // OpenFreeMap Liberty, recoloured toward the brand: cool pale ground, white streets, mint parks, cobalt-tinted water.
+  var BASE = { ground: "#F1F4FA", block: "#E6EBF5", building: "#E1E7F2", casing: "#D7DFEF", street: "#FFFFFF",
+    park: "#D9EFDB", water: "#CAD7FD", rail: "#C6CEE0", label: "#5B6380" };
+  function restyleBaseMap() {
+    (map.getStyle().layers || []).forEach(function (l) {
+      var id = l.id, set = function (k, v) { try { map.setPaintProperty(id, k, v); } catch (e) {} };
+      if (l.type === "background") set("background-color", BASE.ground);
+      else if (l.type === "fill") {
+        if (id === "water") set("fill-color", BASE.water);
+        else if (/park|grass|wood|wetland/.test(id)) set("fill-color", BASE.park);
+        else if (id === "building") set("fill-color", BASE.building);
+        else if (/^landuse|landcover_sand|aeroway/.test(id)) set("fill-color", BASE.block);
+      } else if (l.type === "fill-extrusion") set("fill-extrusion-color", BASE.building);
+      else if (l.type === "line") {
+        if (/^waterway/.test(id)) set("line-color", BASE.water);
+        else if (/rail/.test(id)) set("line-color", BASE.rail);
+        else if (/casing$/.test(id)) set("line-color", BASE.casing);
+        else if (/^(road|tunnel|bridge)_/.test(id)) set("line-color", BASE.street);
+        else if (id === "park_outline") set("line-color", BASE.park);
+      } else if (l.type === "symbol") {
+        if (/^poi/.test(id)) { set("icon-opacity", 0.55); set("text-opacity", 0.75); }
+        if (l.layout && l.layout["text-field"]) set("text-color", BASE.label);
+      }
+    });
+  }
+
   map.on("error", function (e) { console.warn(e && e.error); });
 
   map.on("load", function () {
-    if (map.getLayer("water")) { try { map.setPaintProperty("water", "fill-color", "#C7D3EC"); } catch (e) {} }
-    Promise.all([MS.points(), MS.approvedPhotos()]).then(function (res) {
+    restyleBaseMap();
+    Promise.all([MS.points(), MS.allPhotos()]).then(function (res) {
       all = res[0];
       res[1].forEach(function (ph) { (photos[ph.point_id] = photos[ph.point_id] || []).push(ph); });
       Object.keys(photos).forEach(function (id) {
-        photos[id].sort(function (a, b) { return (b.taken_at || b.created_at).localeCompare(a.taken_at || a.created_at); });
+        // Newest first; undated photos (some of CML's) go last.
+        photos[id].sort(function (a, b) { return (b.taken_at || b.created_at || "").localeCompare(a.taken_at || a.created_at || ""); });
       });
       all.features.forEach(function (f) { byId[f.id] = f; f.properties.fotos = (photos[f.id] || []).length; });
       var withPhoto = all.features.filter(function (f) { return f.properties.kind === "bebedouro" && f.properties.fotos; }).length;
-      if (MS.db) {
+      if (withPhoto) {
         var c = document.getElementById("count");
-        c.innerHTML = "<b>" + withPhoto + "</b> de 438 bebedouros com foto"; c.hidden = false;
+        // The 438 challenge: how many bebedouros already have a photo.
+        c.innerHTML = ic("camara") + "<span><b>" + withPhoto + "</b> de 438 bebedouros com foto" +
+          '<span class="bar"><i style="width:' + Math.max(2, Math.round(withPhoto / 438 * 100)) + '%"></i></span></span>';
+        c.hidden = false;
       }
       var tpaths = res[1].map(function (ph) { return MS.thumbPath(ph.storage_path); });
       var fpaths = res[1].map(function (ph) { return ph.storage_path; });
@@ -226,6 +332,9 @@
 
   function addLayers() {
     map.addSource("pts", { type: "geojson", data: data(), cluster: true, clusterMaxZoom: 14, clusterRadius: 46 });
+    // A soft halo behind each cluster bubble.
+    map.addLayer({ id: "clusters-halo", type: "circle", source: "pts", filter: ["has", "point_count"],
+      paint: { "circle-color": AZUL, "circle-opacity": 0.18, "circle-radius": ["step", ["get", "point_count"], 23, 10, 28, 40, 35] } });
     map.addLayer({ id: "clusters", type: "circle", source: "pts", filter: ["has", "point_count"],
       paint: { "circle-color": AZUL, "circle-stroke-color": "#fff", "circle-stroke-width": 2,
         "circle-radius": ["step", ["get", "point_count"], 16, 10, 20, 40, 26] } });
@@ -242,7 +351,7 @@
         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5]
       } });
     map.addLayer({ id: "pt-sel", type: "circle", source: "pts", filter: ["==", ["get", "id"], ""],
-      paint: { "circle-radius": 14, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#141414", "circle-stroke-width": 3 } });
+      paint: { "circle-radius": 14, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#071447", "circle-stroke-width": 3 } });
 
     map.on("click", "clusters", function (e) {
       var f = e.features[0];
@@ -251,6 +360,12 @@
       });
     });
     map.on("click", "pt", function (e) { select(e.features[0].properties.id, false); });
+    // A click on empty map (not a pin or a cluster) closes the open fountain card, like clicking outside a modal.
+    map.on("click", function (e) {
+      if (!sel) return;
+      if (map.queryRenderedFeatures(e.point, { layers: ["pt", "clusters"] }).length) return;
+      closeCard();
+    });
     ["clusters", "pt"].forEach(function (l) {
       map.on("mouseenter", l, function () { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", l, function () { map.getCanvas().style.cursor = ""; });
@@ -306,6 +421,7 @@
     var off = window.innerWidth < 900 ? [0, -140] : [190, 0];
     if (fly) map.flyTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 16.5), offset: off, duration: 900 });
     else if (window.innerWidth < 900) map.easeTo({ center: f.geometry.coordinates, offset: [0, -140], duration: 400 });
+    var wasOpen = !card.hidden;
     renderCard();
     syncPhotoPins();
   }
@@ -319,8 +435,8 @@
       var many = list.length > 1;
       media = '<div class="media"><img src="" alt="" id="ph" tabindex="0" role="button">' +
         (many ? '<span class="n" id="phn"></span>' +
-          '<button type="button" class="nav prev" id="phprev" aria-label="Foto anterior">‹</button>' +
-          '<button type="button" class="nav next" id="phnext" aria-label="Foto seguinte">›</button>' : "") +
+          '<button type="button" class="nav prev" id="phprev" aria-label="Foto anterior">' + ic("esq") + "</button>" +
+          '<button type="button" class="nav next" id="phnext" aria-label="Foto seguinte">' + ic("dir") + "</button>" : "") +
         '<span class="credit" id="phc"></span></div>' +
         (many ? '<ul class="strip" aria-label="Fotos deste bebedouro">' + list.map(function (ph, i) {
           var t = thumbs[MS.thumbPath(ph.storage_path)] || "";
@@ -328,19 +444,22 @@
             (i + 1) + " de " + list.length + '"></button></li>';
         }).join("") + "</ul>" : "");
     } else if (p.kind === "bebedouro") {
-      media = '<div class="media invite"><strong>Ainda ninguém fotografou este bebedouro.</strong><span>Passas por cá? Envia uma foto e ajuda a completar o mapa.</span></div>';
+      media = '<div class="media invite">' + ic("camara") + "<strong>Ainda sem fotos. Sê o primeiro!</strong>" +
+        "<span>Passas por cá? Tira uma foto e ajuda a completar o mapa.</span></div>";
     } else {
       media = "";
     }
-    var walk = me ? '<p class="walk">' + MS.walkMin(MS.dist(me, ll)) + " min a pé · " + MS.fmtDist(MS.dist(me, ll)) + "</p>" : "";
-    var tags = p.accessible === true ? '<div class="tags"><span class="tag">Acessível a mobilidade reduzida</span></div>' : "";
+    var walk = me ? '<p class="walk">' + ic("andar") + MS.walkMin(MS.dist(me, ll)) + " min a pé · " + MS.fmtDist(MS.dist(me, ll)) + "</p>" : "";
+    var tags = p.accessible === true ? '<div class="tags"><span class="tag">' + ic("acessivel") + 'Acessível a mobilidade reduzida</span></div>' : "";
     var note = MS.NOTE[p.kind] ? '<p class="note">' + MS.NOTE[p.kind] + "</p>" : "";
     var dir = "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + ll[1] + "," + ll[0];
-    card.innerHTML = '<button type="button" class="close" id="close" aria-label="Fechar">×</button>' + media +
-      '<div class="body"><h2>' + MS.esc(p.name) + '</h2><p class="meta">' + MS.esc(p.address) + " · " + MS.KIND[p.kind] + "</p>" +
+    card.innerHTML = '<div class="grip" id="grip"><span class="kind">' + ic(KIND_ICON[p.kind] || "gota") + MS.KIND[p.kind] + "</span>" +
+      '<button type="button" class="close" id="close" aria-label="Fechar">' + ic("x") + "</button></div>" +
+      '<div class="scroll">' + media +
+      '<div class="body"><h2>' + MS.esc(p.name) + '</h2><p class="meta">' + MS.esc(p.address) + "</p>" +
       walk + tags + note +
-      '<div class="acts">' + (p.kind === "bebedouro" ? '<a class="btn pri" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '">Enviar foto</a>' : "") +
-      '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">Como lá chegar</a></div></div>';
+      '<div class="acts">' + (p.kind === "bebedouro" ? '<a class="btn brilho" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '"><span class="brilho-txt">' + ic("camara") + "Enviar foto</span></a>" : "") +
+      '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">' + ic("mapa") + "Como lá chegar</a></div></div></div>";
     card.hidden = false;
     document.getElementById("send").hidden = true;
     document.getElementById("close").onclick = closeCard;
@@ -419,6 +538,67 @@
     if (Math.abs(dx) > 40 && !vnext.hidden) showPhoto(photoIx + (dx < 0 ? 1 : -1));
   });
 
+  // Dragging the card by its handle bar.
+  // Phones: a bottom sheet with three resting points (full, half, peek); dragging below peek closes it.
+  // Desktop: the card moves anywhere over the map; double-click the handle to put it back.
+  var phone = window.matchMedia("(max-width: 899px)");
+  function sheetStops() {
+    var h = card.offsetHeight;
+    return { full: 0, half: Math.round(h * 0.45), peek: Math.max(0, h - 176) };
+  }
+  function setSheet(stop) {
+    card.style.setProperty("--sheet-y", sheetStops()[stop] + "px"); card.dataset.sheet = stop;
+  }
+  function sheetY() {
+    var y = parseFloat(card.style.getPropertyValue("--sheet-y"));
+    return isNaN(y) ? sheetStops().half : y; // 0 is a real position (full), so no "|| default" here
+  }
+  var drag = null;
+  // Tablets and phones (touch, or 1024 px and narrower): no dragging at all.
+  var noDrag = window.matchMedia("(max-width: 1024px), (pointer: coarse)");
+  card.addEventListener("pointerdown", function (e) {
+    if (noDrag.matches) return;
+    if (!e.target.closest(".grip") || e.target.closest(".close") || e.button > 0) return;
+    var r = card.getBoundingClientRect(), st = stage.getBoundingClientRect();
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, left: r.left - st.left, top: r.top - st.top,
+      sheet: sheetY(), t: Date.now(), moved: false };
+    try { card.setPointerCapture(e.pointerId); } catch (err) {}
+    card.classList.add("dragging");
+  });
+  card.addEventListener("pointermove", function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+    if (phone.matches) {
+      card.style.setProperty("--sheet-y", Math.max(0, drag.sheet + dy) + "px");
+    } else {
+      var st = stage.getBoundingClientRect();
+      var x = Math.min(Math.max(8, drag.left + dx), st.width - card.offsetWidth - 8);
+      var y = Math.min(Math.max(8, drag.top + dy), st.height - 120);
+      stage.style.setProperty("--card-x", x + "px"); stage.style.setProperty("--card-y", y + "px");
+    }
+  });
+  function endDrag(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    card.classList.remove("dragging");
+    if (phone.matches) {
+      var y = sheetY(), stops = sheetStops();
+      var v = (e.clientY - drag.y0) / Math.max(1, Date.now() - drag.t); // px per ms; a flick picks the next stop
+      if (!drag.moved) setSheet(card.dataset.sheet === "peek" ? "half" : card.dataset.sheet === "half" ? "full" : "half"); // a tap cycles up
+      else if (y > stops.peek + 70 || (v > 0.9 && card.dataset.sheet === "peek")) closeCard();
+      else if (v > 0.5) setSheet(card.dataset.sheet === "full" ? "half" : "peek");
+      else if (v < -0.5) setSheet(card.dataset.sheet === "peek" ? "half" : "full");
+      else setSheet(["full", "half", "peek"].reduce(function (a, b) { return Math.abs(stops[b] - y) < Math.abs(stops[a] - y) ? b : a; }));
+    }
+    drag = null;
+  }
+  card.addEventListener("pointerup", endDrag);
+  card.addEventListener("pointercancel", endDrag);
+  card.addEventListener("dblclick", function (e) {
+    if (!e.target.closest(".grip") || phone.matches) return;
+    stage.style.removeProperty("--card-x"); stage.style.removeProperty("--card-y");
+  });
+
   function closeCard() {
     closeViewer(); sel = null; card.hidden = true; document.getElementById("send").hidden = false;
     if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], ""]);
@@ -451,28 +631,53 @@
       n = document.createElement("p"); n.className = "soon-note"; n.setAttribute("role", "status");
       document.querySelector(".stage").appendChild(n);
     }
-    n.textContent = "Em breve! Taça, garrafa e estado chegam com as tuas fotos e relatos.";
+    n.innerHTML = ic("brilho") + "<span>Em breve! Taça, garrafa e estado chegam com as tuas fotos e relatos.</span>";
     n.hidden = false;
     clearTimeout(soonTimer);
     soonTimer = setTimeout(function () { n.hidden = true; }, 4000);
   }
 
-  var q = document.getElementById("q"), results = document.getElementById("results");
+  // Search: a "Procurar" pill that opens into a panel under the logo (accordion). Esc or a click on the map closes it.
+  var q = document.getElementById("q"), results = document.getElementById("results"), hint = document.getElementById("hint");
+  var findBtn = document.getElementById("findBtn"), findPanel = document.getElementById("findPanel");
+  function openFind() {
+    findPanel.hidden = false; findBtn.setAttribute("aria-expanded", "true"); findPanel.parentNode.classList.add("open"); top.classList.add("searching");
+    setTimeout(function () { q.focus(); }, 30);
+  }
+  function closeFind(back) {
+    if (findPanel.hidden) return;
+    findPanel.hidden = true; findBtn.setAttribute("aria-expanded", "false"); findPanel.parentNode.classList.remove("open"); top.classList.remove("searching");
+    q.value = ""; results.innerHTML = ""; results.hidden = true; hint.hidden = false;
+    if (back) findBtn.focus();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "/" && !e.target.closest("input, textarea") && !viewer.open) { e.preventDefault(); openFind(); }
+  });
+  findBtn.addEventListener("click", function () { findPanel.hidden ? openFind() : closeFind(true); });
+  q.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); closeFind(true); } });
   q.addEventListener("input", function () {
     if (!all) return;
     var hits = MS.search(all.features, q.value, 8);
     results.innerHTML = hits.map(function (f) {
-      return '<li><button type="button" data-id="' + f.id + '"><b>' + MS.esc(f.properties.name) + "</b><span>" +
-        MS.esc(f.properties.address) + " · " + MS.KIND[f.properties.kind] + "</span></button></li>";
+      return '<li><button type="button" data-id="' + f.id + '"><span class="ico">' + ic(KIND_ICON[f.properties.kind] || "gota") +
+        "</span><span><b>" + MS.esc(f.properties.name) + "</b><span>" + MS.esc(f.properties.address) + "</span></span></button></li>";
     }).join("");
     results.hidden = !hits.length;
+    hint.hidden = !!hits.length;
+    hint.textContent = q.value.trim() ? "Nada encontrado. Experimenta outra rua ou jardim." : "Escreve o nome de uma rua, praça ou jardim.";
   });
   results.addEventListener("click", function (e) {
     var b = e.target.closest("[data-id]"); if (!b) return;
-    results.hidden = true; q.value = ""; q.blur();
+    closeFind(false);
     select(b.dataset.id, true);
   });
-  document.addEventListener("click", function (e) { if (!e.target.closest(".find")) results.hidden = true; });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".brand")) closeFind(false); });
+
+  // The fountain card sits just below the floating header on desktop.
+  var top = document.getElementById("top"), stage = document.querySelector(".stage");
+  function placeCard() { stage.style.setProperty("--top-h", Math.round(top.getBoundingClientRect().bottom + 12) + "px"); }
+  if (window.ResizeObserver) new ResizeObserver(placeCard).observe(top);
+  placeCard();
 })();
 </script>
 </body>

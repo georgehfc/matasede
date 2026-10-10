@@ -69,11 +69,27 @@ window.MS = (function () {
         return res.data || [];
       });
   }
-  // Returns {path: url} for the given storage paths.
+  // Photos published by the Câmara Municipal de Lisboa, shipped with the site in /fotos-cml/ (data/fotos-cml.json).
+  // Same shape as Supabase photos; their storage_path starts with "cml/" so signed() leaves them alone.
+  function cmlPhotos() {
+    return fetch("/data/fotos-cml.json").then(function (r) { return r.ok ? r.json() : { photos: [] }; })
+      .then(function (d) {
+        return (d.photos || []).map(function (p) {
+          return { id: "cml-" + p.file, point_id: p.point_id, storage_path: "cml/" + p.file, taken_at: p.taken_at,
+            credit: p.credit, created_at: null, source: p.source };
+        });
+      }).catch(function () { return []; });
+  }
+  // Every photo to show: approved ones from Supabase plus the CML ones.
+  function allPhotos() {
+    return Promise.all([approvedPhotos(), cmlPhotos()]).then(function (r) { return r[0].concat(r[1]); });
+  }
+  // Returns {path: url} for the given storage paths. CML photos are plain files on this site.
   function signed(paths) {
-    if (!db || !paths.length) return Promise.resolve({});
-    return db.storage.from("fotos").createSignedUrls(paths, 6 * 3600).then(function (res) {
-      var out = {};
+    var out = {}, remote = [];
+    paths.forEach(function (p) { if (p.indexOf("cml/") === 0) out[p] = "/fotos-cml/" + p.slice(4); else remote.push(p); });
+    if (!db || !remote.length) return Promise.resolve(out);
+    return db.storage.from("fotos").createSignedUrls(remote, 6 * 3600).then(function (res) {
       (res.data || []).forEach(function (d) { if (d.signedUrl) out[d.path] = d.signedUrl; });
       return out;
     });
@@ -88,6 +104,6 @@ window.MS = (function () {
   return {
     db: db, KIND: KIND, NOTE: NOTE, points: points, dist: dist, nearest: nearest, fmtDist: fmtDist,
     walkMin: walkMin, norm: norm, search: search, esc: esc, thumbPath: thumbPath,
-    approvedPhotos: approvedPhotos, signed: signed, monthYear: monthYear
+    approvedPhotos: approvedPhotos, cmlPhotos: cmlPhotos, allPhotos: allPhotos, signed: signed, monthYear: monthYear
   };
 })();

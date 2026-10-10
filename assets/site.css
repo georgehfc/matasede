@@ -1,35 +1,127 @@
-/* Mata-Sede shared tokens: limestone ground, basalt type, azulejo cobalt-navy accent. */
+/* Mata-Sede shared tokens (DESIGN v2, Oct 2026): frosted-glass surfaces, pill shapes, deep navy and bright azulejo cobalt.
+   One primary per screen: the "brilho" button (navy, a cobalt light running around its edge). Everything else is glass.
+   Type: Bricolage Grotesque for the logo and titles, Inter for everything else. Change colours here, once. */
 :root{
-  --chao:#FFFFFF; --basalto:#141414; --cinza:#5E5E58; --linha:#DADAD4;
-  --azul:#1D3A8A; --azul-fundo:#E9EEF8; --sobre-azul:#FFFFFF; --erro:#B3261E;
-  --display:"Archivo Black","Arial Black",Arial,sans-serif;
-  --texto:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --chao:#FFFFFF;            /* cards and controls */
+  --fundo:#F4F6FB;           /* page ground */
+  --basalto:#0B1020;         /* text */
+  --cinza:#5D6478;           /* secondary text */
+  --linha:rgba(11,16,32,.09);/* hairline borders */
+  /* The blues — one scale, used everywhere. Canvas and SVG code that can't read these repeats the same hex values. */
+  --abismo:#050F38;          /* deepest navy: hero top, Lisbon's land in the hero */
+  --noite:#071447;           /* navy: primary button, active filters, favicon */
+  --azul-profundo:#0E2A9A;   /* deep cobalt: gradients between navy and cobalt */
+  --azul:#2457F5;            /* cobalt, the brand blue: pins, edges, links' base (5.6:1 with white) */
+  --azul-texto:#1D46D1;      /* cobalt for text and links on white */
+  --azul-claro:#7FB2FF;      /* light blue: on navy (icons, hyphen), hover glow */
+  --agua:#5AD2F4;            /* aqua: the fountains' glow, water highlights */
+  --azul-fundo:#EDF2FF;      /* soft cobalt tint behind content */
+  --sobre-azul:#FFFFFF;
+  --erro:#D3263A;            /* red only ever means broken */
+  --sombra:0 1px 2px rgba(11,16,32,.06),0 8px 28px rgba(11,16,32,.10);
+  --sombra-leve:0 1px 2px rgba(11,16,32,.06),0 2px 8px rgba(11,16,32,.06);
+  --raio:24px;               /* cards and panels */
+  --vidro:rgba(255,255,255,.82);        /* frosted glass: secondary buttons, chips */
+  --vidro-forte:rgba(255,255,255,.86);  /* frosted glass: floating panels and cards */
+  --vidro-borda:rgba(11,16,32,.08);
+  --desfoque:saturate(1.6) blur(14px);
+  --display:"Bricolage Grotesque","Inter",system-ui,sans-serif;
+  --texto:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root{--chao:#141414; --basalto:#F3F2EE; --cinza:#A6A59E; --linha:#34342F;
-    --azul:#9DB4F2; --azul-fundo:#1C2338; --sobre-azul:#0E1530; --erro:#FF8A80; color-scheme:dark}
+  :root{--chao:#141A2B; --fundo:#0A0E1A; --basalto:#F1F4FB; --cinza:#9EA6BB; --linha:rgba(255,255,255,.10);
+    --azul-texto:#7FB2FF; --azul-fundo:#1B2442; --erro:#FF8A94;
+    --vidro:rgba(20,26,43,.62); --vidro-forte:rgba(20,26,43,.82); --vidro-borda:rgba(255,255,255,.12);
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.45); --sombra-leve:0 1px 2px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.3);
+    color-scheme:dark}
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--chao);color:var(--basalto);font:17px/1.5 var(--texto)}
-a{color:var(--azul);text-underline-offset:3px}
-.wm{font:22px/1 var(--display);letter-spacing:-.02em;color:var(--basalto);text-decoration:none;white-space:nowrap}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;
-  font:600 16px/1 var(--texto);border:2px solid var(--azul);color:var(--azul);background:var(--chao);
-  text-decoration:none;cursor:pointer;border-radius:2px}
-.btn.pri{background:var(--azul);color:var(--sobre-azul)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
-.chip{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1.5px solid var(--linha);
-  background:var(--chao);color:var(--basalto);font:500 14px/1 var(--texto);cursor:pointer;border-radius:2px;white-space:nowrap}
-.chip[aria-pressed="true"]{border-color:var(--azul);background:var(--azul);color:var(--sobre-azul)}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1.5px solid var(--linha);font:500 13px/1.2 var(--texto)}
-.invite{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:16px;min-height:150px;
-  background:
-    linear-gradient(transparent 15%,var(--chao) 85%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16'%3E%3Cpath d='M0 12 Q12 0 24 12 T48 12' fill='none' stroke='%231D3A8A' stroke-width='3'/%3E%3C/svg%3E") 0 0/48px 16px repeat,
-    var(--chao)}
-.invite strong{font:600 16px/1.3 var(--texto)}
-.invite span{font-size:14px;color:var(--cinza)}
+body{margin:0;background:var(--fundo);color:var(--basalto);font:16px/1.5 var(--texto);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:var(--azul-texto);text-underline-offset:3px}
+
+/* Logo: the favicon's waves inside a drop, then the wordmark with a cobalt hyphen. */
+.wm{display:inline-flex;align-items:center;gap:6px;font:800 22px/1 var(--display);letter-spacing:-.035em;color:var(--basalto);text-decoration:none;white-space:nowrap;
+  font-variation-settings:"opsz" 96}
+.wm .gota{flex:none;display:block;width:11px;height:13px}
+.wm .hifen{color:var(--azul)}
+
+/* Line icons (Lucide, ISC licence), drawn inline in the text colour. */
+.ic{display:block;flex:none;width:18px;height:18px}
+
+/* Buttons. Secondary (every button that isn't the screen's one primary): a frosted, slightly see-through pill.
+   Primary: "btn brilho" below. */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;
+  font:600 15px/1 var(--texto);letter-spacing:-.005em;border:1px solid var(--vidro-borda);color:var(--basalto);
+  background:var(--vidro);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+  text-decoration:none;cursor:pointer;border-radius:999px;box-shadow:0 6px 20px rgba(7,20,71,.12);
+  transition:background .2s,box-shadow .2s,translate .2s}
+.btn:hover{background:var(--vidro-forte);box-shadow:0 8px 24px rgba(7,20,71,.18)}
+/* On the dark hero and the navy band, the glass button stays white with just a hint of what's behind it. */
+.hero .btn:not(.brilho),.desafio .btn:not(.brilho){background:rgba(255,255,255,.9);color:#0B1020;border-color:rgba(255,255,255,.6)}
+.hero .btn:not(.brilho):hover,.desafio .btn:not(.brilho):hover{background:#fff}
+.btn:active{translate:0 1px}
+.btn.pri{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul),0 8px 24px rgba(7,20,71,.35)} /* static primary, if ever needed */
+.btn:disabled{opacity:.45;cursor:not-allowed;translate:none}
+/* "Brilho" button (adapted from 21st.dev shiny-button): deep navy fill, a cobalt light that runs around the border,
+   a faint speckle and sheen inside; on hover the light widens and brightens. Pure CSS. */
+@property --brilho-angulo{syntax:"<angle>";initial-value:0deg;inherits:false}
+@property --brilho-desvio{syntax:"<angle>";initial-value:0deg;inherits:false}
+@property --brilho-arco{syntax:"<percentage>";initial-value:5%;inherits:false}
+@property --brilho-luz{syntax:"<color>";initial-value:white;inherits:false}
+.btn.brilho{--b-fundo:var(--noite);--b-cor:var(--azul);--b-suave:var(--azul-claro);--b-dur:3s;--b-trans:.8s cubic-bezier(.25,1,.5,1);
+  isolation:isolate;position:relative;overflow:hidden;min-height:52px;padding:0 28px;border:1px solid transparent;border-radius:999px;
+  color:#fff;font-weight:600;
+  background:linear-gradient(var(--b-fundo),var(--b-fundo)) padding-box,
+    conic-gradient(from calc(var(--brilho-angulo) - var(--brilho-desvio)),transparent,var(--b-cor) var(--brilho-arco),
+      var(--brilho-luz) calc(var(--brilho-arco)*2),var(--b-cor) calc(var(--brilho-arco)*3),transparent calc(var(--brilho-arco)*4)) border-box;
+  box-shadow:inset 0 0 0 1px var(--azul-profundo),0 8px 24px rgba(7,20,71,.35);
+  transition:var(--b-trans);transition-property:--brilho-desvio,--brilho-arco,--brilho-luz,translate}
+.btn.brilho:hover{translate:none;box-shadow:inset 0 0 0 1px var(--azul-profundo),0 8px 24px rgba(7,20,71,.35)}
+.btn.brilho:active{translate:0 1px}
+.btn.brilho::before,.btn.brilho::after,.btn.brilho > .brilho-txt::before{content:"";pointer-events:none;position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:-1}
+.btn.brilho::before{--p:2px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:inherit;opacity:.4;
+  background:radial-gradient(circle at var(--p) var(--p),#fff calc(var(--p)/4),transparent 0) padding-box;background-size:4px 4px;background-repeat:space;
+  -webkit-mask-image:conic-gradient(from calc(var(--brilho-angulo) + 45deg),#000,transparent 10% 90%,#000);mask-image:conic-gradient(from calc(var(--brilho-angulo) + 45deg),#000,transparent 10% 90%,#000)}
+.btn.brilho::after{width:100%;aspect-ratio:1;opacity:.6;background:linear-gradient(-50deg,transparent,var(--b-cor),transparent);
+  -webkit-mask-image:radial-gradient(circle at bottom,transparent 40%,#000);mask-image:radial-gradient(circle at bottom,transparent 40%,#000)}
+.btn.brilho > .brilho-txt{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px}
+.btn.brilho > .brilho-txt::before{width:calc(100% + 3rem);height:calc(100% + 2.4rem);box-shadow:inset 0 -1ex 2rem 4px var(--b-cor);opacity:0;
+  transition:opacity var(--b-trans);animation:brilho-respira calc(var(--b-dur)*1.5) linear infinite}
+.btn.brilho,.btn.brilho::before{animation:brilho-gira var(--b-dur) linear infinite,brilho-gira calc(var(--b-dur)/.4) linear infinite reverse paused;animation-composition:add}
+.btn.brilho::after{animation:brilho-roda var(--b-dur) linear infinite,brilho-roda calc(var(--b-dur)/.4) linear infinite reverse paused;animation-composition:add}
+.btn.brilho:is(:hover,:focus-visible){--brilho-arco:20%;--brilho-desvio:95deg;--brilho-luz:var(--b-suave)}
+.btn.brilho:is(:hover,:focus-visible),.btn.brilho:is(:hover,:focus-visible)::before,.btn.brilho:is(:hover,:focus-visible)::after{animation-play-state:running}
+.btn.brilho:is(:hover,:focus-visible) > .brilho-txt::before{opacity:1}
+/* Neutral version (secondary): white fill, ink text, a soft grey light running around the border. */
+@keyframes brilho-gira{to{--brilho-angulo:360deg}}
+@keyframes brilho-roda{to{rotate:360deg}}
+@keyframes brilho-respira{from,to{scale:1}50%{scale:1.2}}
+/* Disabled: no light, no motion; a flat navy pill until the form is ready. */
+.btn.brilho:disabled,.btn.brilho:disabled::before,.btn.brilho:disabled::after,.btn.brilho:disabled > .brilho-txt::before{animation:none!important}
+.btn.brilho:disabled{background:var(--noite);box-shadow:inset 0 0 0 1px rgba(127,178,255,.18);cursor:not-allowed}
+.btn.brilho:disabled::before,.btn.brilho:disabled::after,.btn.brilho:disabled > .brilho-txt::before{opacity:0!important}
+@media (prefers-reduced-motion:reduce){.btn.brilho,.btn.brilho::before,.btn.brilho::after,.btn.brilho > .brilho-txt::before{animation:none!important}}
+.btn:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+/* Filters and tags: glass pills; an active filter takes the primary's navy with its cobalt edge. */
+.chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 11px;border:1px solid var(--vidro-borda);
+  background:var(--vidro);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+  color:var(--basalto);font:500 13.5px/1 var(--texto);cursor:pointer;border-radius:999px;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(7,20,71,.10);transition:background .15s,color .15s,box-shadow .15s}
+.chip .ic{width:16px;height:16px}
+.chip:hover{background:var(--vidro-forte)}
+.chip[aria-pressed="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul),0 6px 18px rgba(7,20,71,.3)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 9px;border-radius:999px;background:var(--azul-fundo);
+  color:var(--basalto);font:500 13px/1.2 var(--texto)}
+.tag .ic{width:15px;height:15px;color:var(--azul-texto)}
+/* Frosted panel, for anything floating over the map or the hero. */
+.vidro{background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);border:1px solid var(--vidro-borda)}
+
+/* Empty album: a quiet tinted panel with a camera and an invitation. */
+.invite{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:18px;min-height:136px;background:var(--azul-fundo)}
+.invite .ic{width:28px;height:28px;color:var(--azul-texto);margin-bottom:auto}
+.invite strong{font:700 17px/1.2 var(--display);letter-spacing:-.02em}
+.invite span{font-size:13.5px;color:var(--cinza);max-width:26em}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
