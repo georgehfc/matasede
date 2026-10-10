@@ -1,0 +1,55 @@
+/* Design tokens from DESIGN.md v1.0.
+   Change a colour or size here and the whole site follows. */
+
+:root {
+  /* Colour */
+  --color-glaze: #FFFFFF;   /* page and panels */
+  --color-cobalt: #1D3CA8;  /* brand, actions, water, selection */
+  --color-wash: #E3E8F7;    /* river, plazas, tinted panels */
+  --color-ink: #121B3D;     /* text and borders */
+  --color-muted: #5A6285;   /* secondary text */
+  --color-line: #E3E8F7;    /* list dividers */
+  --color-hover: #F2F3F5;   /* quiet grey fill on hover */
+  --color-disabled: #B4B8C4;      /* labels and icons of filters with no data yet */
+  --color-disabled-line: #EFF1F7; /* their border, lighter than --color-line */
+  --color-broken: #D2452F;  /* "Avariado" only */
+  --color-warning-yellow: #E8B300;
+  --color-warning-orange: #E0701B;
+  --color-warning-red: #C4231B;
+
+  /* Type */
+  --font-display: "Archivo Black", "Archivo", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, sans-serif;
+
+  --text-wordmark: 24px;
+  --text-display: 40px;
+  --text-title: 32px;
+  --text-distance: 26px;
+  --text-name: 17px;
+  --text-body: 15px;
+  --text-label: 13px;
+  --text-eyebrow: 12px;
+
+  --tracking-display: -0.03em;
+  --tracking-title: -0.025em;
+  --tracking-eyebrow: 0.1em;
+
+  /* Space */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+
+  /* Shape */
+  --border: 1.5px;
+  --radius: 0;
+
+  /* Layout */
+  --header-height: 80px;
+  --frieze-height: 20px;
+  --panel-width: 440px;
+}

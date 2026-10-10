@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-lang="en" data-base="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mata-Sede — the map Lisbon never made</title>
+  <meta name="description" content="Every public drinking fountain in Lisbon on one map, kept current by the people who use them.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+  <a class="skip" href="#painel" data-i18n="allList"></a>
+
+  <header class="cabecalho">
+    <a class="marca" href="./" aria-label="Mata-Sede">MATA-SEDE</a>
+    <form class="pesquisa" role="search" id="pesquisa">
+      <span class="icone" data-icon="search" aria-hidden="true"></span>
+      <input id="pesquisa-input" type="search" autocomplete="off" data-i18n-placeholder="searchPlaceholder" data-i18n-aria="searchLabel">
+    </form>
+    <button class="botao botao--cobalto" id="perto" type="button">
+      <span class="icone" data-icon="locate" aria-hidden="true"></span>
+      <span data-i18n="nearMe"></span>
+    </button>
+    <div class="tempo" id="tempo" hidden></div>
+    <a class="lingua" id="lingua"></a>
+  </header>
+
+  <div class="friso" aria-hidden="true"></div>
+
+  <main class="corpo">
+    <section class="painel" id="painel" aria-live="polite" tabindex="-1"></section>
+    <div class="mapa" id="mapa" role="region" aria-label="Map">
+      <div class="mapa-controlos">
+        <div class="legenda"><span class="pino" data-pin="bebedouro" data-size="16" aria-hidden="true"></span><span data-i18n="legendFountain"></span></div>
+        <label class="interruptor">
+          <input type="checkbox" id="patrimonio">
+          <span class="interruptor-caixa" aria-hidden="true"></span>
+          <span class="pino" data-pin="patrimonio" data-size="16" aria-hidden="true"></span>
+          <span data-i18n="heritageToggle"></span>
+        </label>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module" src="../js/main.js"></script>
+</body>
+</html>

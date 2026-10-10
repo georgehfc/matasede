@@ -82,3 +82,50 @@ Answers so far: Fluent emoji stay at a minimum (A tests one); the Mar Largo wave
 Not yet done: the "Sem info" invite state, a winter (non-heat) state for C, and making B's marks look truly brushed rather than vector.
 
 Note: `CLAUDE.md`, `docs/SPEC.md` and `DESIGN.md` are not in this folder or on GitHub (`main` has only README, data and scripts).
+
+## Round 2: merged direction D, desktop-first (3 Oct 2026)
+
+Founder picks: **B's visuals** (cobalt on white, line-drawn map, geometric icons), **A's typography** (Archivo Black + Archivo), and **C's structure** (temperature in the header, fountain cards, location-first). The product is **desktop-first**: the main experience is browsing at a monitor. Mobile stays a simpler companion for the in-street moments (finding water now, taking photos).
+
+Paper artboard "D · Desktop", 1440 × 900:
+- **Header:** wordmark, search, "Perto de mim", temperature and heat-warning module.
+- **Wave frieze:** a cobalt band with the white Mar Largo wave under the header.
+- **Left column, 440 px:** "Perto de ti" cards with a number, name, status (mark plus word), feature icons, and distance in big numerals with ≈ minutes. The 438-challenge counter sits at the bottom.
+- **Map:** cobalt line drawing, the river as wave strokes, your location with a dotted line to the selected fountain, numbered square pins, and diamonds for chafarizes and bicas.
+- **Detail card:** album first, features, "Como chegar" (hands off to the phone's maps app) and "Reportar".
+
+Palette D: white #FFFFFF, cobalt #1D3CA8, wash #E3E8F7, ink #121B3D, muted #5A6285, broken #D2452F (the only non-cobalt hue).
+
+### Location ("GPS") scope, proposed
+- In: browser geolocation, nearest-first list, straight-line distance, an estimated walk time (≈), and a "Como chegar" handoff to Google or Apple Maps.
+- Out of v1: in-app routing and turn-by-turn, which need a routing service and break the "no API-key services" rule.
+- Needs checking against docs/SPEC.md once it's in the repo.
+
+Next: the mobile companion for D, the empty "Sem info" state, and a winter (non-heat) header.
+
+## Round 3: real data and the Block 4 flow (3 Oct 2026)
+
+These are on the Paper page "Bloco 4 · dados reais + fluxo".
+
+**The 438 real pins** (projected from `data/pontos.geojson`, schematic river, no tiles)
+- At city zoom the 438 points spread across the whole city and stay readable as small dashed squares. The densest areas are Baixa and Avenidas Novas, and there are long gaps in Monsanto and the east.
+- A 70 px clustering grid gave 82 clusters with up to 18 fountains each. It looked busier than the raw pins.
+- **Proposal:** show every pin at city zoom and cluster only when zoomed out beyond the city. Check this in MapLibre with real tiles.
+- At 6 px a pin is too small to tap, so on mobile tapping should pick the nearest pin within 22 px.
+
+**The flow** (wireframe, desktop-first)
+1. Arrive on the map.
+2. "Qual é o mais perto?" is our own message, shown before the browser's prompt.
+3. The browser asks for location. It only asks after a click, never on load.
+4. The nearest 3 appear, with ≈ minutes on foot.
+5. The detail opens in the left panel ("Sem informação recente", "Ainda sem fotos", shareable `?b=id`).
+6. "Como chegar" opens the walking route in Google Maps in a new tab. No QR code.
+
+Other branches:
+- **3b, refused or failed:** the site focuses the search and never asks again on its own.
+- **4b, search results:** search covers the fountains' names and addresses only. Searching any street would need a geocoding service, which is out of scope.
+- **6b, on the phone:** "Como chegar" opens the maps app directly.
+- **Shared link:** goes straight to step 5.
+- **A–Z list:** reaches every fountain.
+
+Decided on 3 Oct 2026: no QR code, and the narrower search is fine for Block 4.
