@@ -68,7 +68,11 @@
 
   /* Filters. */
   .chips{display:flex;gap:6px;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
-    margin:-6px -14px;padding:6px 14px 10px;scroll-padding:0 14px}
+    margin:-6px -14px -20px;padding:6px 14px 24px;scroll-padding:0 14px} /* bottom room so active chips' shadows aren't cut off */
+  /* Phones: the row runs edge to edge and fades out at both sides, so it reads as scrollable. */
+  @media (max-width:899px){.chips{max-width:none;width:calc(100% + 28px);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 36px),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 36px),transparent)}}
   .chips::-webkit-scrollbar{display:none}
   .chips::after{content:"";flex:none;width:4px}
   .chips .chip{flex:none}
@@ -104,8 +108,10 @@
     .card{left:var(--card-x,14px);top:var(--card-y,var(--top-h,140px));width:380px;max-height:calc(100% - var(--card-y,var(--top-h,140px)) - 14px)}
   }
   @media (max-width:899px){
-    /* Phones and small tablets: a fixed bottom sheet (no dragging); its content scrolls inside. */
-    .card{left:0;right:0;bottom:0;max-height:min(68%,calc(100% - 120px));border-radius:var(--raio) var(--raio) 0 0;
+    /* Phones and small tablets: a fixed bottom sheet (no dragging), at most half the screen so the map stays usable;
+       its content scrolls inside. */
+    .stage .card .media:not(.invite) img{height:170px}
+    .card{left:0;right:0;bottom:0;max-height:min(50%,calc(100% - 120px));border-radius:var(--raio) var(--raio) 0 0;
       border-bottom:0;animation:rise .22s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px)}
   }
   .grip{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:40px;padding:0 6px 0 14px;user-select:none}
@@ -471,11 +477,11 @@
     var f = byId[id];
     if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], id]);
     history.replaceState(null, "", "?ponto=" + encodeURIComponent(id));
-    var off = window.innerWidth < 900 ? [0, -140] : [190, 0];
-    if (fly) map.flyTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 16.5), offset: off, duration: 900 });
-    else if (window.innerWidth < 900) map.easeTo({ center: f.geometry.coordinates, offset: [0, -140], duration: 400 });
-    var wasOpen = !card.hidden;
     renderCard();
+    // Phones: centre the fountain in the map left visible above the sheet. Desktop: to the right of the card.
+    var off = window.innerWidth < 900 ? [0, -Math.round(card.offsetHeight / 2)] : [190, 0];
+    if (fly) map.flyTo({ center: f.geometry.coordinates, zoom: Math.max(map.getZoom(), 16.5), offset: off, duration: 900 });
+    else if (window.innerWidth < 900) map.easeTo({ center: f.geometry.coordinates, offset: off, duration: 400 });
     syncPhotoPins();
   }
 
