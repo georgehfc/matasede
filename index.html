@@ -46,6 +46,10 @@
     background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font:500 13.5px/1 var(--texto);
     -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   .eyebrow .ic{width:16px;height:16px;color:var(--agua)}
+  /* The label mostly says "438 bebedouros"; now and then it slides to the chafarizes or the bicas and back. */
+  .eyebrow .roda{display:inline-flex;align-items:center;gap:8px;transition:opacity .28s ease,transform .28s ease}
+  .eyebrow .roda.sai{opacity:0;transform:translateY(-6px)}
+  .eyebrow .roda.entra{opacity:0;transform:translateY(6px);transition:none}
   h1{margin:0;font:800 clamp(52px,11vw,132px)/.9 var(--display);letter-spacing:-.05em;font-variation-settings:"opsz" 96;
     text-shadow:0 2px 30px rgba(7,20,71,.35)}
   .sub{margin:22px 0 0;max-width:30em;font:400 clamp(17px,2.1vw,21px)/1.45 var(--texto);color:rgba(255,255,255,.88)}
@@ -61,12 +65,7 @@
   .legend i{border-radius:50%}
   .legend i.mar{border-radius:2px;width:14px;background:linear-gradient(90deg,var(--azul),var(--agua))}
 
-  main{max-width:1100px;margin:0 auto;padding:24px 20px 72px}
-  .nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 56px}
-  .nums div{background:var(--chao);border:1px solid var(--vidro-borda);border-radius:var(--raio);padding:24px 24px 22px;box-shadow:0 8px 28px rgba(7,20,71,.08)}
-  .nums b{display:block;font:800 clamp(38px,6vw,60px)/1 var(--display);letter-spacing:-.04em;color:var(--azul-texto);font-variant-numeric:tabular-nums}
-  .nums span{display:block;margin-top:8px;font-size:14px;color:var(--cinza)}
-  @media (max-width:640px){.nums{grid-template-columns:1fr}}
+  main{max-width:1100px;margin:0 auto;padding:56px 20px 72px}
   h2{margin:0 0 18px;font:700 clamp(28px,4vw,40px)/1.05 var(--display);letter-spacing:-.035em}
   .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 56px;padding:0;list-style:none}
   .steps li{background:var(--chao);border:1px solid var(--vidro-borda);border-radius:var(--raio);padding:22px;box-shadow:0 8px 28px rgba(7,20,71,.08)}
@@ -96,7 +95,7 @@
     <a class="wm" href="/" aria-label="Mata-Sede, página inicial"><svg class="gota" viewBox="0 0 22 28" width="9" height="11" aria-hidden="true"><defs><clipPath id="gota-c"><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z"/></clipPath><linearGradient id="gota-g" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#5AD2F4"/><stop offset="1" stop-color="#2457F5"/></linearGradient></defs><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z" fill="url(#gota-g)"/><g clip-path="url(#gota-c)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M-3 16.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/><path d="M-3 22.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/></g></svg><span>Mata<span class="hifen">-</span>Sede</span></a>
   </nav>
   <div class="lead">
-    <p class="eyebrow"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>438 bebedouros públicos</p>
+    <p class="eyebrow"><span class="sr">438 bebedouros públicos</span><span class="roda" id="roda" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span>438 bebedouros públicos</span></span></p>
     <h1>Mata a sede.</h1>
     <p class="sub">Todos os bebedouros de Lisboa num só mapa. Encontra o mais perto e vê como está, pelas fotos de quem lá passou.</p>
     <div class="ctas">
@@ -108,12 +107,6 @@
 </section>
 
 <main>
-  <div class="nums" aria-label="O que está no mapa">
-    <div><b>438</b><span>bebedouros públicos</span></div>
-    <div><b>101</b><span>chafarizes históricos</span></div>
-    <div><b>106</b><span>bicas</span></div>
-  </div>
-
   <h2 id="como">Como funciona</h2>
   <ol class="steps">
     <li><svg class="ic" viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><strong>Encontra</strong><p>Abre o mapa, procura uma rua ou deixa-o encontrar o bebedouro mais perto de ti.</p></li>
@@ -171,6 +164,33 @@
       document.getElementById("barra").style.width = Math.max(1, n / 438 * 100) + "%";
     });
   });
+  // Hero label: mostly the 438 bebedouros, briefly the chafarizes, then later the bicas. Still under reduced motion.
+  (function () {
+    var roda = document.getElementById("roda");
+    var GOTA = '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>';
+    var PATRIMONIO = '<line x1="3" x2="21" y1="22" y2="22"/> <line x1="6" x2="6" y1="18" y2="11"/> <line x1="10" x2="10" y1="18" y2="11"/> <line x1="14" x2="14" y1="18" y2="11"/> <line x1="18" x2="18" y1="18" y2="11"/> <polygon points="12 2 20 7 4 7"/>';
+    var VOLTA = [
+      { ic: GOTA, txt: "438 bebedouros públicos", ms: 7000 },
+      { ic: PATRIMONIO, txt: "101 chafarizes públicos", ms: 3200 },
+      { ic: GOTA, txt: "438 bebedouros públicos", ms: 7000 },
+      { ic: PATRIMONIO, txt: "106 bicas", ms: 3200 }
+    ];
+    if (!roda || still) return;
+    var i = 0;
+    function next() {
+      i = (i + 1) % VOLTA.length;
+      roda.classList.add("sai");
+      setTimeout(function () {
+        var v = VOLTA[i];
+        roda.innerHTML = '<svg class="ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + v.ic + "</svg><span>" + v.txt + "</span>";
+        roda.classList.remove("sai"); roda.classList.add("entra");
+        void roda.offsetWidth; // let the start position apply before sliding in
+        roda.classList.remove("entra");
+        setTimeout(next, v.ms);
+      }, 280);
+    }
+    setTimeout(next, VOLTA[0].ms);
+  })();
   if (!P) return;
 
   // Lisbon's land and parks as a smooth silhouette. The 160 × 100 grid is scaled up with smoothing (a blurry

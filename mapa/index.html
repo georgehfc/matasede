@@ -128,6 +128,11 @@
   .grip .btns{display:flex;align-items:center;gap:2px}
   .close .ic{width:17px;height:17px}
   @media (max-width:899px){.grip{height:48px}.close{width:40px;height:40px}.close .ic{width:19px;height:19px}}
+  /* Phones: a handle bar on top of the card; drag the top bar down to dismiss it. */
+  @media (max-width:899px){
+    .grip{position:relative;touch-action:none;padding-top:8px}
+    .grip::before{content:"";position:absolute;left:50%;top:7px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:color-mix(in srgb,var(--basalto) 22%,transparent)}
+  }
   .card .scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
   .card .media{position:relative;margin:0 10px;border-radius:18px;overflow:hidden}
   .card .media:not(.invite){background:var(--azul-fundo)}
@@ -725,7 +730,36 @@
     stage.style.removeProperty("--card-x"); stage.style.removeProperty("--card-y");
   });
 
+  // Phones: drag the card's top bar down to dismiss it. A short drag springs back; a long drag or a flick closes.
+  var pull = null;
+  card.addEventListener("pointerdown", function (e) {
+    if (!phone.matches || !e.target.closest(".grip") || e.target.closest(".close")) return;
+    pull = { id: e.pointerId, y0: e.clientY, t: Date.now(), dy: 0 };
+    try { card.setPointerCapture(e.pointerId); } catch (err) {}
+    card.style.transition = "none";
+  });
+  card.addEventListener("pointermove", function (e) {
+    if (!pull || e.pointerId !== pull.id) return;
+    pull.dy = Math.max(0, e.clientY - pull.y0);
+    card.style.transform = "translateY(" + pull.dy + "px)";
+  });
+  function endPull(e) {
+    if (!pull || e.pointerId !== pull.id) return;
+    var dy = pull.dy, flick = dy / Math.max(1, Date.now() - pull.t) > 0.6;
+    pull = null;
+    card.style.transition = "transform .22s ease";
+    if (dy > 90 || (flick && dy > 20)) {
+      card.style.transform = "translateY(100%)";
+      setTimeout(closeCard, 220);
+    } else {
+      card.style.transform = "";
+    }
+  }
+  card.addEventListener("pointerup", endPull);
+  card.addEventListener("pointercancel", endPull);
+
   function closeCard() {
+    card.style.transform = ""; card.style.transition = "";
     closeViewer(); sel = null; card.hidden = true; document.getElementById("send").hidden = false;
     if (map.getLayer("pt-sel")) map.setFilter("pt-sel", ["==", ["get", "id"], ""]);
     history.replaceState(null, "", location.pathname);
