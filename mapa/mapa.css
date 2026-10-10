@@ -76,11 +76,13 @@
   .switch .track{position:relative;width:34px;height:22px;border-radius:11px;background:rgba(11,16,32,.14);transition:background .2s}
   .switch .knob{position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;
     box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .2s}
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .switch .track{background:rgba(255,255,255,.22)}}
-  :root[data-theme="dark"] .switch .track{background:rgba(255,255,255,.22)}
-  .switch[aria-checked="true"] .track{background:var(--noite);box-shadow:inset 0 0 0 1px var(--azul)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .switch:not([aria-checked="true"]) .track{background:rgba(255,255,255,.22)}}
+  :root[data-theme="dark"] .switch:not([aria-checked="true"]) .track{background:rgba(255,255,255,.22)}
+  /* On: the whole pill turns navy like an active chip, and the track turns bright cobalt so it reads as on in light and dark. */
+  .switch[aria-checked="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul),0 6px 18px rgba(7,20,71,.3)}
+  .switch[aria-checked="true"] .track{background:var(--azul);box-shadow:none}
   .switch[aria-checked="true"] .knob{transform:translateX(12px)}
-  .switch[aria-checked="true"] .ic{color:var(--azul-texto);animation:pop .3s ease-out}
+  .switch[aria-checked="true"] .ic{color:var(--azul-claro);animation:pop .3s ease-out}
   @media (max-width:899px){.chips .switch{order:-2}.chips .sep{order:-1}}
   .soon-note{position:absolute;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:6;transform:translateX(-50%);
     width:max-content;max-width:calc(100% - 28px);display:flex;align-items:center;gap:9px;margin:0;padding:11px 16px 11px 13px;
