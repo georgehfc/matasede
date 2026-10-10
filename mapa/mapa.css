@@ -1,0 +1,214 @@
+/* Mata-Sede map page styles (shared by /mapa/ and every fountain page /b/<id>/). */
+  /* Map page, DESIGN v2: the map fills the screen; logo, search, filters and the fountain card float over it. Crisp: hairlines, tight shadows. */
+  html,body{height:100%;overflow:hidden}
+  .stage{position:fixed;inset:0;overflow:hidden;background:var(--fundo)}
+  #map{position:absolute;inset:0}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* Floating header. The wrapper lets clicks through to the map; the controls take them. */
+  .top{position:absolute;left:14px;right:14px;top:calc(14px + env(safe-area-inset-top,0px));z-index:5;
+    display:flex;flex-direction:column;align-items:flex-start;gap:10px;pointer-events:none}
+  .top > *{pointer-events:auto}
+  .row1{display:flex;align-items:flex-start;gap:10px;width:100%;pointer-events:none}
+  .row1 > *{pointer-events:auto}
+  .brand{display:flex;flex-direction:column;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:28px;box-shadow:0 8px 28px rgba(7,20,71,.16);
+    max-width:100%;overflow:hidden}
+  .brand.open{width:min(420px,100%)}
+  .top.searching .chips,.top.searching .count{display:none!important} /* searching: the panel has the stage to itself */
+  @media (max-width:899px){.brand{width:100%}}
+  .brand-row{display:flex;align-items:center;gap:18px;padding:6px 6px 6px 14px;min-height:50px}
+  .brand .wm{font-size:23px}
+  .find-pill{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 12px;border:1px solid var(--vidro-borda);
+    border-radius:999px;background:rgba(11,16,32,.04);color:var(--cinza);font:500 14px/1 var(--texto);cursor:pointer;transition:background .15s,color .15s}
+  .find-pill:hover{color:var(--basalto)}
+  /* Light/dark switch: local preview only, for testing both looks. */
+  .tema{margin-left:auto;margin-right:-10px}
+  .tema:not([hidden]) + .find-pill{margin-left:0}
+  .find-pill kbd{margin-left:6px;font:500 11px/1 var(--texto);padding:3px 6px;border:1px solid var(--linha);border-radius:999px;background:var(--chao);color:var(--cinza)}
+  @media (max-width:899px){.find-pill kbd{display:none}}
+  .find-pill[aria-expanded="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul)}
+
+  /* Search opens like an accordion under the logo. */
+  .find-panel{padding:2px 10px 10px;border-top:1px solid var(--linha);animation:drop .18s ease-out}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .find-panel .field{position:relative;margin-top:8px}
+  .find-panel .field .ic{position:absolute;left:12px;top:13px;color:var(--cinza)}
+  .find-panel input{width:100%;height:44px;padding:0 12px 0 38px;font:500 15px var(--texto);color:var(--basalto);
+    background:rgba(11,16,32,.04);border:1px solid var(--vidro-borda);border-radius:999px}
+  .find-panel input:focus{border-color:var(--azul);outline:none;background:var(--chao);box-shadow:0 0 0 3px rgba(36,87,245,.15)}
+  .find-panel .hint{margin:10px 4px 2px;font-size:13px;color:var(--cinza)}
+  .results{margin:6px 0 0;padding:0;list-style:none;max-height:min(52vh,420px);overflow:auto;display:flex;flex-direction:column}
+  .results button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:11px;width:100%;padding:9px 10px;border-radius:16px;cursor:pointer}
+  .results button:hover,.results button:focus-visible{background:var(--azul-fundo)}
+  .results .ico{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--noite);color:var(--azul-claro);box-shadow:inset 0 0 0 1px var(--azul)}
+  .results .ico .ic{width:17px;height:17px}
+  .results b{display:block;font-weight:600;font-size:14px;line-height:1.3}
+  .results span{display:block;font-size:12.5px;color:var(--cinza)}
+
+  /* The 438 challenge counter, top right on desktop. */
+  .count{margin-left:auto;display:flex;align-items:center;gap:10px;padding:9px 18px 9px 14px;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:999px;
+    box-shadow:var(--sombra);font-size:13px;color:var(--cinza);white-space:nowrap}
+  .count .ic{color:var(--azul-texto)}
+  .count b{color:var(--basalto);font-weight:700;font-variant-numeric:tabular-nums}
+  .count .bar{display:block;width:120px;height:5px;margin-top:6px;border-radius:99px;background:var(--azul-fundo);overflow:hidden}
+  .count .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--noite),var(--azul))}
+  @media (max-width:899px){.count{display:none!important}}
+
+  /* Filters. */
+  .chips{display:flex;gap:6px;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    margin:-6px -14px -20px;padding:6px 14px 24px;scroll-padding:0 14px} /* bottom room so active chips' shadows aren't cut off */
+  /* Phones: the row runs edge to edge and fades out at both sides, so it reads as scrollable. */
+  @media (max-width:899px){.chips{max-width:none;width:calc(100% + 28px);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 36px),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 36px),transparent)}}
+  .chips::-webkit-scrollbar{display:none}
+  .chips::after{content:"";flex:none;width:4px}
+  .chips .chip{flex:none}
+  .chip[aria-pressed="true"] .ic{animation:pop .3s ease-out}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.3) rotate(-10deg)}100%{transform:scale(1)}}
+  .chips .sep{flex:none;width:1px;margin:7px 3px;background:var(--linha)}
+  /* "Com foto": an on/off switch rather than a chip. */
+  .switch{flex:none;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 6px 0 11px;border:1px solid var(--vidro-borda);border-radius:999px;
+    background:var(--vidro);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);box-shadow:0 4px 14px rgba(7,20,71,.10);color:var(--basalto);font:500 13.5px/1 var(--texto);cursor:pointer;white-space:nowrap}
+  .switch .ic{width:16px;height:16px}
+  .switch .track{position:relative;width:34px;height:22px;border-radius:11px;background:rgba(11,16,32,.14);transition:background .2s}
+  .switch .knob{position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .2s}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .switch .track{background:rgba(255,255,255,.22)}}
+  :root[data-theme="dark"] .switch .track{background:rgba(255,255,255,.22)}
+  .switch[aria-checked="true"] .track{background:var(--noite);box-shadow:inset 0 0 0 1px var(--azul)}
+  .switch[aria-checked="true"] .knob{transform:translateX(12px)}
+  .switch[aria-checked="true"] .ic{color:var(--azul-texto);animation:pop .3s ease-out}
+  @media (max-width:899px){.chips .switch{order:-2}.chips .sep{order:-1}}
+  .soon-note{position:absolute;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:6;transform:translateX(-50%);
+    width:max-content;max-width:calc(100% - 28px);display:flex;align-items:center;gap:9px;margin:0;padding:11px 16px 11px 13px;
+    background:var(--noite);color:#fff;font:500 13.5px/1.35 var(--texto);border-radius:999px;box-shadow:inset 0 0 0 1px var(--azul),0 10px 28px rgba(7,20,71,.35);animation:drop .18s ease-out}
+
+  /* "Enviar foto": bottom left (centred on phones). */
+  .send,.btn.brilho.send{position:absolute;left:14px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:3;white-space:nowrap}
+  @media (max-width:899px){.send,.btn.brilho.send{left:50%;transform:translateX(-50%)}}
+
+  /* Fountain card. Desktop: a panel you can drag by its handle. Phones: a bottom sheet you drag between peek, half and full. */
+  .card{position:absolute;z-index:4;background:var(--vidro-forte);-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque);
+    border:1px solid var(--vidro-borda);border-radius:var(--raio);box-shadow:0 14px 40px rgba(7,20,71,.22);
+    display:flex;flex-direction:column;overflow:hidden;animation:rise .22s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
+  @media (min-width:900px){
+    .card{left:var(--card-x,14px);top:var(--card-y,var(--top-h,140px));width:380px;max-height:calc(100% - var(--card-y,var(--top-h,140px)) - 14px)}
+  }
+  @media (max-width:899px){
+    /* Phones and small tablets: a fixed bottom sheet (no dragging), at most half the screen so the map stays usable;
+       its content scrolls inside. */
+    .stage .card .media:not(.invite) img{height:170px}
+    .card{left:0;right:0;bottom:0;max-height:min(50%,calc(100% - 120px));border-radius:var(--raio) var(--raio) 0 0;
+      border-bottom:0;animation:rise .22s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px)}
+  }
+  .grip{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:40px;padding:0 6px 0 14px;user-select:none}
+  @media (min-width:1025px) and (pointer:fine){.grip{cursor:grab;touch-action:none}} /* only desktops can drag the card */
+  .grip:active{cursor:grabbing}
+  .grip .kind{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--texto);letter-spacing:.07em;text-transform:uppercase;color:var(--azul-texto)}
+  .grip .kind .ic{width:15px;height:15px}
+  .close{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--cinza);cursor:pointer;display:grid;place-items:center}
+  .close:hover{background:var(--fundo);color:var(--basalto)}
+  .grip .btns{display:flex;align-items:center;gap:2px}
+  .close .ic{width:17px;height:17px}
+  @media (max-width:899px){.grip{height:48px}.close{width:40px;height:40px}.close .ic{width:19px;height:19px}}
+  /* Phones: a handle bar on top of the card; drag the top bar down to dismiss it. */
+  @media (max-width:899px){
+    .grip{position:relative;touch-action:none;padding-top:8px}
+    .grip::before{content:"";position:absolute;left:50%;top:7px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:color-mix(in srgb,var(--basalto) 22%,transparent)}
+  }
+  .card .scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+  .card .media{position:relative;margin:0 10px;border-radius:18px;overflow:hidden}
+  .card .media:not(.invite){background:var(--azul-fundo)}
+  .card .media:not(.invite) img{display:block;width:100%;height:220px;object-fit:cover;cursor:zoom-in}
+  .card .media img.tall{object-fit:contain}
+  /* Behind the photo, the same photo blurred and see-through, so vertical photos have soft colour at the sides, not empty bands. */
+  .card .media .fundo-foto{position:absolute;inset:-24px;background:center/cover no-repeat;filter:blur(20px) saturate(1.15);opacity:.6;transform:scale(1.05)}
+  .card .media:not(.invite) img{position:relative}
+  .card .media img:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+  .card .media .n,.card .media .credit{position:absolute;bottom:9px;font:500 11.5px/1 var(--texto);background:rgba(7,20,71,.6);color:#fff;
+    padding:6px 10px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .card .media .n{right:9px;font-variant-numeric:tabular-nums}
+  .card .media .credit{left:9px;max-width:calc(100% - 70px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card .media .nav{position:absolute;top:50%;margin-top:-17px;width:34px;height:34px;border:0;border-radius:50%;padding:0;cursor:pointer;
+    background:rgba(255,255,255,.94);color:#0B1020;display:grid;place-items:center;box-shadow:var(--sombra-leve)}
+  .card .media .prev{left:9px}
+  .card .media .next{right:9px}
+  .card .strip{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 0;margin:0;list-style:none;scrollbar-width:none}
+  .card .strip button{flex:none;display:block;width:46px;height:46px;padding:0;border:2px solid transparent;border-radius:14px;cursor:pointer;
+    background:var(--azul-fundo) center/cover no-repeat;opacity:.6;transition:opacity .15s}
+  .card .strip button:hover{opacity:1}
+  .card .strip button[aria-current="true"]{border-color:var(--azul);opacity:1}
+  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px}
+  .card h2{margin:0;font:700 23px/1.1 var(--display);letter-spacing:-.03em;text-wrap:balance;font-variation-settings:"opsz" 48}
+  .card .meta{margin:-3px 0 0;font-size:13.5px;color:var(--cinza)}
+  .card .walk{margin:0;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--azul-texto);font-variant-numeric:tabular-nums}
+  .card .note{margin:0;font-size:13.5px;color:var(--cinza)}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .card .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .card .acts .btn{flex:1 1 140px;min-width:0;padding:0 12px;white-space:nowrap}
+  .card .acts .btn .ic{width:17px;height:17px}
+
+  /* "O que sabemos": three questions anyone can answer with Sim / Não. The newest answer is what shows. */
+  .ask{display:flex;flex-direction:column;gap:11px;margin-top:3px;padding-top:12px;border-top:1px solid var(--linha)}
+  .ask h3{margin:0;font:600 11px/1 var(--texto);letter-spacing:.07em;text-transform:uppercase;color:var(--cinza)}
+  .ask .q{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:2px 10px}
+  .ask .q > .ic{grid-row:1/3;width:20px;height:20px;color:var(--azul-texto)}
+  .ask .q b{font-weight:600;font-size:14px;line-height:1.25}
+  .ask .q small{grid-column:2;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--cinza)}
+  .ask .q small .ic{width:14px;height:14px}
+  .ask .q.mau small{color:var(--erro);font-weight:600}
+  .ask .yn{grid-column:3;grid-row:1/3;display:flex;gap:4px}
+  .ask .yn button{height:32px;min-width:46px;padding:0 11px;border:1px solid var(--vidro-borda);border-radius:999px;background:var(--vidro);
+    color:var(--basalto);font:500 13px/1 var(--texto);cursor:pointer}
+  .ask .yn button:hover{background:var(--vidro-forte)}
+  .ask .yn button[aria-pressed="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul)}
+  .ask .yn button:disabled{opacity:.5;cursor:wait}
+  .ask .hint{margin:0;font-size:12.5px;color:var(--cinza)}
+
+  /* Round photo pins. --ppin is set from the zoom in sizePhotoPins(): bigger when zoomed out. */
+  .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:2.5px solid #fff;background:var(--azul-fundo) center/cover no-repeat;cursor:pointer;padding:0;
+    box-shadow:0 0 0 2px var(--azul),0 4px 12px rgba(11,16,32,.3);transition:width .18s,height .18s}
+  .ppin.mau{border-color:var(--erro)} /* reported broken: red only ever means broken */
+  /* ...and never by colour alone: a red ✕ badge on the pin's corner. */
+  .ppin.mau::after{content:"";position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px #fff;
+    background:var(--erro) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E") center/12px no-repeat}
+  .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px);box-shadow:0 0 0 3px #0B1020,0 0 0 7px rgba(255,255,255,.9),0 8px 20px rgba(11,16,32,.4)}
+
+  /* Full-screen photo viewer. Clicking the dark area around the photo closes it. */
+  .viewer{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;
+    background:rgba(6,9,18,.95);color:#fff;overflow:hidden}
+  .viewer::backdrop{background:transparent}
+  .viewer .frame{position:absolute;inset:68px 84px 64px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none;border-radius:10px;cursor:zoom-out}
+  .viewer .x,.viewer .nav{position:absolute;border:0;border-radius:50%;padding:0;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center}
+  .viewer .x{right:12px;top:12px;width:42px;height:42px}
+  .viewer .nav{top:50%;margin-top:-23px;width:46px;height:46px}
+  .viewer .x:hover,.viewer .nav:hover{background:rgba(255,255,255,.24)}
+  .viewer .x:focus-visible,.viewer .nav:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .viewer .prev{left:16px}
+  .viewer .next{right:16px}
+  .viewer .info{position:absolute;left:84px;right:84px;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin:0;display:flex;gap:16px;
+    justify-content:center;text-align:center;font:500 13.5px/1.3 var(--texto);pointer-events:none}
+  .viewer .info b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  @media (max-width:600px){
+    .viewer .frame{inset:68px 0 96px}
+    .viewer img{border-radius:0}
+    .viewer .nav{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-top:0;width:42px;height:42px}
+    .viewer .prev{left:12px}
+    .viewer .next{right:12px}
+    .viewer .info{left:64px;right:64px;flex-direction:column;gap:2px;font-size:12.5px;bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
+
+  .err{position:absolute;left:14px;right:14px;bottom:24px;z-index:6;padding:13px 18px;background:var(--vidro-forte);border:1px solid var(--vidro-borda);border-radius:18px;box-shadow:var(--sombra);
+    border-left:4px solid var(--erro);color:var(--basalto)}
+  .maplibregl-ctrl-group{border-radius:999px!important;border:1px solid var(--vidro-borda);box-shadow:0 4px 14px rgba(7,20,71,.12)!important;overflow:hidden;
+    background:var(--vidro-forte)!important;-webkit-backdrop-filter:var(--desfoque);backdrop-filter:var(--desfoque)}
+  .maplibregl-ctrl-group button{background-color:transparent!important}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:invert(1)}}
+  :root[data-theme="dark"] .maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:invert(1)}
+  .maplibregl-ctrl-group button{width:36px!important;height:36px!important}
+  .maplibregl-ctrl-bottom-right{bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  @media (max-width:899px){.maplibregl-ctrl-bottom-right{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}

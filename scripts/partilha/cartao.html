@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Cartão de partilha · Mata-Sede</title>
+<!-- The 1200 × 630 image shown when a link is shared (WhatsApp, Instagram, Facebook…).
+     scripts/gerar_partilhas.mjs opens this page once per fountain and saves a screenshot to partilha/<id>.jpg.
+     ?id=<id>&foto=<url>  a fountain with a photo     ?id=<id>  a fountain without one (map at its spot)
+     ?site=1             the general card for the home, map and upload pages -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400;500;600&display=block">
+<link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
+<style>
+  html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#071447}
+  .cartao{position:relative;display:flex;width:1200px;height:630px;font-family:Inter,system-ui,sans-serif;color:#fff}
+  .texto{position:relative;z-index:2;flex:none;width:560px;display:flex;flex-direction:column;padding:56px 56px 50px 60px;box-sizing:border-box;
+    background:radial-gradient(120% 90% at 0% 100%,rgba(36,87,245,.45),transparent 60%),linear-gradient(160deg,#050F38,#071447 60%,#0E2A9A)}
+  .wm{display:flex;align-items:center;gap:10px;font:800 34px/1 "Bricolage Grotesque";letter-spacing:-.035em;font-variation-settings:"opsz" 96}
+  .wm svg{width:20px;height:24px}
+  .wm .hifen{color:#7FB2FF}
+  .meio{margin-top:auto;display:flex;flex-direction:column;gap:14px}
+  .eyebrow{font:600 18px/1 Inter;letter-spacing:.12em;text-transform:uppercase;color:#7FB2FF}
+  h1{margin:0;font:800 54px/1.02 "Bricolage Grotesque";letter-spacing:-.035em;font-variation-settings:"opsz" 72;
+    display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  h1.longo{font-size:44px}
+  .morada{font:400 24px/1.3 Inter;color:rgba(255,255,255,.82)}
+  .tags{display:flex;gap:10px;margin-top:6px}
+  .tag{display:inline-flex;align-items:center;gap:8px;padding:9px 16px 9px 12px;border-radius:999px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.2);font:500 18px/1 Inter}
+  .tag svg{width:20px;height:20px;color:#5AD2F4}
+  .pe{margin-top:34px;font:600 22px/1 Inter;letter-spacing:-.01em}
+  .pe b{color:#fff;font-weight:600}
+  .lado{position:relative;flex:1;overflow:hidden;background:#EDF2FF}
+  .lado .fundo{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(28px) saturate(1.15);opacity:.65;transform:scale(1.05)}
+  .lado img{position:relative;display:block;width:100%;height:100%;object-fit:cover}
+  .lado img.alta{object-fit:contain}
+  #map{position:absolute;inset:0}
+  .maplibregl-ctrl-attrib,.maplibregl-ctrl-logo{display:none!important} /* the site credits OpenStreetMap; the card is too small to */
+  .pino{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:#2457F5;display:grid;place-items:center;
+    box-shadow:0 0 0 5px #fff,0 0 0 16px rgba(36,87,245,.22),0 10px 30px rgba(7,20,71,.35)}
+  .pino svg{width:30px;height:30px;color:#fff}
+  .ponto{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#2457F5;box-shadow:0 0 0 2px #fff}
+</style>
+</head>
+<body>
+<div class="cartao">
+  <div class="texto">
+    <div class="wm"><svg viewBox="0 0 22 28" aria-hidden="true"><defs><clipPath id="c"><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z"/></clipPath><linearGradient id="g" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#5AD2F4"/><stop offset="1" stop-color="#2457F5"/></linearGradient></defs><path d="M11 .8C11 .8 1.2 11.6 1.2 18.2a9.8 9.8 0 0 0 19.6 0C20.8 11.6 11 .8 11 .8z" fill="url(#g)"/><g clip-path="url(#c)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M-3 16.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/><path d="M-3 22.5q2.5-3.2 5 0t5 0 5 0 5 0 5 0 5 0"/></g></svg><span>Mata<span class="hifen">-</span>Sede</span></div>
+    <div class="meio">
+      <div class="eyebrow" id="eyebrow"></div>
+      <h1 id="nome"></h1>
+      <div class="morada" id="morada"></div>
+      <div class="tags" id="tags"></div>
+    </div>
+    <div class="pe"><b>matasede.pt</b></div>
+  </div>
+  <div class="lado" id="lado"></div>
+</div>
+<script src="/assets/vendor/maplibre-gl.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var GOTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>';
+  var ACESSIVEL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>';
+  var lado = document.getElementById("lado");
+  function pronto() { document.fonts.ready.then(function () { setTimeout(function () { window.PRONTO = true; }, 150); }); }
+  function falhou(msg) { window.ERRO = msg; }
+
+  // The base map, recoloured like the site's (mapa.js), with optional dots.
+  function mapa(center, zoom, pontos, pino) {
+    lado.innerHTML = '<div id="map"></div>' + (pino ? '<div class="pino">' + GOTA + "</div>" : "");
+    var map = new maplibregl.Map({ container: "map", style: "https://tiles.openfreemap.org/styles/liberty", center: center, zoom: zoom,
+      interactive: false, attributionControl: false, fadeDuration: 0, preserveDrawingBuffer: true });
+    var BASE = { ground: "#F1F4FA", block: "#E6EBF5", building: "#E1E7F2", casing: "#D7DFEF", street: "#FFFFFF",
+      park: "#D9EFDB", water: "#CAD7FD", rail: "#C6CEE0", label: "#5B6380" };
+    map.on("load", function () {
+      (map.getStyle().layers || []).forEach(function (l) {
+        var id = l.id, set = function (k, v) { try { map.setPaintProperty(id, k, v); } catch (e) {} };
+        if (l.type === "background") set("background-color", BASE.ground);
+        else if (l.type === "fill") {
+          if (id === "water") set("fill-color", BASE.water);
+          else if (/park|grass|wood|wetland/.test(id)) set("fill-color", BASE.park);
+          else if (id === "building") set("fill-color", BASE.building);
+          else if (/^landuse|landcover_sand|aeroway/.test(id)) set("fill-color", BASE.block);
+        } else if (l.type === "fill-extrusion") set("fill-extrusion-color", BASE.building);
+        else if (l.type === "line") {
+          if (/^waterway/.test(id)) set("line-color", BASE.water);
+          else if (/rail/.test(id)) set("line-color", BASE.rail);
+          else if (/casing$/.test(id)) set("line-color", BASE.casing);
+          else if (/^(road|tunnel|bridge)_/.test(id)) set("line-color", BASE.street);
+        } else if (l.type === "symbol") {
+          if (/^poi/.test(id)) map.setLayoutProperty(id, "visibility", "none");
+          else if (l.layout && l.layout["text-field"]) set("text-color", BASE.label);
+        }
+      });
+      if (pontos) {
+        map.addSource("p", { type: "geojson", data: pontos });
+        map.addLayer({ id: "p", type: "circle", source: "p", paint: { "circle-radius": 4.5, "circle-color": "#2457F5",
+          "circle-stroke-color": "#fff", "circle-stroke-width": 1.5 } });
+      }
+      map.once("idle", pronto);
+      setTimeout(pronto, 9000); // a slow tile shouldn't hold the card up forever
+    });
+    map.on("error", function (e) { if (e && e.error && /style/i.test(String(e.error.message))) falhou("mapa"); });
+  }
+
+  fetch("/data/pontos.geojson").then(function (r) { return r.json(); }).then(function (geo) {
+    if (q.get("site")) {
+      document.getElementById("eyebrow").textContent = "Lisboa · água de graça";
+      document.getElementById("nome").textContent = "Mata a sede.";
+      document.getElementById("morada").textContent = "Todos os bebedouros públicos da cidade num só mapa, com fotos e o estado de cada um.";
+      var beb = { type: "FeatureCollection", features: geo.features.filter(function (f) { return f.properties.kind === "bebedouro"; }) };
+      return mapa([-9.155, 38.735], 11.6, beb, false);
+    }
+    var f = geo.features.find(function (x) { return x.id === q.get("id"); });
+    if (!f) return falhou("sem ponto");
+    var p = f.properties, nome = document.getElementById("nome");
+    document.getElementById("eyebrow").textContent = ({ bebedouro: "Bebedouro", chafariz: "Chafariz", bica: "Bica" }[p.kind] || "Bebedouro") + " · Lisboa";
+    nome.textContent = p.name;
+    if (p.name.length > 48) nome.classList.add("longo");
+    document.getElementById("morada").textContent = p.address || "";
+    if (p.accessible === true) document.getElementById("tags").innerHTML = '<span class="tag">' + ACESSIVEL + "Acessível a mobilidade reduzida</span>";
+    var foto = q.get("foto");
+    if (foto) {
+      lado.innerHTML = '<div class="fundo" style="background-image:url(&quot;' + foto.replace(/"/g, "%22") + '&quot;)"></div><img alt="">';
+      var img = lado.querySelector("img");
+      img.onload = function () { if (img.naturalHeight > img.naturalWidth * 0.9) img.classList.add("alta"); pronto(); };
+      img.onerror = function () { falhou("foto"); };
+      img.src = foto;
+    } else {
+      mapa(f.geometry.coordinates, 16.2, null, true);
+    }
+  }).catch(function (e) { falhou(String(e)); });
+})();
+</script>
+</body>
+</html>
