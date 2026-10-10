@@ -165,6 +165,9 @@
   .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:2.5px solid #fff;background:var(--azul-fundo) center/cover no-repeat;cursor:pointer;padding:0;
     box-shadow:0 0 0 2px var(--azul),0 4px 12px rgba(11,16,32,.3);transition:width .18s,height .18s}
   .ppin.mau{border-color:var(--erro)} /* reported broken: red only ever means broken */
+  /* ...and never by colour alone: a red ✕ badge on the pin's corner. */
+  .ppin.mau::after{content:"";position:absolute;right:-5px;top:-5px;width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px #fff;
+    background:var(--erro) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E") center/12px no-repeat}
   .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px);box-shadow:0 0 0 3px #0B1020,0 0 0 7px rgba(255,255,255,.9),0 8px 20px rgba(11,16,32,.4)}
 
   /* Full-screen photo viewer. Clicking the dark area around the photo closes it. */
@@ -272,6 +275,15 @@
   ];
   var rep = {};
   var ERRO = "#D3263A"; // --erro: red only ever means broken
+  var MAU = ["==", ["get", "funciona"], false]; // map expression: reported broken
+  // A white ✕ drawn in code (no image file), 16 px on screen.
+  function crossImage() {
+    var c = document.createElement("canvas"); c.width = c.height = 32;
+    var g = c.getContext("2d");
+    g.strokeStyle = "#fff"; g.lineWidth = 4.5; g.lineCap = "round";
+    g.beginPath(); g.moveTo(9, 9); g.lineTo(23, 23); g.moveTo(23, 9); g.lineTo(9, 23); g.stroke();
+    return g.getImageData(0, 0, 32, 32);
+  }
   var markers = {};
   var card = document.getElementById("card");
 
@@ -378,11 +390,16 @@
     }
     map.addLayer({ id: "pt", type: "circle", source: "pts", filter: ["!", ["has", "point_count"]],
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 4, 16, 8],
-        "circle-color": ["case", ["==", ["get", "funciona"], false], ERRO, ["match", ["get", "kind"], "bebedouro", AZUL, "#FFFFFF"]],
+        // Broken dots grow from zoom 15 to make room for their ✕.
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 4, 15, ["case", MAU, 8, 7], 16, ["case", MAU, 11, 8]],
+        "circle-color": ["case", MAU, ERRO, ["match", ["get", "kind"], "bebedouro", AZUL, "#FFFFFF"]],
         "circle-stroke-color": ["match", ["get", "kind"], "bebedouro", "#FFFFFF", AZUL],
         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5]
       } });
+    // Status never by colour alone: a white ✕ on broken dots once they are big enough to hold it.
+    map.addImage("mau-x", crossImage(), { pixelRatio: 2 });
+    map.addLayer({ id: "pt-mau", type: "symbol", source: "pts", minzoom: 15, filter: ["all", ["!", ["has", "point_count"]], MAU],
+      layout: { "icon-image": "mau-x", "icon-size": ["interpolate", ["linear"], ["zoom"], 15, 0.8, 16, 1], "icon-allow-overlap": true, "icon-ignore-placement": true } });
     map.addLayer({ id: "pt-sel", type: "circle", source: "pts", filter: ["==", ["get", "id"], ""],
       paint: { "circle-radius": 14, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#071447", "circle-stroke-width": 3 } });
 
@@ -439,7 +456,9 @@
           markers[p.id] = new maplibregl.Marker({ element: el }).setLngLat(byId[p.id].geometry.coordinates).addTo(map);
         }
         markers[p.id].getElement().classList.toggle("sel", p.id === sel);
-        markers[p.id].getElement().classList.toggle("mau", byId[p.id].properties.funciona === false);
+        var mau = byId[p.id].properties.funciona === false, pin = markers[p.id].getElement();
+        pin.classList.toggle("mau", mau);
+        pin.setAttribute("aria-label", p.name + (mau ? ", avariado" : ""));
       });
       Object.keys(markers).forEach(function (id) {
         if (!seen[id]) { markers[id].remove(); delete markers[id]; }
