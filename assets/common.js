@@ -94,6 +94,45 @@ window.MS = (function () {
       return out;
     });
   }
+  // Reports: the newest answer per fountain and question (taca, garrafa, funciona), from the reports_latest view.
+  function latestReports() {
+    if (!db) return Promise.resolve([]);
+    return db.from("reports_latest").select("point_id,field,value,created_at").then(function (res) {
+      if (res.error) { console.warn(res.error); return []; }
+      return res.data || [];
+    });
+  }
+  // A random id for this browser, so the database can replace its own earlier answer. Not linked to a person.
+  var deviceId = null;
+  function device() {
+    if (deviceId) return deviceId;
+    try { deviceId = localStorage.getItem("ms-device"); } catch (e) {}
+    if (!deviceId) {
+      deviceId = crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, function (c) {
+        return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+      });
+      try { localStorage.setItem("ms-device", deviceId); } catch (e) {}
+    }
+    return deviceId;
+  }
+  function report(pointId, field, value) {
+    if (!db) return Promise.reject(new Error("sem_ligacao"));
+    return db.from("reports").insert({ point_id: pointId, field: field, value: value, device: device() }).then(function (res) {
+      if (res.error) throw res.error;
+    });
+  }
+  // "agora mesmo", "há 5 min", "há 3 h", "ontem", "há 4 dias", then month and year.
+  function ago(iso) {
+    var s = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (isNaN(s)) return "";
+    if (s < 90) return "agora mesmo";
+    if (s < 3600) return "há " + Math.round(s / 60) + " min";
+    if (s < 86400) return "há " + Math.round(s / 3600) + " h";
+    if (s < 172800) return "ontem";
+    if (s < 30 * 86400) return "há " + Math.round(s / 86400) + " dias";
+    return "em " + monthYear(iso);
+  }
+
   function monthYear(iso) {
     if (!iso) return "";
     var d = new Date(iso);
@@ -104,6 +143,7 @@ window.MS = (function () {
   return {
     db: db, KIND: KIND, NOTE: NOTE, points: points, dist: dist, nearest: nearest, fmtDist: fmtDist,
     walkMin: walkMin, norm: norm, search: search, esc: esc, thumbPath: thumbPath,
-    approvedPhotos: approvedPhotos, cmlPhotos: cmlPhotos, allPhotos: allPhotos, signed: signed, monthYear: monthYear
+    approvedPhotos: approvedPhotos, cmlPhotos: cmlPhotos, allPhotos: allPhotos, signed: signed, monthYear: monthYear,
+    latestReports: latestReports, report: report, ago: ago
   };
 })();

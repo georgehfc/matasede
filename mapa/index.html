@@ -74,9 +74,6 @@
   .chips .chip{flex:none}
   .chip[aria-pressed="true"] .ic{animation:pop .3s ease-out}
   @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.3) rotate(-10deg)}100%{transform:scale(1)}}
-  /* Filters with no data until people send photos and reports: muted, still clickable to explain "em breve". */
-  .chip.soon{color:var(--cinza);background:color-mix(in srgb,var(--chao) 70%,transparent);box-shadow:none;border-style:dashed}
-  .chip.soon:hover{border-color:var(--linha)}
   .chips .sep{flex:none;width:1px;margin:7px 3px;background:var(--linha)}
   /* "Com foto": an on/off switch rather than a chip. */
   .switch{flex:none;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 6px 0 11px;border:1px solid var(--vidro-borda);border-radius:999px;
@@ -147,9 +144,27 @@
   .card .acts .btn{flex:1 1 140px;min-width:0;padding:0 12px;white-space:nowrap}
   .card .acts .btn .ic{width:17px;height:17px}
 
+  /* "O que sabemos": three questions anyone can answer with Sim / Não. The newest answer is what shows. */
+  .ask{display:flex;flex-direction:column;gap:11px;margin-top:3px;padding-top:12px;border-top:1px solid var(--linha)}
+  .ask h3{margin:0;font:600 11px/1 var(--texto);letter-spacing:.07em;text-transform:uppercase;color:var(--cinza)}
+  .ask .q{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:2px 10px}
+  .ask .q > .ic{grid-row:1/3;width:20px;height:20px;color:var(--azul-texto)}
+  .ask .q b{font-weight:600;font-size:14px;line-height:1.25}
+  .ask .q small{grid-column:2;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--cinza)}
+  .ask .q small .ic{width:14px;height:14px}
+  .ask .q.mau small{color:var(--erro);font-weight:600}
+  .ask .yn{grid-column:3;grid-row:1/3;display:flex;gap:4px}
+  .ask .yn button{height:32px;min-width:46px;padding:0 11px;border:1px solid var(--vidro-borda);border-radius:999px;background:var(--vidro);
+    color:var(--basalto);font:500 13px/1 var(--texto);cursor:pointer}
+  .ask .yn button:hover{background:var(--vidro-forte)}
+  .ask .yn button[aria-pressed="true"]{background:var(--noite);border-color:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--azul)}
+  .ask .yn button:disabled{opacity:.5;cursor:wait}
+  .ask .hint{margin:0;font-size:12.5px;color:var(--cinza)}
+
   /* Round photo pins. --ppin is set from the zoom in sizePhotoPins(): bigger when zoomed out. */
   .ppin{width:var(--ppin,52px);height:var(--ppin,52px);border-radius:50%;border:2.5px solid #fff;background:var(--azul-fundo) center/cover no-repeat;cursor:pointer;padding:0;
     box-shadow:0 0 0 2px var(--azul),0 4px 12px rgba(11,16,32,.3);transition:width .18s,height .18s}
+  .ppin.mau{border-color:var(--erro)} /* reported broken: red only ever means broken */
   .ppin.sel{width:calc(var(--ppin,52px) + 14px);height:calc(var(--ppin,52px) + 14px);box-shadow:0 0 0 3px #0B1020,0 0 0 7px rgba(255,255,255,.9),0 8px 20px rgba(11,16,32,.4)}
 
   /* Full-screen photo viewer. Clicking the dark area around the photo closes it. */
@@ -157,7 +172,7 @@
     background:rgba(6,9,18,.95);color:#fff;overflow:hidden}
   .viewer::backdrop{background:transparent}
   .viewer .frame{position:absolute;inset:68px 84px 64px;display:flex;align-items:center;justify-content:center;pointer-events:none}
-  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none;border-radius:10px}
+  .viewer img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:auto;user-select:none;border-radius:10px;cursor:zoom-out}
   .viewer .x,.viewer .nav{position:absolute;border:0;border-radius:50%;padding:0;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center}
   .viewer .x{right:12px;top:12px;width:42px;height:42px}
   .viewer .nav{top:50%;margin-top:-23px;width:46px;height:46px}
@@ -211,9 +226,9 @@
     <button type="button" class="chip" data-f="bebedouro" aria-pressed="true"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Bebedouros</button>
     <button type="button" class="chip" data-f="heritage" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"/> <line x1="6" x2="6" y1="18" y2="11"/> <line x1="10" x2="10" y1="18" y2="11"/> <line x1="14" x2="14" y1="18" y2="11"/> <line x1="18" x2="18" y1="18" y2="11"/> <polygon points="12 2 20 7 4 7"/></svg>Chafarizes e bicas</button>
     <button type="button" class="chip" data-f="acc" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/> <path d="m18 19 1-7-6 1"/> <path d="m5 8 3-3 5.5 3-2.36 3.5"/> <path d="M4.24 14.5a5 5 0 0 0 6.88 6"/> <path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg>Só acessíveis</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.25 16.25h1.5L12 17z"/> <path d="M16 14v.5"/> <path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309"/> <path d="M8 14v.5"/> <path d="M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/></svg>Taça</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8"/> <path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/> <path d="M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/></svg>Garrafa</button>
-    <button type="button" class="chip soon" data-soon aria-disabled="true" title="Em breve, com as tuas contribuições"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/> <path d="m9 12 2 2 4-4"/></svg>A funcionar</button>
+    <button type="button" class="chip" data-f="taca" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.25 16.25h1.5L12 17z"/> <path d="M16 14v.5"/> <path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309"/> <path d="M8 14v.5"/> <path d="M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/></svg>Taça</button>
+    <button type="button" class="chip" data-f="garrafa" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2h8"/> <path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/> <path d="M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/></svg>Garrafa</button>
+    <button type="button" class="chip" data-f="funciona" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/> <path d="m9 12 2 2 4-4"/></svg>A funcionar</button>
     <span class="sep" aria-hidden="true"></span>
     <button type="button" class="switch" data-f="fotos" role="switch" aria-checked="false"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/> <circle cx="12" cy="13" r="3"/></svg>Com foto<span class="track" aria-hidden="true"><span class="knob"></span></span></button>
   </div>
@@ -231,8 +246,8 @@
 
 <script src="/assets/vendor/maplibre-gl.js"></script>
 <script src="/assets/vendor/supabase.js"></script>
-<script src="/assets/config.js"></script>
-<script src="/assets/common.js"></script>
+<script src="/assets/config.js?v=2"></script>
+<script src="/assets/common.js?v=2"></script>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
@@ -241,14 +256,22 @@
     : "https://tiles.openfreemap.org/styles/liberty";
   var AZUL = "#2457F5";
   // Line icons (Lucide, ISC licence): inner SVG markup by name.
-  var ICONS = {"gota": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>", "chafariz": "<line x1=\"3\" x2=\"21\" y1=\"22\" y2=\"22\"/> <line x1=\"6\" x2=\"6\" y1=\"18\" y2=\"11\"/> <line x1=\"10\" x2=\"10\" y1=\"18\" y2=\"11\"/> <line x1=\"14\" x2=\"14\" y1=\"18\" y2=\"11\"/> <line x1=\"18\" x2=\"18\" y1=\"18\" y2=\"11\"/> <polygon points=\"12 2 20 7 4 7\"/>", "acessivel": "<circle cx=\"16\" cy=\"4\" r=\"1\"/> <path d=\"m18 19 1-7-6 1\"/> <path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/> <path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/> <path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>", "taca": "<path d=\"M11.25 16.25h1.5L12 17z\"/> <path d=\"M16 14v.5\"/> <path d=\"M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309\"/> <path d=\"M8 14v.5\"/> <path d=\"M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5\"/>", "garrafa": "<path d=\"M8 2h8\"/> <path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\"/> <path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/>", "funciona": "<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"m9 12 2 2 4-4\"/>", "camara": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/> <circle cx=\"12\" cy=\"13\" r=\"3\"/>", "lupa": "<circle cx=\"11\" cy=\"11\" r=\"8\"/> <path d=\"m21 21-4.3-4.3\"/>", "andar": "<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/> <path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/> <path d=\"M16 17h4\"/> <path d=\"M4 13h4\"/>", "mapa": "<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>", "brilho": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/> <path d=\"M20 3v4\"/> <path d=\"M22 5h-4\"/> <path d=\"M4 17v2\"/> <path d=\"M5 18H3\"/>", "x": "<path d=\"M18 6 6 18\"/> <path d=\"m6 6 12 12\"/>", "esq": "<path d=\"m15 18-6-6 6-6\"/>", "dir": "<path d=\"m9 18 6-6-6-6\"/>"};
+  var ICONS = {"gota": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>", "chafariz": "<line x1=\"3\" x2=\"21\" y1=\"22\" y2=\"22\"/> <line x1=\"6\" x2=\"6\" y1=\"18\" y2=\"11\"/> <line x1=\"10\" x2=\"10\" y1=\"18\" y2=\"11\"/> <line x1=\"14\" x2=\"14\" y1=\"18\" y2=\"11\"/> <line x1=\"18\" x2=\"18\" y1=\"18\" y2=\"11\"/> <polygon points=\"12 2 20 7 4 7\"/>", "acessivel": "<circle cx=\"16\" cy=\"4\" r=\"1\"/> <path d=\"m18 19 1-7-6 1\"/> <path d=\"m5 8 3-3 5.5 3-2.36 3.5\"/> <path d=\"M4.24 14.5a5 5 0 0 0 6.88 6\"/> <path d=\"M13.76 17.5a5 5 0 0 0-6.88-6\"/>", "taca": "<path d=\"M11.25 16.25h1.5L12 17z\"/> <path d=\"M16 14v.5\"/> <path d=\"M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309\"/> <path d=\"M8 14v.5\"/> <path d=\"M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5\"/>", "garrafa": "<path d=\"M8 2h8\"/> <path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\"/> <path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/>", "funciona": "<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"m9 12 2 2 4-4\"/>", "camara": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/> <circle cx=\"12\" cy=\"13\" r=\"3\"/>", "lupa": "<circle cx=\"11\" cy=\"11\" r=\"8\"/> <path d=\"m21 21-4.3-4.3\"/>", "andar": "<path d=\"M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z\"/> <path d=\"M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z\"/> <path d=\"M16 17h4\"/> <path d=\"M4 13h4\"/>", "mapa": "<polygon points=\"3 11 22 2 13 21 11 13 3 11\"/>", "brilho": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/> <path d=\"M20 3v4\"/> <path d=\"M22 5h-4\"/> <path d=\"M4 17v2\"/> <path d=\"M5 18H3\"/>", "x": "<path d=\"M18 6 6 18\"/> <path d=\"m6 6 12 12\"/>", "avariado": "<circle cx=\"12\" cy=\"12\" r=\"10\"/> <path d=\"m15 9-6 6\"/> <path d=\"m9 9 6 6\"/>", "esq": "<path d=\"m15 18-6-6 6-6\"/>", "dir": "<path d=\"m9 18 6-6-6-6\"/>"};
   function ic(name) {
     return '<svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       (ICONS[name] || "") + "</svg>";
   }
   var KIND_ICON = { bebedouro: "gota", chafariz: "chafariz", bica: "chafariz" };
   var all = null, byId = {}, photos = {}, thumbs = {}, me = null, sel = null, photoIx = 0;
-  var filters = { bebedouro: true, heritage: false, acc: false, fotos: false }; // chafarizes e bicas off by default
+  var filters = { bebedouro: true, heritage: false, acc: false, taca: false, garrafa: false, funciona: false, fotos: false }; // chafarizes e bicas off by default
+  // The three questions anyone can answer in the fountain card. rep[pointId][field] = { value, at } holds the newest answer.
+  var ASK = [
+    { f: "funciona", icon: "funciona", label: "A funcionar", yes: "A funcionar", no: "Avariado" },
+    { f: "taca", icon: "taca", label: "Taça para animais", yes: "Tem", no: "Não tem" },
+    { f: "garrafa", icon: "garrafa", label: "Torneira para garrafas", yes: "Tem", no: "Não tem" }
+  ];
+  var rep = {};
+  var ERRO = "#D3263A"; // --erro: red only ever means broken
   var markers = {};
   var card = document.getElementById("card");
 
@@ -267,6 +290,9 @@
     if (p.kind !== "bebedouro" && !filters.heritage) return false;
     if (filters.acc && p.accessible !== true) return false;
     if (filters.fotos && !p.fotos) return false;
+    if (filters.taca && p.taca !== true) return false;
+    if (filters.garrafa && p.garrafa !== true) return false;
+    if (filters.funciona && p.funciona !== true) return false;
     return true;
   }
   function data() { return { type: "FeatureCollection", features: all.features.filter(visible) }; }
@@ -306,14 +332,15 @@
 
   map.on("load", function () {
     restyleBaseMap();
-    Promise.all([MS.points(), MS.allPhotos()]).then(function (res) {
+    Promise.all([MS.points(), MS.allPhotos(), MS.latestReports()]).then(function (res) {
       all = res[0];
+      res[2].forEach(function (r) { (rep[r.point_id] = rep[r.point_id] || {})[r.field] = { value: r.value, at: r.created_at }; });
       res[1].forEach(function (ph) { (photos[ph.point_id] = photos[ph.point_id] || []).push(ph); });
       Object.keys(photos).forEach(function (id) {
         // Newest first; undated photos (some of CML's) go last.
         photos[id].sort(function (a, b) { return (b.taken_at || b.created_at || "").localeCompare(a.taken_at || a.created_at || ""); });
       });
-      all.features.forEach(function (f) { byId[f.id] = f; f.properties.fotos = (photos[f.id] || []).length; });
+      all.features.forEach(function (f) { byId[f.id] = f; f.properties.fotos = (photos[f.id] || []).length; applyReports(f); });
       var withPhoto = all.features.filter(function (f) { return f.properties.kind === "bebedouro" && f.properties.fotos; }).length;
       if (withPhoto) {
         var c = document.getElementById("count");
@@ -329,6 +356,12 @@
       console.error(e); showError("Não foi possível carregar os pontos. Tenta recarregar a página.");
     });
   });
+
+  // Copies the newest answers onto the point, so filters and pin colours can read them.
+  function applyReports(f) {
+    var r = rep[f.id] || {};
+    ASK.forEach(function (a) { if (r[a.f]) f.properties[a.f] = r[a.f].value; else delete f.properties[a.f]; });
+  }
 
   function addLayers() {
     map.addSource("pts", { type: "geojson", data: data(), cluster: true, clusterMaxZoom: 14, clusterRadius: 46 });
@@ -346,7 +379,7 @@
     map.addLayer({ id: "pt", type: "circle", source: "pts", filter: ["!", ["has", "point_count"]],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 4, 16, 8],
-        "circle-color": ["match", ["get", "kind"], "bebedouro", AZUL, "#FFFFFF"],
+        "circle-color": ["case", ["==", ["get", "funciona"], false], ERRO, ["match", ["get", "kind"], "bebedouro", AZUL, "#FFFFFF"]],
         "circle-stroke-color": ["match", ["get", "kind"], "bebedouro", "#FFFFFF", AZUL],
         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5]
       } });
@@ -406,6 +439,7 @@
           markers[p.id] = new maplibregl.Marker({ element: el }).setLngLat(byId[p.id].geometry.coordinates).addTo(map);
         }
         markers[p.id].getElement().classList.toggle("sel", p.id === sel);
+        markers[p.id].getElement().classList.toggle("mau", byId[p.id].properties.funciona === false);
       });
       Object.keys(markers).forEach(function (id) {
         if (!seen[id]) { markers[id].remove(); delete markers[id]; }
@@ -457,7 +491,7 @@
       '<button type="button" class="close" id="close" aria-label="Fechar">' + ic("x") + "</button></div>" +
       '<div class="scroll">' + media +
       '<div class="body"><h2>' + MS.esc(p.name) + '</h2><p class="meta">' + MS.esc(p.address) + "</p>" +
-      walk + tags + note +
+      walk + tags + note + (p.kind === "bebedouro" ? askHTML(p.id) : "") +
       '<div class="acts">' + (p.kind === "bebedouro" ? '<a class="btn brilho" href="/enviar/?ponto=' + encodeURIComponent(p.id) + '"><span class="brilho-txt">' + ic("camara") + "Enviar foto</span></a>" : "") +
       '<a class="btn" href="' + dir + '" target="_blank" rel="noopener">' + ic("mapa") + "Como lá chegar</a></div></div></div>";
     card.hidden = false;
@@ -484,6 +518,44 @@
       });
     }
   }
+
+  // "O que sabemos": each question shows the newest answer and when it came, plus Sim / Não buttons anyone can press.
+  function askHTML(id) {
+    var r = rep[id] || {};
+    return '<section class="ask" id="ask" aria-labelledby="askh"><h3 id="askh">O que sabemos</h3>' + ASK.map(function (a) {
+      var now = r[a.f], status, mau = now && now.value === false && a.f === "funciona";
+      if (!now) status = "Ainda ninguém disse";
+      else status = (mau ? ic("avariado") : "") + (now.value ? a.yes : a.no) + " · " + MS.ago(now.at);
+      return '<div class="q' + (mau ? " mau" : "") + '">' + ic(a.icon) + "<b>" + a.label + "</b><small>" + status + "</small>" +
+        '<div class="yn" role="group" aria-label="' + a.label + '">' +
+        '<button type="button" data-r="' + a.f + ':1" aria-pressed="' + (!!now && now.value === true) + '">Sim</button>' +
+        '<button type="button" data-r="' + a.f + ':0" aria-pressed="' + (!!now && now.value === false) + '">Não</button></div></div>';
+    }).join("") + '<p class="hint">Passaste por cá? Responde e ajudas quem vem a seguir.</p></section>';
+  }
+  function renderAsk(focus) {
+    var el = document.getElementById("ask"); if (!el || !sel) return;
+    el.outerHTML = askHTML(sel);
+    if (focus) { var b = card.querySelector('[data-r="' + focus + '"]'); if (b) b.focus(); }
+  }
+  // An answer shows straight away; if the database refuses it, it is undone and we say so.
+  card.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-r]"); if (!b || b.disabled || !sel) return;
+    var id = sel, parts = b.dataset.r.split(":"), field = parts[0], value = parts[1] === "1";
+    var r = rep[id] = rep[id] || {}, before = r[field];
+    if (before && before.value === value && Date.now() - new Date(before.at).getTime() < 60000) return; // same answer just now
+    r[field] = { value: value, at: new Date().toISOString() };
+    applyReports(byId[id]); map.getSource("pts").setData(data()); syncPhotoPins();
+    renderAsk(b.dataset.r);
+    MS.report(id, field, value).then(function () {
+      note("Obrigado! Já está no mapa.");
+    }).catch(function (err) {
+      console.warn(err);
+      if (before) r[field] = before; else delete r[field];
+      applyReports(byId[id]); map.getSource("pts").setData(data()); syncPhotoPins();
+      if (sel === id) renderAsk();
+      note(err && /demasiados/.test(err.message) ? "Muitas respostas seguidas. Tenta daqui a pouco." : "Não foi possível guardar. Tenta outra vez.");
+    });
+  });
 
   // Shows photo i of the selected fountain's album (wraps around) without redrawing the card.
   function showPhoto(i) {
@@ -528,7 +600,8 @@
   document.getElementById("vclose").onclick = closeViewer;
   vprev.onclick = function () { showPhoto(photoIx - 1); };
   vnext.onclick = function () { showPhoto(photoIx + 1); };
-  viewer.addEventListener("click", function (e) { if (e.target === viewer || e.target.classList.contains("info")) closeViewer(); });
+  // A click anywhere except the buttons closes it, the photo included (it shows a zoom-out cursor).
+  viewer.addEventListener("click", function (e) { if (e.target === viewer || e.target === vimg || e.target.classList.contains("info")) closeViewer(); });
   viewer.addEventListener("cancel", function (e) { e.preventDefault(); closeViewer(); });
   var vx0 = null;
   viewer.addEventListener("touchstart", function (e) { vx0 = e.touches[0].clientX; }, { passive: true });
@@ -617,24 +690,28 @@
   });
 
   document.querySelector(".chips").addEventListener("click", function (e) {
-    if (e.target.closest("[data-soon]")) return soonNote();
     var b = e.target.closest("[data-f]"); if (!b || !all) return;
     filters[b.dataset.f] = !filters[b.dataset.f];
     b.setAttribute(b.getAttribute("role") === "switch" ? "aria-checked" : "aria-pressed", filters[b.dataset.f]);
-    map.getSource("pts").setData(data());
+    var d = data();
+    map.getSource("pts").setData(d);
+    // Taça, Garrafa and A funcionar only match what people have answered so far: explain an empty map.
+    if (!d.features.length && (filters.taca || filters.garrafa || filters.funciona)) {
+      note("Ainda ninguém confirmou isto num bebedouro. Abre um e responde!");
+    }
   });
-  // Taça, Garrafa and A funcionar have no data yet: say so instead of filtering everything out.
-  var soonTimer = null;
-  function soonNote() {
+  // A short message floating at the bottom, gone after 4 seconds.
+  var noteTimer = null;
+  function note(msg) {
     var n = document.querySelector(".soon-note");
     if (!n) {
       n = document.createElement("p"); n.className = "soon-note"; n.setAttribute("role", "status");
       document.querySelector(".stage").appendChild(n);
     }
-    n.innerHTML = ic("brilho") + "<span>Em breve! Taça, garrafa e estado chegam com as tuas fotos e relatos.</span>";
+    n.innerHTML = ic("brilho") + "<span>" + MS.esc(msg) + "</span>";
     n.hidden = false;
-    clearTimeout(soonTimer);
-    soonTimer = setTimeout(function () { n.hidden = true; }, 4000);
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function () { n.hidden = true; }, 4000);
   }
 
   // Search: a "Procurar" pill that opens into a panel under the logo (accordion). Esc or a click on the map closes it.
