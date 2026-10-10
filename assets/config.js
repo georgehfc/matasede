@@ -18,6 +18,7 @@
   var local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname) || location.protocol === "file:";
   window.MATASEDE = local ? TESTE : REAL;
   if (local) {
+    try { var tema = localStorage.getItem("ms-tema"); if (tema) document.documentElement.dataset.theme = tema; } catch (e) {}
     console.info("Mata-Sede: a usar o projeto de TESTES (matasede-teste).");
     // A small badge so it's obvious this preview writes to the test project, not the real one.
     document.addEventListener("DOMContentLoaded", function () {

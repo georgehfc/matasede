@@ -29,13 +29,19 @@
   --texto:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   color-scheme:light;
 }
+/* Dark mode follows the device. data-theme="light" or "dark" on <html> overrides it (the local preview has a switch). */
 @media (prefers-color-scheme: dark){
-  :root{--chao:#141A2B; --fundo:#0A0E1A; --basalto:#F1F4FB; --cinza:#9EA6BB; --linha:rgba(255,255,255,.10);
+  :root:not([data-theme="light"]){--chao:#141A2B; --fundo:#0A0E1A; --basalto:#F1F4FB; --cinza:#9EA6BB; --linha:rgba(255,255,255,.10);
     --azul-texto:#7FB2FF; --azul-fundo:#1B2442; --erro:#FF8A94;
     --vidro:rgba(20,26,43,.62); --vidro-forte:rgba(20,26,43,.82); --vidro-borda:rgba(255,255,255,.12);
     --sombra:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.45); --sombra-leve:0 1px 2px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.3);
     color-scheme:dark}
 }
+:root[data-theme="dark"]{--chao:#141A2B; --fundo:#0A0E1A; --basalto:#F1F4FB; --cinza:#9EA6BB; --linha:rgba(255,255,255,.10);
+    --azul-texto:#7FB2FF; --azul-fundo:#1B2442; --erro:#FF8A94;
+    --vidro:rgba(20,26,43,.62); --vidro-forte:rgba(20,26,43,.82); --vidro-borda:rgba(255,255,255,.12);
+    --sombra:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.45); --sombra-leve:0 1px 2px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.3);
+    color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--fundo);color:var(--basalto);font:16px/1.5 var(--texto);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
