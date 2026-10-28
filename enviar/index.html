@@ -118,6 +118,7 @@
       <section id="whereSec">
         <h2><b>2</b> · Qual é?</h2>
         <p class="hint" id="whereHint">Escolhe a foto primeiro. Pela localização da foto, mostramos os bebedouros ali ao lado.</p>
+        <button type="button" class="btn brilho" id="useHere" hidden>Usar a minha localização</button>
         <ul class="opts" id="opts"></ul>
       </section>
 
@@ -132,7 +133,7 @@
 
       <p class="msg" id="msg" role="alert" hidden></p>
       <button type="submit" class="btn brilho go" id="go" disabled>Enviar foto</button>
-      <p class="hint">Antes de enviar, a foto é reduzida e perde os dados que o telemóvel lá guarda. Guardamos só as coordenadas, à parte, para confirmar o bebedouro. Nunca são publicadas.</p>
+      <p class="hint">Antes de enviar, a foto é reduzida e perde os dados que o telemóvel lá guarda. Guardamos só as coordenadas, à parte, para confirmar o bebedouro. Nunca são publicadas e são apagadas quando a foto é revista.</p>
     </div>
   </form>
 
@@ -186,7 +187,7 @@
   });
 
   function reset(msg) {
-    gpsAt = null; chosen = null; options = []; showOptions(); where(msg);
+    gpsAt = null; chosen = null; options = []; $("useHere").hidden = true; showOptions(); where(msg);
   }
 
   $("file").addEventListener("change", function () {
@@ -204,28 +205,66 @@
     ]).then(function (r) {
       var gps = r[0] || {}, meta = r[0] || {};
       if (meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal)) takenAt = meta.DateTimeOriginal.toISOString();
-      if (!isFinite(gps.latitude) || !isFinite(gps.longitude)) {
-        reset("Esta foto não traz a localização, por isso não a podemos associar a um bebedouro. " +
-          "Liga a localização da câmara (Definições → Privacidade → Localização → Câmara) e tira a foto junto ao bebedouro. " +
-          "No iPhone, ao escolher a foto, toca em Opções e ativa Localização, se aparecer.");
-        return;
-      }
-      var at = [Math.round(gps.longitude * 1e6) / 1e6, Math.round(gps.latitude * 1e6) / 1e6];
-      var near = MS.nearest(bebedouros, at, 5);
-      options = near.filter(function (o) { return o.m <= MAX_M; });
-      if (!options.length) {
-        reset(near.length
-          ? "Esta foto foi tirada a " + MS.fmtDist(near[0].m) + " do bebedouro mais perto. Só aceitamos fotos tiradas junto a um bebedouro (até " + MAX_M + " m)."
-          : "Esta foto não foi tirada em Lisboa.");
-        return;
-      }
-      gpsAt = at;
-      var pre = wanted && options.some(function (o) { return o.f.id === wanted; }) ? wanted : options[0].f.id;
-      chosen = pre;
-      where(options.length > 1 ? "Há mais de um bebedouro aqui. Confirma qual é:" : "Pela localização da foto, é este:");
-      showOptions();
+      if (isFinite(gps.latitude) && isFinite(gps.longitude)) { place(gps.latitude, gps.longitude, "photo"); return; }
+      // A photo taken with the camera from this page has no location: phone browsers strip it.
+      // If the photo is fresh, the person is still at the fountain, so the phone's location now stands in.
+      if (fresh(f, meta) && "geolocation" in navigator) { askHere(); return; }
+      reset(NO_GPS);
     });
   });
+
+  var NO_GPS = "Esta foto não traz a localização, por isso não a podemos associar a um bebedouro. " +
+    "Liga a localização da câmara (Definições → Privacidade → Localização → Câmara) e tira a foto junto ao bebedouro. " +
+    "No iPhone, ao escolher a foto, toca em Opções e ativa Localização, se aparecer.";
+  var FRESH_MS = 15 * 60 * 1000;
+
+  // Taken in the last 15 minutes, by the photo's own clock or, failing that, the file's.
+  function fresh(f, meta) {
+    var t = meta.DateTimeOriginal instanceof Date && !isNaN(meta.DateTimeOriginal) ? meta.DateTimeOriginal.getTime() : f.lastModified;
+    return isFinite(t) && Math.abs(Date.now() - t) <= FRESH_MS;
+  }
+
+  // Explain first, then let the person's own tap open the browser's location prompt.
+  function askHere() {
+    where("A câmara do navegador não guarda a localização na foto. Como a tiraste agora, podemos usar a localização do telemóvel " +
+      "para encontrar o bebedouro. Serve só para confirmar qual é, nunca é publicada e é apagada quando a foto é revista.");
+    $("useHere").hidden = false;
+  }
+  $("useHere").addEventListener("click", function () { $("useHere").hidden = true; here(file); });
+
+  function here(f) {
+    where("A ver onde estás agora…");
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      if (file !== f) return; // the photo was swapped while we waited
+      if (!takenAt) takenAt = new Date().toISOString();
+      place(pos.coords.latitude, pos.coords.longitude, "device");
+    }, function (err) {
+      if (file !== f) return;
+      reset(err && err.code === 1
+        ? "A foto não traz a localização e o navegador não deixou ver onde estás. Permite a localização para este site e escolhe a foto outra vez, ou tira a foto com a câmara do telemóvel e escolhe-a da galeria."
+        : NO_GPS);
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  }
+
+  // source: "photo" (the photo's GPS) or "device" (the phone's location right now).
+  function place(lat, lng, source) {
+    var at = [Math.round(lng * 1e6) / 1e6, Math.round(lat * 1e6) / 1e6];
+    var near = MS.nearest(bebedouros, at, 5);
+    options = near.filter(function (o) { return o.m <= MAX_M; });
+    if (!options.length) {
+      reset(!near.length
+        ? (source === "photo" ? "Esta foto não foi tirada em Lisboa." : "Não estás em Lisboa.")
+        : source === "photo"
+          ? "Esta foto foi tirada a " + MS.fmtDist(near[0].m) + " do bebedouro mais perto. Só aceitamos fotos tiradas junto a um bebedouro (até " + MAX_M + " m)."
+          : "Estás a " + MS.fmtDist(near[0].m) + " do bebedouro mais perto. Só aceitamos fotos tiradas junto a um bebedouro (até " + MAX_M + " m).");
+      return;
+    }
+    gpsAt = at;
+    chosen = wanted && options.some(function (o) { return o.f.id === wanted; }) ? wanted : options[0].f.id;
+    where(options.length > 1 ? "Há mais de um bebedouro aqui. Confirma qual é:"
+      : source === "photo" ? "Pela localização da foto, é este:" : "Pela tua localização, é este:");
+    showOptions();
+  }
   $("change").addEventListener("click", function () { $("file").value = ""; $("file").click(); });
   $("ok").addEventListener("change", update);
 
