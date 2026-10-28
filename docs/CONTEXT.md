@@ -1,6 +1,6 @@
 # Mata-Sede — Context and decision log
 
-Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 6 Oct 2026.
+Everything decided before the repo existed, written down so nobody has to remember a chat. Updated 22 Oct 2026.
 
 Read order for a new session: `CLAUDE.md` → `docs/SPEC.md` → `DESIGN.md` → this file.
 
@@ -24,6 +24,8 @@ The founder is a web designer with minimal programming experience. The project m
 - **Heritage angle:** the Aqueduto das Águas Livres, the old chafarizes and the aguadeiros who carried water through the city. EPAL is restoring chafarizes alongside the new network. The open data includes 101 chafarizes and 106 bicas, which become our heritage layer.
 - **Civic reporting precedent:** *Na Minha Rua LX* is the city's own reporting portal (since 2017) and explicitly covers fountain maintenance. Deferred for now by decision (see below), but it is where official complaints belong.
 - **Crowdsourcing precedent:** the Refill app lists over 295,000 water points worldwide and moderates every submission before it appears.
+- **Reference, Porto (aguasdoporto.pt):** the municipal water company has a page "Fontes, Fontanários e Bebedouros" stating 170 fontes, 65 fontanários and 115 bebedouros on the main walking and cycling routes, with modern, historic, accessible and pet-adapted models, plus a dedicated programme for fountain rehabilitation and cleaning. It counts them but shows no map and no condition, which is the same gap Mata-Sede fills for Lisbon. (Added 22 Oct 2026.)
+- **Reference, product (ancienttrees.app):** a map of remarkable old trees with the pattern Mata-Sede wants: "near you, right now", a short route past several points, a story and sources for each point, ticking off the ones you visited, and browsing by city, species and park. Lisbon has 36 trees on it. English only, with an app plus website. (Added 22 Oct 2026.)
 - **Wildfire reporting is deliberately out of scope:** that space is well covered (for example fogos.pt, refreshed every two minutes from civil protection data), and real emergencies belong to 112.
 
 Sources are named rather than linked because links rot; search the outlet plus the fact. Main sources: Lisboa Aberta (dados.cm-lisboa.pt), Lisboa para Pessoas, Time Out Lisboa, Mensagem de Lisboa, EPAL, ERSAR, Câmara Municipal de Lisboa.
@@ -64,6 +66,7 @@ Sources are named rather than linked because links rot; search the outlet plus t
 | 10 Oct 2026 | **Reports live (anonymous):** the fountain card asks *A funcionar*, *Taça para animais* and *Torneira para garrafas* with Sim / Não; anyone can answer, no account, and answers show straight away (newest answer wins). A random per-browser id replaces your own answer within a day and caps 30 answers an hour; bad answers are deleted in the `reports` table. Broken fountains turn red; the Taça, Garrafa and A funcionar filters are live. Names later via Google sign-in or accounts. The failing *Verificar fotos* GitHub Action was disabled. |
 | 10 Oct 2026 | **DESIGN.md v2** written from the live site (supersedes v1.0); `preview.html` rebuilt on the live site, reading the real `assets/site.css`. CLAUDE.md brand and icon lines updated to match. |
 | 10 Oct 2026 | **Fountain pages and link previews:** every bebedouro gets its own address, `matasede.pt/b/<id>/` (the map, opened on it), with its own title, description, location data and a 1200×630 preview image (its newest photo framed in the brand, or the map at its spot). `scripts/gerar_partilhas.mjs` makes the pages, the images, `sitemap.xml` and `robots.txt`; re-run it when photos are approved. Old `/mapa/?ponto=` links keep working. The map's code moved into `mapa/mapa.css` and `mapa/mapa.js`. |
+| 28 Oct 2026 | **Upload: phone location when the photo has none.** Photos taken with the camera from `/enviar/` arrive without GPS (phone browsers strip it), so the founder had to save the photo and upload it again. Now, if a photo has no location but was taken in the last 15 minutes (by its own date, or the file's), the page explains why and offers a *Usar a minha localização* button; only that tap opens the browser's location prompt, and the phone's location is used instead. Older photos without GPS are still refused. The database rule is unchanged: within 50 m of a bebedouro. **Coordinates are deleted once a photo is reviewed** (`supabase/004_apagar_coordenadas.sql`: approved or rejected clears `photo_lat`/`photo_lng`, keeps `distance_m`); review the pending queue at least monthly. A CNPD-savvy review is worth it if Mata-Sede grows. |
 
 ## Still open
 
